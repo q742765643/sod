@@ -20,16 +20,20 @@ import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.dataclass.DataOnlineTimeEntity;
 import com.piesat.dm.entity.datatable.TableDataStatisticsEntity;
+import com.piesat.dm.rpc.api.dataclass.DataOnlineTimeService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableDataStatisticsService;
+import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.dto.datatable.TableDataStatisticsDto;
 import com.piesat.schedule.client.api.client.handler.base.BaseHandler;
+import com.piesat.schedule.dao.JobInfoDao;
 import com.piesat.schedule.entity.JobInfoEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.mapstruct.JobInfoMapstruct;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataUnit;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -53,6 +57,8 @@ public class TableCollectHandler  implements BaseHandler {
     private DatabaseDao databaseDao;
     @Autowired
     private DataOnlineTimeDao dataOnlineTimeDao;
+    @Autowired
+    private DataOnlineTimeService dataOnlineTimeService;
 
     @Autowired
     private DataTableDao dataTableDao;
@@ -82,34 +88,33 @@ public class TableCollectHandler  implements BaseHandler {
 
     @Override
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
-        String newBoundEndTimeFlag = "";
+        String newBoundEndTimeFlag = null;
         Date newBoundEndTime = null;
         Date newBoundBeginTime = null;
         getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<SchemaEntity> databaseEntities = schemaDao.findAll();
 
-
-
-
-//        ConnectVo coreInfo = schemaDto.getConnectVo();
-//        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
-//        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-//        AuzDatabase actuator = (AuzDatabase) af.getActuator(false);
-
-
+        //获取资料的在线时间配置
+        List<Map<String, Object>> allOnlineInfo = dataOnlineTimeService.findAllOnlineInfo();
 
         if(databaseEntities != null && databaseEntities.size()>0){
             for(SchemaEntity schemaEntity : databaseEntities) {
-
-
-
-
-
                 DatabaseDcl databaseDcl = null;
+                List<String> dbTableNams = null;
                 try {
+                    /*if (databaseEntity.getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
+                        continue;
+                    }*/
+                    if (schemaEntity.getDatabase().getDatabaseName().contains("元数据") || schemaEntity.getDatabase().getDatabaseName().contains("公共元") ) {
+                        continue;
+                    }
                     String databaseType = schemaEntity.getDatabase().getDatabaseType();
+                    String driverClassName = schemaEntity.getDatabase().getDriverClassName();
                     String databaseUrl = schemaEntity.getDatabase().getDatabaseUrl();
+                    String databasePort = schemaEntity.getDatabase().getDatabasePort();
+                    String databaseInstance = schemaEntity.getDatabase().getDatabaseInstance();
+                    String schemaName = schemaEntity.getSchemaName();
 
                     List<Map<String, Object>> dataTableList = dataTableService.getByDatabaseId(schemaEntity.getId());
                     if (dataTableList == null || dataTableList.size() == 0) {
@@ -130,11 +135,12 @@ public class TableCollectHandler  implements BaseHandler {
                     if ("xugu".equalsIgnoreCase(databaseType)) {
                         Xugu xugu = new Xugu(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = xugu;
+                        dbTableNams = databaseDcl.queryTableName(schemaName);
                     } else if ("gbase8a".equalsIgnoreCase(databaseType)) {
                         Gbase8a gbase8a = new Gbase8a(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = gbase8a;
                     }
-
+                    //List<String> arr = databaseDcl.queryTableName(schemaName);
                     Map<String, String> tableCollectInfo = new HashMap<String, String>();
                     for (int i = 0; i < dataTableList.size(); i++) {
                         String begin_time = "";
@@ -144,19 +150,48 @@ public class TableCollectHandler  implements BaseHandler {
                         String sql = "";
                         Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
+                        System.out.println(schemaEntity.getDatabaseName()+"="+schemaEntity.getDatabase().getDatabaseName()+"="+schemaName+"="+table_name);
+                        /*if(!Arrays.asList(arr).contains(table_name)){
+                            continue;
+                        }*/
                         String data_class_id = String.valueOf(tableInfo.get("data_class_id"));
                         msg.append("定时统计：").append(schemaEntity.getDatabase().getDatabaseName() + "_" + schemaEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
+                        if("xugu".equalsIgnoreCase(databaseType) && dbTableNams != null && dbTableNams.size()>0 && !dbTableNams.contains(table_name.toUpperCase())){
+                            continue;
+                        }
+
+                        if(allOnlineInfo != null && allOnlineInfo.size()>0){
+                            for(Map<String, Object> map : allOnlineInfo){
+                                String online_table_name = (String) map.get("TABLE_NAME");
+                                String online_database_id = (String) map.get("DATABASE_ID");
+                                if(schemaEntity.getId().equals(online_database_id) && online_table_name.equalsIgnoreCase(table_name)){
+                                    if(map.get("BOUND_BEGIN_TIME") != null){
+                                        newBoundBeginTime = (Date) map.get("BOUND_BEGIN_TIME");
+                                    }
+                                    if(map.get("BOUND_END_TIME") != null){
+                                        newBoundEndTime = (Date) map.get("BOUND_END_TIME");
+                                    }
+                                    if(map.get("BOUND_END_TIME_FLAG") != null){
+                                        newBoundEndTimeFlag = (String) map.get("BOUND_END_TIME_FLAG");
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+
                         //判断昨天数据是否已经统计入库
                         //List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(schemaEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZeroDate);
-                        TableDataStatisticsDto tableDataStatisticsDto = new TableDataStatisticsDto();
+                       /* TableDataStatisticsDto tableDataStatisticsDto = new TableDataStatisticsDto();
                         tableDataStatisticsDto.setDatabaseId(schemaEntity.getId());
                         tableDataStatisticsDto.setTableId(String.valueOf(tableInfo.get("id")));
                         tableDataStatisticsDto.setStatisticDate(yesterdayZeroDate);
                         List<TableDataStatisticsDto> tableDataStatisticsDtos = tableDataStatisticsService.findByParam(tableDataStatisticsDto);
                         if (tableDataStatisticsDtos != null && tableDataStatisticsDtos.size() > 0) {
                             continue;
-                        }
+                        }*/
+
 
                         //不统计值表数据
                         if ("E".equals(String.valueOf(tableInfo.get("db_table_type"))) && String.valueOf(tableInfo.get("storage_type")).contains("K")) {
@@ -237,6 +272,7 @@ public class TableCollectHandler  implements BaseHandler {
         if(schemaEntities != null && schemaEntities.size()>0){
             for(SchemaEntity schemaEntity : schemaEntities) {
                 DatabaseDcl databaseDcl = null;
+                List<String> dbTableNams = null;
                 if(!schemaEntity.getId().equalsIgnoreCase(newDatabaseId)){
                     continue;
                 }
@@ -267,12 +303,13 @@ public class TableCollectHandler  implements BaseHandler {
                     if ("xugu".equalsIgnoreCase(databaseType)) {
                         Xugu xugu = new Xugu(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = xugu;
+                        dbTableNams = databaseDcl.queryTableName(schemaName);
                     } else if ("gbase8a".equalsIgnoreCase(databaseType)) {
                         Gbase8a gbase8a = new Gbase8a(databaseUrl, databaseAdministratorEntity.getUserName(), databaseAdministratorEntity.getPassWord());
                         databaseDcl = gbase8a;
                     }
 
-                    List<String> arr = databaseDcl.queryTableName(schemaName);
+
 
                     Map<String, String> tableCollectInfo = new HashMap<String, String>();
                     for (int i = 0; i < dataTableList.size(); i++) {
@@ -284,7 +321,7 @@ public class TableCollectHandler  implements BaseHandler {
                         Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
 
-                        if(!Arrays.asList(arr).contains(table_name)){
+                        if("xugu".equalsIgnoreCase(databaseType) && dbTableNams != null && dbTableNams.size()>0 && !dbTableNams.contains(table_name.toUpperCase())){
                             continue;
                         }
                         if(!table_name.equalsIgnoreCase(newTableName)){
@@ -374,7 +411,6 @@ public class TableCollectHandler  implements BaseHandler {
         }
 
     }
-
 
     //昨天0点
     String yesterdayZero = "";

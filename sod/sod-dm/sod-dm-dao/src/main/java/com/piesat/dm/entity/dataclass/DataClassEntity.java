@@ -93,6 +93,7 @@ public class DataClassEntity extends BaseEntity {
     private Integer frequencyType;
 
     /**
+     * 1：全部在线  2近线服务
      * is_all_line
      */
     @Column(name = "is_all_line", columnDefinition="integer DEFAULT 1 ")

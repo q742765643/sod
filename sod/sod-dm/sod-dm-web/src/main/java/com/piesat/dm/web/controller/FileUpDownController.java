@@ -145,4 +145,20 @@ public class FileUpDownController {
                 fis.close();
         }
     }
+
+    @ApiOperation(value = "判断文件是否存在")
+    @GetMapping("/fileExitOrNot")
+    public ResultT fileExitOrNot(String filePath) {
+        try{
+            File file = new File(filePath);
+            if (!file.exists()) {
+                return ResultT.failed("文件不存在");
+            }else{
+                return ResultT.success("文件存在");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultT.failed("文件不存在");
+        }
+    }
 }

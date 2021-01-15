@@ -463,6 +463,24 @@ public class DatabaseUserManagerController {
         }
     }
 
+    @ApiOperation(value = "数据库访问账户申请材料是否存在")
+    @GetMapping(value = "fileIsExistById")
+    public ResultT fileIsExistById(HttpServletRequest request) {
+        try {
+            String id = request.getParameter("id");
+            DatabaseUserDto databaseUserDto = this.databaseUserService.getDotById(id);
+            String fileName = databaseUserDto.getApplyMaterial();
+            File testFile = new File(fileName);
+            if (!testFile.exists()) {
+                return ResultT.failed("文件不存在");
+            }
+            return ResultT.success("文件存在");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "判断用户是否存在数据库访问账户(已审核通过)")
     @RequiresPermissions("dm:databaseUser:existUser")
     @GetMapping(value = "/existUser")

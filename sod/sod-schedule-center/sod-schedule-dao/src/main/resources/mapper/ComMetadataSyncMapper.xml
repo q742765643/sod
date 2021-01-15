@@ -77,7 +77,7 @@
 <!--    <update id="clearTable" parameterType="java.lang.String">
     	delete from ${tableName}
     </update>-->
-    <update  id="clearTable" parameterType="java.lang.String">
+    <update id="clearTable" parameterType="java.lang.String" statementType="STATEMENT">
     	TRUNCATE TABLE ${tableName}
     </update>
 

@@ -335,7 +335,7 @@ public class Gbase8a extends AbstractDatabaseDcl {
         if(newBoundBeginTime != null){
 //            String minData = String.valueOf(newBoundBeginTime);
             DateTime minData = new DateTime(newBoundBeginTime.getTime());
-             sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">" + "'"+minData+ "'";
+             sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " + timeColumnName + ">=" + "'"+minData+ "'";
         }else {
              sql = "SELECT MIN(" + timeColumnName + ") FROM " + schema + "." + tableName;
         }
@@ -360,14 +360,14 @@ public class Gbase8a extends AbstractDatabaseDcl {
         if(newBoundEndTime != null){
 //            String maxData = String.valueOf(newBoundEndTime);
             DateTime maxData = new DateTime(newBoundEndTime.getTime());
-            sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + "WHERE" +timeColumnName + "<" +  "'"+maxData+ "'";
-        }else if(newBoundEndTimeFlag != null || !"".equalsIgnoreCase(newBoundEndTimeFlag)){
+            sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " +timeColumnName + "<" +  "'"+maxData+ "'";
+        }else if(StringUtils.isNotEmpty(newBoundEndTimeFlag)){
             int num = Integer.parseInt(newBoundEndTimeFlag);
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + num);
 //            String masFlog = String.valueOf(calendar);
             DateTime masFlog = new DateTime(calendar.getTime());
-            sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + "WHERE" +timeColumnName + "<" +  "'"+masFlog+ "'";;
+            sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName + " WHERE " +timeColumnName + "<" +  "'"+masFlog+ "'";;
         }else {
             sql = "SELECT MAX(" + timeColumnName + ") FROM " + schema + "." + tableName;
         }

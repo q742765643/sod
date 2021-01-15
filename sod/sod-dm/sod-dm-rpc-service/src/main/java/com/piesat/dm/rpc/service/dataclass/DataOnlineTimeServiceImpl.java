@@ -157,4 +157,10 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         result.put("dataOnlineTime",dataOnlineTimeEntity);
         return result;
     }
+
+    @Override
+    public List<Map<String, Object>> findAllOnlineInfo() {
+        List<Map<String, Object>> allOnlineInfo = mybatisQueryMapper.findAllOnlineInfo();
+        return allOnlineInfo;
+    }
 }

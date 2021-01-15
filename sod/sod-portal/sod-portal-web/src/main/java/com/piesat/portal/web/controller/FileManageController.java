@@ -145,7 +145,7 @@ public class FileManageController {
         File file = new File(fullPath);
         String fileName = file.getName();
 
-        if(file.exists()){
+//        if(file.exists()){
             try {
                 String userAgent = request.getHeader("User-Agent");
                 if (userAgent.contains("MSIE") || userAgent.contains("Trident")) {
@@ -183,19 +183,57 @@ public class FileManageController {
             }catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }else{
-            try {
-                response.setContentType("text/html; charset=UTF-8"); //转码
-                PrintWriter out = response.getWriter();
-                out.flush();
-                out.println("<script defer='defer' type='text/javascript'>");
-                out.println("alert('文件不存在或已经被删除！');");
-//                out.println("window.location='/AnnualStatistics/downloadList';");
-                out.println("</script>");
-            } catch (Exception e) {
-                e.printStackTrace();
+//        }else{
+//            try {
+//                response.setContentType("text/html; charset=UTF-8"); //转码
+//                PrintWriter out = response.getWriter();
+//                out.flush();
+//                out.println("<script defer='defer' type='text/javascript'>");
+//                out.println("alert('文件不存在或已经被删除！');");
+////                out.println("window.location='/AnnualStatistics/downloadList';");
+//                out.println("</script>");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+    }
+
+    @ApiOperation(value="根据id下载文件",notes="根据id下载文件")
+    @GetMapping(value="/pdfById")
+    public void pdfById(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String id = request.getParameter("id");
+        FileManageDto fileManageDto = this.fileManageService.getDotById(id);
+        String fullPath = fileManageDto.getFilePath();
+//        String fullPath = "F://技术文档/computer-basic.pdf";
+        File file = new File(fullPath);
+        String fileName = file.getName();
+//        if(file.exists()) {
+            FileInputStream in = new FileInputStream(new File(fullPath));
+            OutputStream out = response.getOutputStream();
+            response.addHeader("Content-Disposition", "inline;filename=" + new String(fileName));
+            response.addHeader("Content-Length", "" + file.length());
+            response.setContentType("application/pdf");
+            byte[] b = new byte[1024];
+            while ((in.read(b)) != -1) {
+                out.write(b);
             }
-        }
+            out.flush();
+            in.close();
+            out.close();
+//        }
+//        else{
+//            try {
+//                response.setContentType("text/html; charset=UTF-8"); //转码
+//                PrintWriter out = response.getWriter();
+//                out.flush();
+//                out.println("<script defer='defer' type='text/javascript'>");
+//                out.println("alert('文件不存在或已经被删除！');");
+//                out.println("</script>");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return Response.create().success();
     }
 
 }

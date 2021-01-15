@@ -30,4 +30,6 @@ public interface DataOnlineTimeService {
     DataOnlineTimeDto updateTime(String dataClassId);
     Map<String,Object> getByClassId(String dataClassId);
 
+    List<Map<String,Object>> findAllOnlineInfo();
+
 }
