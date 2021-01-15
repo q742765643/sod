@@ -54,9 +54,6 @@ public class TableCollectHandler  implements BaseHandler {
     @Autowired
     private SchemaDao schemaDao;
 
-    private DatabaseDao databaseDao;
-    @Autowired
-    private DataOnlineTimeDao dataOnlineTimeDao;
     @Autowired
     private DataOnlineTimeService dataOnlineTimeService;
 

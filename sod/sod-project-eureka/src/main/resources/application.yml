@@ -20,7 +20,7 @@ eureka:
       defaultZone: http://sodweb01:28328/eureka/
   server:
     enable-self-preservation: false
-
-endpoints:
-  shutdown:
-    enabled: true
+management:
+  endpoint:
+    shutdown:
+      enabled: true

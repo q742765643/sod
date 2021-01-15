@@ -24,6 +24,7 @@ public class Constants {
     public static final String MAX = "MAX(%s) ";
     public static final String ZERO = "0";
     public static final String PERCENT = "%";
+    public static final String STAR = "*";
     public static final String[] TIME_TYPES = new String[]{"DATE","DATETIME","TIMESTAMP"};
 
     public static final String LT = " < ";

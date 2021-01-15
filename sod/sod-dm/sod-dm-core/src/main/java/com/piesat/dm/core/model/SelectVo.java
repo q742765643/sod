@@ -1,5 +1,6 @@
 package com.piesat.dm.core.model;
 
+import com.piesat.dm.core.constants.Constants;
 import lombok.Data;
 
 import java.util.List;
@@ -35,6 +36,8 @@ public class SelectVo {
         this.columns = columns;
         if (columns != null && columns.size() > 0) {
             columnStr = columns.stream().collect(Collectors.joining(","));
+        }else {
+            columnStr = Constants.STAR;
         }
     }
 }
