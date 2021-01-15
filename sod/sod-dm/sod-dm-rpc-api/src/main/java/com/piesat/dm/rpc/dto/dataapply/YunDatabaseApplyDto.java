@@ -180,6 +180,12 @@ public class YunDatabaseApplyDto extends BaseDto {
     @ApiModelProperty("审核人")
     private String examiner;
 
+    /**
+     * 审核人
+     */
+    @ApiModelProperty("externalIP")
+    private String externalIP;
+
 
     private String telephone;//申请用户联系方式
     private String department;//申请用户所属部门
