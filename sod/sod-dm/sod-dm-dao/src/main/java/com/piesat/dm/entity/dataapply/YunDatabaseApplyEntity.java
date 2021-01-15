@@ -43,7 +43,7 @@ public class YunDatabaseApplyEntity extends BaseEntity {
      * 服务端口
      */
     @Column(name="port" ,length=10)
-    private Integer port;
+    private String port;
     /**
      * 管理服务端口
      */
