@@ -52,3 +52,11 @@ export function editFileManage(data) {
     data: data
   })
 }
+export function pdfShow(query) {
+  return request({
+    url: baseUrl + '/portal/fileManage/pdfById',
+    method: 'get',
+    params: query,
+    responseType: "blob"
+  })
+}

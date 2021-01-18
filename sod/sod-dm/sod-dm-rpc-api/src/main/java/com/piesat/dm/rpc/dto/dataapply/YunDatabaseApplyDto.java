@@ -44,17 +44,17 @@ public class YunDatabaseApplyDto extends BaseDto {
      * 服务端口
      */
     @ApiModelProperty("服务端口")
-    private Integer port;
+    private String port;
     /**
      * 管理服务端口
      */
     @ApiModelProperty("管理服务端口")
-    private Integer managerPort;
+    private String managerPort;
     /**
      * API端口
      */
     @ApiModelProperty("API端口")
-    private Integer restApiport;
+    private String restApiport;
     /**
      * 集群规模
      */
@@ -94,7 +94,7 @@ public class YunDatabaseApplyDto extends BaseDto {
      * 客户端连接端口
      */
     @ApiModelProperty("客户端链接端口")
-    private Integer externalPort;
+    private String externalPort;
     /**
      * 管理员密码
      */
