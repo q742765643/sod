@@ -171,11 +171,18 @@ export function getJournalNew(data) {
     data: data
   })
 }
-//监控配置
-
+//连接信息
 export function getLinkInfo(data) {
   return request({
     url: baseUrl + '/dm/yunDatabaseApply/getLink',
+    method: 'post',
+    data: data
+  })
+}
+//主机节点
+export function gethostsNew(data) {
+  return request({
+    url: baseUrl + '/dm/yunDatabaseApply/gethostsNew',
     method: 'post',
     data: data
   })
