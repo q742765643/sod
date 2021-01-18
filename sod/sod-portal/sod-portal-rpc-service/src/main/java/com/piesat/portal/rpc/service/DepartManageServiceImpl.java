@@ -131,6 +131,12 @@ public class DepartManageServiceImpl extends BaseService<DepartManageEntity> imp
         return this.departManageMapstruct.toDto(departManageEntity);
     }
 
+    @Override
+    public List<DepartManageDto> findAllDept() {
+        List<DepartManageEntity> departManageEntities = this.getAll();
+        return this.departManageMapstruct.toDto(departManageEntities);
+    }
+
     public List buildDeptTreeSelect(List<DepartManageDto> depts)
     {
         String warLevelStr = warLevel();
