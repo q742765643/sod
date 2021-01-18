@@ -96,7 +96,7 @@
               <span>{{ scope.row.serviceStatus }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="ip" label="节点IP" :show-overflow-tooltip="true"></el-table-column>
+          <!--<el-table-column prop="ip" label="节点IP" :show-overflow-tooltip="true"></el-table-column>-->
           <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column prop="lastModifyTime" label="更新时间" :show-overflow-tooltip="true"></el-table-column>
         </el-table>
@@ -427,7 +427,8 @@ import {
   editDeployNew,
   getJournalNew,
   getMonitorDataNew,
-  saveLog
+  saveLog,
+  gethostsNew
 } from "@/api/authorityAudit/middlewareDBaudit";
 import {
   parseTime
@@ -506,6 +507,7 @@ export default {
       },
       containerList:[],
       nodeIdList:[],
+      hostsList:[],
       configData: {
         id:"",
         type:"",
@@ -541,6 +543,13 @@ export default {
         this.clusterList = response.data;
       }
     );
+    // gethostsNew({}).then(response => {
+    //   response = JSON.parse(response.data)
+    //   var host = response.content.content;
+    //   for(var i=0;i<host.length;i++){
+    //     this.hostsList.push(host[i].address);
+    //   }
+    // });
 
     nodeDataNew(this.msgDialog).then(respone =>{
       if(respone.code == "200"){
@@ -569,6 +578,9 @@ export default {
       this.msgFormDialog = response.data;
       this.msgFormDialog.createShow = parseTime(this.msgFormDialog.createTime);
       this.msgFormDialog.updateShow = parseTime(this.msgFormDialog.updateTime);
+      if(this.msgFormDialog.storageLogic == "kafka"){
+        this.msgFormDialog.clusterSize = this.msgFormDialog.slaveCount;
+      }
       this.msgFormDialog.examineStatus = '活跃'
     });
 
@@ -619,6 +631,26 @@ export default {
       }else{
         this.msgFormDialog.cluster = true
       }
+
+      if(this.msgFormDialog.storageLogic == "kafka"){
+      var q = parseInt(this.msgFormDialog.slaveCount);
+      var w = parseInt(this.msgFormDialog.clusterSize);
+      var e = q-w;
+      if(e>0){
+        for (var i = 0; i < e; i++) {
+          if (this.msgFormDialog.port != "") {
+            this.msgFormDialog.port = this.msgFormDialog.port + ","
+          }
+          var b = Math.floor((Math.random() + 3) * 10000);
+          var c = b.toString();
+          this.msgFormDialog.port = this.msgFormDialog.port + c;
+        }
+      }
+      }
+      // if(this.msgFormDialog.storageLogic =="kafka"){
+      //   var index = Math.floor((Math.random()*this.hostsList.length));
+      //   this.msgFormDialog.externalIP = this.hostsList[index];
+      // }
       editDeployNew(this.msgFormDialog).then(res => {
         if (res.code == 200) {
           this.msgFormDialog.examineStatus = '02'

@@ -42,18 +42,23 @@ public class YunDatabaseApplyEntity extends BaseEntity {
     /**
      * 服务端口
      */
-    @Column(name="port" ,length=10)
-    private Integer port;
+    @Column(name="port" ,length=200)
+    private String port;
     /**
      * 管理服务端口
      */
-    @Column(name="managerPort" ,length=10)
-    private Integer managerPort;
+    @Column(name="managerPort" ,length=200)
+    private String managerPort;
     /**
      * API端口
      */
-    @Column(name="restapiport" ,length=10)
-    private Integer restApiport;
+    @Column(name="restapiport" ,length=200)
+    private String restApiport;
+    /**
+     * externalIP
+     */
+    @Column(name="externalIP" ,length=100)
+    private String externalIP;
     /**
      * 集群规模
      */
@@ -92,8 +97,8 @@ public class YunDatabaseApplyEntity extends BaseEntity {
     /**
      * 客户端连接端口
      */
-    @Column(name="externalport" ,length=10)
-    private Integer externalPort;
+    @Column(name="externalport" ,length=200)
+    private String externalPort;
     /**
      * 管理员密码
      */

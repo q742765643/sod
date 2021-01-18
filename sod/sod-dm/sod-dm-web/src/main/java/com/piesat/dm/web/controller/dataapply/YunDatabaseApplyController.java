@@ -84,6 +84,8 @@ public class YunDatabaseApplyController {
     @GrpcHthtClient
     private UserService userService;
 
+//    String CloudURL = CloudURL1 + "middlewares/";
+
     @PostMapping(value = "/save")
     @RequiresPermissions("dm:yunDatabaseApply:save")
     @ApiOperation(value = "添加",notes = "添加")
@@ -559,7 +561,7 @@ System.out.println(requestData+"-------");
         JSONObject jsonObject = new JSONObject(requestData);
 //        String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
-        String url = CloudURL+type+"/deploy/temp";
+        String url = CloudURL+ "middlewares/"+type+"/deploy/temp";
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -572,7 +574,7 @@ System.out.println(requestData+"-------");
         JSONObject jsonObject = new JSONObject(requestData);
         String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
-        String url = CloudURL+type+"/"+id+"/nodes";
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/nodes";
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -581,7 +583,7 @@ System.out.println(requestData+"-------");
     @ApiOperation(value = "节点信息查询", notes = "节点信息查询")
     public ResultT getByIdPortal(String type,String id) throws UnsupportedEncodingException{
         ResultT resultT = new ResultT<>();
-        String url = CloudURL+type+"/"+id+"/nodes";
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/nodes";
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -595,7 +597,7 @@ System.out.println(requestData+"-------");
         String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
         String nodeId = jsonObject.getStr("nodeId");
-        String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/containers";
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/nodes/"+nodeId+"/containers";
 //        System.out.println(requestData);
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
@@ -609,7 +611,7 @@ System.out.println(requestData+"-------");
         JSONObject jsonObject = new JSONObject(requestData);
         String id = jsonObject.getStr("id");//获取key为"_source"的值
         String type = jsonObject.getStr("type");
-        String url = CloudURL+type+"/"+id+"/linkMessage";
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/linkMessage";
 //        System.out.println(requestData);
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
@@ -629,7 +631,7 @@ System.out.println(requestData+"-------");
         String endDate = jsonObject.getStr("endDate");
         String zType = jsonObject.getStr("zType");
         String ZZ = URLEncoder.encode(zType);
-        String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/monitors?step="+step+"&type="+ZZ+"&startDate="+startDate+"&endDate="+endDate;
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/nodes/"+nodeId+"/monitors?step="+step+"&type="+ZZ+"&startDate="+startDate+"&endDate="+endDate;
 //        System.out.println("+++++++++"+zType);
 //        System.out.println("+++++++++"+ZZ);
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
@@ -645,7 +647,7 @@ System.out.println(requestData+"-------");
         String type = jsonObject.getStr("type");
         String nodeId = jsonObject.getStr("nodeId");
         String container = jsonObject.getStr("container");
-        String url = CloudURL+type+"/"+id+"/nodes/"+nodeId+"/logs?rows=1000&name="+container;
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/nodes/"+nodeId+"/logs?rows=1000&name="+container;
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -660,7 +662,21 @@ System.out.println(requestData+"-------");
         System.out.println(requestData);
         String id = jsonObject.getStr("id");//获取key为""的值
         String type = jsonObject.getStr("type");
-        String url = CloudURL+type+"/"+id+"/monitors/configurations";
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/monitors/configurations";
+        resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
+        return resultT;
+    }
+    @PostMapping("/gethostsNew")
+    @RequiresPermissions("dm:yunDatabaseApply:gethostsNew")
+    @ApiOperation(value = "监控配置", notes = "监控配置")
+    public ResultT gethostsNew(@RequestBody String requestData) throws UnsupportedEncodingException {
+        ResultT resultT = new ResultT<>();
+//        System.out.println(requestData + "+++++++++");
+//        JSONObject jsonObject = new JSONObject(requestData);
+//        System.out.println(requestData);
+//        String id = jsonObject.getStr("id");//获取key为""的值
+//        String type = jsonObject.getStr("type");
+        String url = CloudURL+"hosts/?page=1&pageSize=20";
         resultT.setData(doGet(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -673,7 +689,7 @@ System.out.println(requestData+"-------");
         JSONObject jsonObject = new JSONObject(requestData);
         String id = jsonObject.getStr("id");//获取key为""的值
         String type = jsonObject.getStr("type");
-        String url = CloudURL+type+"/"+id;
+        String url = CloudURL+ "middlewares/"+type+"/"+id;
         resultT.setData(doDelete(url,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -684,7 +700,7 @@ System.out.println(requestData+"-------");
         ResultT resultT = new ResultT<>();
         JSONObject jsonObject = new JSONObject(requestData);
         String type = jsonObject.getStr("storageLogic");
-        String url = CloudURL+type;
+        String url = CloudURL+ "middlewares/"+type;
         resultT.setData(doPost(url,requestData,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -696,7 +712,7 @@ System.out.println(requestData+"-------");
         JSONObject jsonObject = new JSONObject(requestData);
         String type = jsonObject.getStr("storageLogic");
         String id = jsonObject.getStr("itserviceId");
-        String url = CloudURL+type+"/"+id+"/configurations";
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/configurations";
         resultT.setData(doPut(url,requestData,loginUrl,cloudName,cloudPassword));
         return resultT;
     }
@@ -711,7 +727,7 @@ System.out.println(requestData+"-------");
         String data = jsonObject.getStr("data");
 
 //        System.out.println("修改数据"+data);
-        String url = CloudURL+type+"/"+id+"/monitors/configurations";
+        String url = CloudURL+ "middlewares/"+type+"/"+id+"/monitors/configurations";
         resultT.setData(doPut(url,data,loginUrl,cloudName,cloudPassword));
         return resultT;
     }

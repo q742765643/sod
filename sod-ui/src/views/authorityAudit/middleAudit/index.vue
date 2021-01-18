@@ -111,7 +111,7 @@
           <span v-if="scope.row.examineTime">{{ parseTime(scope.row.examineTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="240">
+      <el-table-column label="操作" width="310">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.examineStatus == '01'"
@@ -148,6 +148,12 @@
             size="mini"
             icon="el-icon-delete"
             @click="deleteCe(scope.row)">删除</el-button>
+          <el-button
+            v-if="scope.row.itserviceId != null"
+            type="text"
+            size="mini"
+            icon="el-icon-delete"
+            @click="getLink(scope.row)">链接信息</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -296,7 +302,7 @@
             :key="index"
             :timestamp="'操作时间：'+parseTime(activity.createTime)">
             <h3>{{logStatus(activity.viewStatus)}}</h3>
-            <p v-if="activity.viewStatus != '4'&&activity.viewStatus != '5'&&activity.viewStatus != '2'">申请理由：{{activity.databaseUse}}</p>
+            <p v-if="activity.viewStatus != '4'&&activity.viewStatus != '5'&&activity.viewStatus != '2'&&activity.viewStatus != '6'">申请理由：{{activity.databaseUse}}</p>
             <p v-if="activity.viewStatus == '4'|| activity.viewStatus == '5' || activity.viewStatus == '2'">审核意见：{{activity.rejectReason}}<br></p>
             <el-button v-if="activity.viewStatus == '1'||activity.viewStatus == '3'" @click="handleExport(activity.examineMaterial)" size="small" type="success">下载申请材料</el-button>
             <br v-if="activity.viewStatus == '1'||activity.viewStatus == '3'"><el-button
@@ -346,11 +352,11 @@
           </el-row>
           <el-row type="flex" class="row-bg" justify="center">
             <el-col :span="18">
-              <el-form-item label="名称" prop="displayname">
+              <el-form-item label="实例名" prop="displayname">
                 <el-input
                   size="small"
                   v-model.trim="msgFormDialog.displayname"
-                  placeholder="名称"
+                  placeholder="实例名"
                 ></el-input>
               </el-form-item>
             </el-col>
@@ -477,6 +483,7 @@
               <el-form-item label="用户名" prop="username">
                 <el-input
                   v-model.trim="msgFormDialog.username"
+                  placeholder="用户名"
                   size="small"></el-input>
               </el-form-item>
             </el-col>
@@ -486,6 +493,7 @@
               <el-form-item label="配置密码" prop="password">
                 <el-input
                   v-model.trim="msgFormDialog.password"
+                  placeholder="配置密码"
                   size="small"></el-input>
               </el-form-item>
             </el-col>
@@ -555,6 +563,7 @@ import {
   getTemp,
   deleteFeedbackId,
   getLinkInfo,
+  gethostsNew,
 } from "@/api/authorityAudit/middlewareDBaudit";
   import { downloadTable } from "@/api/structureManagement/exportTable";
 import axios from 'axios'
@@ -567,6 +576,8 @@ export default {
 
   },
   data() {
+
+
     return {
       upLoadUrl: baseUrl + "/dm/yunDatabaseApply/upload",
       passwordType:"",
@@ -660,7 +671,7 @@ export default {
       },
       rules: {
         displayname: [
-          { required: true, message: "请输入名称", trigger: "blur" }
+          { required: true,pattern:/^[\u4e00-\u9fa5A-Za-z][\u4e00-\u9fa5A-Za-z0-9_]{0,}[\u4e00-\u9fa5A-Za-z0-9]$/, message: '支持输入中英文、数字及特殊字符"_"，不允许以"_"和数字开头，不允许以"_"结尾，长度不少于2个字符',trigger: "blur" }
         ],
         cpu: [
           { required: true, message: "请选择CPU", trigger: "blur" }
@@ -675,19 +686,19 @@ export default {
           { required: true, message: "请选择存储空间", trigger: "blur" }
         ],
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" }
+          { required: true, pattern:/(^_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)/, message: "用户名允许是字母、数字以及下划线且不能以数字开头，不能输入连续下划线", trigger: "blur" }
         ],
         password: [
-          { required: true, message: "请输入配置密码", trigger: "blur" }
+          { required: true, pattern:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d_-~;,.'":#&!@$%^*]{8,16}$/, message: "密码必须包含大小写字母和数字，长度8-16位", trigger: "blur" }
         ],
         database: [
-          { required: true, message: "请输入初始化数据库名称", trigger: "blur" }
+          { required: true, pattern:/(^_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)/, message: "用户名允许是字母、数字以及下划线且不能以数字开头，不能输入连续下划线", trigger: "blur" }
         ],
         adminPassword: [
-          { required: true, message: "请输入管理员密码", trigger: "blur" }
+          { required: true,pattern:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d_-~;,.'":#&!@$%^*]{8,16}$/, message: "密码必须包含大小写字母和数字，长度8-16位", message: "请输入管理员密码", trigger: "blur" },
         ],
         databaseUse: [
-          { required: true, message: "请输入管理员密码", trigger: "blur" }
+          { required: true, message: "请输入用途", trigger: "blur" }
         ],
       },
       total: 0,
@@ -706,6 +717,7 @@ export default {
       cpuList:[],
       memoryList:[],
       clusterList:[],
+      hostsList:[],
     };
   },
   created() {
@@ -734,8 +746,6 @@ export default {
 
   methods: {
 
-
-
     // ceshi(row){
     //   deleteLogData({logId:row.id})
     // },
@@ -754,7 +764,6 @@ export default {
         });
       }
     },
-
 
     handleCurrentChange(val) {
       this.currentRow = val;
@@ -782,7 +791,6 @@ export default {
     },
     /** 查询列表 */
     getList() {
-
 
       if (this.queryParams.dateRange) {
         this.dateRange = this.queryParams.dateRange;
@@ -857,12 +865,7 @@ export default {
     },
 
     downloadTable() {},
-    // //查看原因
-    // viewReason(row) {
-    //   this.$alert(row.failure_reason, "拒绝原因", {
-    //     confirmButtonText: "确定",
-    //   });
-    // },
+
     // 详情
     analysisCell(row) {
       // this.dialogTitle = "中间件详情";
@@ -1030,9 +1033,20 @@ export default {
       this.outerVisible = true;
     },
     applyNewExample(){
+      this.hostsList = [];
       this.applyVisible = true;
       // this.msgFormDialog.storageLogic = 'tensorflow';
       this.getTempInfo(this.msgFormDialog.storageLogic);
+      gethostsNew({}).then(response => {
+        response = JSON.parse(response.data)
+        var host = response.content.content;
+        for(var i=0;i<host.length;i++){
+          this.hostsList.push(host[i].address);
+        }
+        // var index = Math.floor((Math.random()*this.hostsList.length));
+        // this.msgFormDialog.externalIP = this.hostsList[index];
+        // debugger
+        });
     },
     getTempInfo(type){
       getTemp({type:type}).then((result)=>{
@@ -1063,22 +1077,42 @@ export default {
     },
     trueDialog(formName) {
       //显示延迟加载
-      const loading = this.$loading({
-        lock: true,
-        text: "请稍候",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
+
       // console.log(this.msgFormDialog);
       if(this.msgFormDialog.slaveCount !="1"){
         this.msgFormDialog.cluster = true
       } else{
         this.msgFormDialog.cluster = false
       }
+      if(this.msgFormDialog.storageLogic =="kafka"){
+        debugger
+        var index = Math.floor((Math.random()*this.hostsList.length));
+        this.msgFormDialog.externalIP = this.hostsList[index];
+        if(this.msgFormDialog.slaveCount !="1" ){
+          this.msgFormDialog.port = "";
+          var a = parseInt(this.msgFormDialog.slaveCount);
+          for(var i=0;i<a;i++){
+            if(this.msgFormDialog.port != ""){
+              this.msgFormDialog.port = this.msgFormDialog.port+","
+            }
+            var b = Math.floor((Math.random()+3)*10000);
+            var c = b.toString();
+            this.msgFormDialog.port = this.msgFormDialog.port + c;
+          }
+        }
+      }
+
       this.msgFormDialog.userId = this.$store.getters.userName;
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          const loading = this.$loading({
+            lock: true,
+            text: "请稍候",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)"
+          });
           deployNew(this.msgFormDialog).then(res => {
+            debugger
             if (res.code == 200) {
               var  a = JSON.parse(res.data);
               this.msgFormDialog.itserviceId = a.content.id;
@@ -1088,7 +1122,7 @@ export default {
                 this.msgFormDialog.id = '';
                 this.msgFormDialog.userId = this.$store.getters.userName;
                 this.msgFormDialog.viewStatus = '8';
-                this.msgFormDialog.databaseUse = '管理员申请'
+                // this.msgFormDialog.databaseUse = '管理员申请'
                 saveLog(this.msgFormDialog).then(res =>{
                   this.msgFormDialog.viewStatus = '2';
                   this.msgFormDialog.rejectReason = '同意'
