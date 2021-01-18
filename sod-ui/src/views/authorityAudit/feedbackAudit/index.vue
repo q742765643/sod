@@ -52,19 +52,18 @@
       <el-table-column prop="feedbackStatus" label="状态" :formatter="statusShow"></el-table-column>
       <el-table-column prop="userId" label="申请用户" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column prop="processor" label="处理用户" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="createTime" label="申请时间" sortable="custom">
+      <el-table-column prop="createTime" label="申请时间" sortable="custom" width="160">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="updateTime" label="更新时间" sortable="custom">
+      <el-table-column prop="updateTime" label="更新时间" sortable="custom" width="160">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200px">
+      <el-table-column label="操作" width="150px">
         <template slot-scope="scope">
-
           <el-button
             v-if="scope.row.feedbackStatus == '1'"
             type="text"

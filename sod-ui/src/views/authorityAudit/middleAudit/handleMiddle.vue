@@ -386,7 +386,8 @@ import {
   exportDemo,
   exprotFile,
   getUserByType,
-  editDeployNew
+  editDeployNew,
+  gethostsNew
 } from "@/api/authorityAudit/middlewareDBaudit";
 import { downloadTable } from "@/api/structureManagement/exportTable";
 import {
@@ -422,8 +423,8 @@ export default {
       clusterList:[],
       storageLogicList: [],
       contantTaskChose: [],
+      hostsList:[],
       msgFormDialog: {
-
         // viewStatus:"",
         userId: "",
         slaveCount:"",
@@ -455,7 +456,8 @@ export default {
         examiner: "",
         examineMaterial: "",
         token:"",
-        remarks:[]
+        remarks:[],
+
       },
 
       rules: {
@@ -516,6 +518,14 @@ export default {
         this.clusterList = response.data;
       }
     );
+    gethostsNew({}).then(response => {
+      debugger
+      response = JSON.parse(response.data)
+      var host = response.content.content;
+      for(var i=0;i<host.length;i++){
+        this.hostsList.push(host[i].address);
+      }
+      });
     this.initServerDetail();
     this.msgFormDialog.examiner = this.$store.getters.name;
   },
@@ -598,6 +608,43 @@ export default {
       } else{
         this.msgFormDialog.cluster = false
       }
+      debugger
+
+      if(this.msgFormDialog.storageLogic =="kafka"){
+        if(this.msgFormDialog.itserviceId == null) {
+          if (this.msgFormDialog.externalIP == null) {
+            var index = Math.floor((Math.random() * this.hostsList.length));
+            this.msgFormDialog.externalIP = this.hostsList[index];
+          }
+          if (this.msgFormDialog.slaveCount != "1") {
+            this.msgFormDialog.port = "";
+            var a = parseInt(this.msgFormDialog.slaveCount);
+            for (var i = 0; i < a; i++) {
+              if (this.msgFormDialog.port != "") {
+                this.msgFormDialog.port = this.msgFormDialog.port + ","
+              }
+              var b = Math.floor((Math.random() + 3) * 10000);
+              var c = b.toString();
+              this.msgFormDialog.port = this.msgFormDialog.port + c;
+            }
+          }
+        }
+        if(this.msgFormDialog.editSlaveCount != null){
+          var q = parseInt(this.msgFormDialog.slaveCount);
+          var w = parseInt(this.msgFormDialog.editSlaveCount);
+          var e = w-q;
+          if(e>0){
+            for (var i = 0; i < e; i++) {
+              if (this.msgFormDialog.port != "") {
+                this.msgFormDialog.port = this.msgFormDialog.port + ","
+              }
+              var b = Math.floor((Math.random() + 3) * 10000);
+              var c = b.toString();
+              this.msgFormDialog.port = this.msgFormDialog.port + c;
+            }
+          }
+        }
+      }
       // debugger
       //显示延迟加载
       const loading = this.$loading({
@@ -610,7 +657,7 @@ export default {
         if (valid) {
 
           if (this.handleObj.id) {
-            if(this.msgFormDialog.examineStatus == '02') {
+            if(this.msgFormDialog.itserviceId == null) {
               deployNew(this.msgFormDialog).then(res => {
                 if (res.code == 200) {
                   var  a = JSON.parse(res.data);
@@ -639,7 +686,8 @@ export default {
                   });
                 }
               });
-            }else if (this.msgFormDialog.examineStatus == '01'){
+            }else if (this.msgFormDialog.itserviceId != null){
+
               editDeployNew(this.msgFormDialog, this.msgFormDialog.storageLogic,this.msgFormDialog.itserviceId).then(res => {
                 if (res.code == 200) {
                   this.msgFormDialog.examineStatus = '02';
