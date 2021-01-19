@@ -1,5 +1,6 @@
 package com.piesat.portal.rpc.service;
 
+import com.github.pagehelper.util.StringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
@@ -8,7 +9,9 @@ import com.piesat.common.utils.MD5Util;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.dao.UserManageDao;
 import com.piesat.portal.entity.UserManageEntity;
+import com.piesat.portal.rpc.api.DepartManageService;
 import com.piesat.portal.rpc.api.UserManageService;
+import com.piesat.portal.rpc.dto.DepartManageDto;
 import com.piesat.portal.rpc.dto.UserManageDto;
 import com.piesat.portal.rpc.mapstruct.UserManageMapstruct;
 import com.piesat.util.page.PageBean;
@@ -26,6 +29,9 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
 
     @Autowired
     private UserManageMapstruct userManageMapstruct;
+
+    @Autowired
+    private DepartManageService departManageService;
 
     @Override
     public BaseDao<UserManageEntity> getBaseDao() {
@@ -45,10 +51,25 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         if(StringUtils.isNotEmpty(userManageDto.getIscheck())){
             specificationBuilder.add("ischeck", SpecificationOperator.Operator.eq.name(),userManageDto.getIscheck());
         }
-
+        if(StringUtils.isNotEmpty(userManageDto.getUserLevel())){
+            specificationBuilder.add("userLevel", SpecificationOperator.Operator.eq.name(),userManageDto.getUserLevel());
+        }
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<UserManageEntity> userManageEntities = (List<UserManageEntity>) pageBean.getPageData();
         List<UserManageDto> userManageDtos = userManageMapstruct.toDto(userManageEntities);
+        //查询部门信息
+        List<DepartManageDto> departManageDtos = departManageService.findAllDept();
+
+        if(userManageDtos != null && userManageDtos.size()>0 && departManageDtos != null && departManageDtos.size()>0){
+            for(UserManageDto userManage : userManageDtos){
+                for(DepartManageDto departManageDto : departManageDtos){
+                    if(departManageDto.getDeptunicode().equals(userManage.getDeptunicode())){
+                        userManage.setDeptName(departManageDto.getDeptname());
+                        break;
+                    }
+                }
+            }
+        }
         pageBean.setPageData(userManageDtos);
         return pageBean;
     }
@@ -56,7 +77,33 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
     @Override
     public UserManageDto getDotById(String id) {
         UserManageEntity userManageEntity = this.getById(id);
-        return this.userManageMapstruct.toDto(userManageEntity);
+        UserManageDto userManageDto = this.userManageMapstruct.toDto(userManageEntity);
+        String deptunicode = userManageDto.getDeptunicode();
+        List<DepartManageDto> departManageDtos = departManageService.findByDeptunicode(deptunicode);
+        if(departManageDtos != null && departManageDtos.size()>0){
+            String deptName = "";
+            deptName = getAllDeptName(deptName,departManageDtos.get(0));
+            userManageDto.setDeptName(deptName);
+        }
+        return userManageDto;
+    }
+
+    private String  getAllDeptName(String deptName,DepartManageDto dept){
+        if(dept.getDeptcode().equals(dept.getParentCode())){
+            return dept.getDeptname()+"-"+deptName;
+        }else{
+            if(StringUtil.isEmpty(deptName)){
+                deptName = dept.getDeptname();
+            }else{
+                deptName = dept.getDeptname() + "-"+deptName;
+            }
+            List<DepartManageDto> parent = departManageService.findByDeptcode(dept.getParentCode());
+            if(null != parent && parent.size()>0){
+                return getAllDeptName(deptName,parent.get(0));
+            }else{
+                return deptName;
+            }
+        }
     }
 
     @Override

@@ -31,4 +31,6 @@ public interface DepartManageService {
     DepartManageDto updateDto(DepartManageDto departManageDto);
 
     void delete(String id);
+
+    List<DepartManageDto> findAllDept();
 }
