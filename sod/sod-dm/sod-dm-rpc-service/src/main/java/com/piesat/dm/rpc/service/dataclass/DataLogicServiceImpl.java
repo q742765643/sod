@@ -213,10 +213,11 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                 //dataList剔除掉该专题库下的资料
                 if(selectedList!=null&&selectedList.size()>0){
                     List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
-                    for(Map<String,Object> notSelect :dataList){
-                        for(DatabaseSpecialReadWriteEntity databaseSpecial :selectedList){
+                    for(DatabaseSpecialReadWriteEntity databaseSpecial :selectedList){
+                        for(Map<String,Object> notSelect :dataList){
                             if(notSelect.get("DATA_CLASS_ID").toString().equals(databaseSpecial.getDataClassId().toString())){
                                 delectedList.add(notSelect);
+                                break;
                             }
                         }
                     }
@@ -229,10 +230,11 @@ public class DataLogicServiceImpl extends BaseService<DataLogicEntity> implement
                 if(dataAuthorityMap != null && dataAuthorityMap.get("DS") != null){
                     List<Map<String,Object>> dataAuthorityList = (List<Map<String,Object>>)dataAuthorityMap.get("DS");
                     List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
-                    for(Map<String,Object> notSelect :dataList){
-                        for(Map<String, Object> dataAuthorityRecord :dataAuthorityList){
+                    for(Map<String, Object> dataAuthorityRecord :dataAuthorityList){
+                        for(Map<String,Object> notSelect :dataList){
                             if(notSelect.get("DATA_CLASS_ID").toString().equals(dataAuthorityRecord.get("DATA_CLASS_ID").toString())){
                                 delectedList.add(notSelect);
+                                break;
                             }
                         }
                     }
