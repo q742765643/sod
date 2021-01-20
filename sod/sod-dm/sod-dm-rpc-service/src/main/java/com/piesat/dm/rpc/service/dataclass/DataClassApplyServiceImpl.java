@@ -2,12 +2,16 @@ package com.piesat.dm.rpc.service.dataclass;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.dao.ReviewLogDao;
 import com.piesat.dm.dao.dataclass.DataClassApplyDao;
 import com.piesat.dm.entity.dataclass.DataClassApplyEntity;
+import com.piesat.dm.rpc.api.ReviewLogService;
 import com.piesat.dm.rpc.api.dataclass.DataClassApplyService;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
+import com.piesat.dm.rpc.dto.ReviewLogDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassApplyDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
@@ -16,6 +20,7 @@ import com.piesat.dm.rpc.mapper.dataclass.DataClassApplyMapper;
 import com.piesat.util.ResultT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +45,8 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     private TableIndexService tableIndexService;
     @Autowired
     private ShardingService shardingService;
+    @Autowired
+    private ReviewLogService reviewLogService;
 
 
     @Override
@@ -48,10 +55,11 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DataClassApplyDto saveDto(DataClassApplyDto dataClassApplyDto) {
         List<TableColumnDto> tableColumns = dataClassApplyDto.getTableColumns();
         List<TableIndexDto> tableIndexList = dataClassApplyDto.getTableIndexList();
-        List<TablePartDto> tableParts = dataClassApplyDto.getTableParts();
+        TablePartDto tablePart = dataClassApplyDto.getTablePart();
         DataClassApplyEntity save = this.save(this.dataClassApplyMapper.toEntity(dataClassApplyDto));
         DataClassApplyDto dataClassApply = this.dataClassApplyMapper.toDto(save);
         Optional.ofNullable(tableColumns).ifPresent(e -> {
@@ -67,12 +75,14 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                 this.tableIndexService.saveDto(e1);
             });
         });
-        Optional.ofNullable(tableParts).ifPresent(e -> {
-            e.forEach(e1 -> {
-                e1.setId(save.getId());
-                this.shardingService.saveDto(e1);
-            });
+        Optional.ofNullable(tablePart).ifPresent(e -> {
+            this.shardingService.saveDto(e);
         });
+        ReviewLogDto rl = new ReviewLogDto();
+        rl.setBindId(save.getId());
+        rl.setUserId(save.getUserId());
+        rl.setStatusInfo(ConstantsMsg.STATUS1);
+        this.reviewLogService.saveDto(rl);
         return dataClassApply;
     }
 
@@ -81,6 +91,10 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         DataClassApplyDto dataClassApplyDto = this.dataClassApplyMapper.toDto(this.getById(id));
         List<TableColumnDto> tableColumn = this.tableColumnService.findByTableId(dataClassApplyDto.getId());
         dataClassApplyDto.setTableColumns(tableColumn);
+        List<TableIndexDto> tableIndex = this.tableIndexService.findByTableId(dataClassApplyDto.getId());
+        dataClassApplyDto.setTableIndexList(tableIndex);
+        TablePartDto tablePartDto = this.shardingService.getDotByTableId(dataClassApplyDto.getId());
+        dataClassApplyDto.setTablePart(tablePartDto);
         return dataClassApplyDto;
     }
 

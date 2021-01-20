@@ -103,5 +103,5 @@ public class DataClassApplyDto extends BaseDto {
 
     private List<TableColumnDto> tableColumns;
     private List<TableIndexDto> tableIndexList;
-    private List<TablePartDto> tableParts;
+    private TablePartDto tablePart;
 }

@@ -4,6 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.ReviewLogEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author cwh
  * @program: sod
@@ -12,4 +14,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReviewLogDao extends BaseDao<ReviewLogEntity> {
+    /**
+     * 根据绑定id查询
+     * @param bindId
+     * @return
+     */
+    List<ReviewLogEntity> findByBindId(String bindId);
 }

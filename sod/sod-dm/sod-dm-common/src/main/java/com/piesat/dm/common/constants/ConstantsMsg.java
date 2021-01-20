@@ -33,4 +33,8 @@ public class ConstantsMsg {
     public static final String TITLE1 = "【样例数据查询】";
     public static final String TITLE2 = "【验证表结构是否存在】";
 
+
+    public static final String STATUS1 = "申请";
+
+
 }
