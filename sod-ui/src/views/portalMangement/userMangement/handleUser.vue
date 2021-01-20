@@ -16,29 +16,56 @@
       <el-form-item prop="userName" label="姓名:">
         <el-input clearable size="small" v-model="msgFormDialog.userName" :disabled="handleDis" />
       </el-form-item>
-      <el-form-item prop="deptunicode" label="工作单位:">
+      <el-form-item prop="deptName" label="工作单位:">
         <el-input
           clearable
           size="small"
-          v-model="msgFormDialog.deptunicode"
+          v-model="msgFormDialog.deptName"
           :disabled="handleDis"
         />
       </el-form-item>
       <el-form-item prop="post" label="职位:">
-        <el-input
+        <!--<el-input
           clearable
           size="small"
           v-model="msgFormDialog.post"
           :disabled="handleDis"
-        />
+        />-->
+        <el-select v-model="msgFormDialog.post" :disabled="handleDis">
+          <el-option label="全部" value></el-option>
+          <el-option label="科员" value="1"></el-option>
+          <el-option label="副科" value="2"></el-option>
+          <el-option label="正科" value="3"></el-option>
+          <el-option label="副处" value="4"></el-option>
+          <el-option label="正处" value="5"></el-option>
+          <el-option label="副厅" value="6"></el-option>
+          <el-option label="正厅" value="7"></el-option>
+          <el-option label="副省" value="8"></el-option>
+          <el-option label="正省" value="9"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item prop="jobTitle" label="职称:">
-        <el-input
+        <!--<el-input
           clearable
           size="small"
           v-model="msgFormDialog.jobTitle"
           :disabled="handleDis"
-        />
+        />-->
+        <el-select v-model="msgFormDialog.jobTitle" :disabled="handleDis">
+          <el-option label="全部" value></el-option>
+          <el-option label="正高（一级）" value="1"></el-option>
+          <el-option label="正高（二级）" value="2"></el-option>
+          <el-option label="正高（三级）" value="3"></el-option>
+          <el-option label="正高（四级）" value="4"></el-option>
+          <el-option label="副高（五级）" value="5"></el-option>
+          <el-option label="副高（六级）" value="6"></el-option>
+          <el-option label="副高（七级）" value="7"></el-option>
+          <el-option label="中级（八级）" value="8"></el-option>
+          <el-option label="中级（九级）" value="9"></el-option>
+          <el-option label="中级（十级）" value="10"></el-option>
+          <el-option label="初级（十一级）" value="11"></el-option>
+          <el-option label="初级（十二级）" value="12"></el-option>
+        </el-select>
       </el-form-item>
       <el-form-item prop="phone" label="手机:">
         <el-input

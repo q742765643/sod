@@ -8,15 +8,15 @@
       <el-form-item prop="loginName" label="登录名:">
         <el-input clearable size="small" v-model="queryParams.loginName" placeholder="请输入登录名" />
       </el-form-item>
-      <!--<el-form-item prop="isshow" label="用户级别:">
-        <el-select v-model="queryParams.isshow">
+      <el-form-item prop="userLevel" label="用户级别:">
+        <el-select v-model="queryParams.userLevel" size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
           <el-option label="国家级" value="01"></el-option>
           <el-option label="非国家级" value="02"></el-option>
         </el-select>
-      </el-form-item>-->
+      </el-form-item>
       <el-form-item prop="ischeck" label="用户状态:">
-        <el-select v-model="queryParams.ischeck">
+        <el-select v-model="queryParams.ischeck" size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
           <el-option label="未审核" value="0"></el-option>
           <el-option label="已审核" value="1"></el-option>
@@ -46,7 +46,13 @@
       <el-table-column type="index" label="序号" width="80" :index="table_index"></el-table-column>
       <el-table-column prop="loginName" label="登录名" width="120"></el-table-column>
       <el-table-column prop="userName" label="用户姓名" width="120"></el-table-column>
-      <el-table-column prop="deptunicode" label="部门"></el-table-column>
+      <el-table-column prop="userLevel" label="用户级别" width="120">
+        <template slot-scope="scope">
+          <span v-if="scope.row.userLevel=='01'">国家级</span>
+          <span v-if="scope.row.userLevel=='02'">非国家级</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="deptName" label="部门"></el-table-column>
       <el-table-column prop="email" label="邮箱地址"></el-table-column>
       <el-table-column prop="phone" label="电话号码"></el-table-column>
      <!-- <el-table-column prop="lastLoginTime" label="最后登录时间">
@@ -129,6 +135,7 @@ export default {
         pageSize: 10,
         userName: "",
         loginName:"",
+        userLevel:"",
         ischeck:"",
       },
       tableData: [],
@@ -177,6 +184,7 @@ export default {
         distinguishCancelAndClose: true,
         confirmButtonText: "通过",
         cancelButtonText: "驳回",
+        type: "warning",
       })
         .then(() => {
           let obj = {
@@ -203,20 +211,22 @@ export default {
             id: row.id,
             ischeck: '2',
           };
-          editById(obj).then((response) => {
-            if (response.code == 200) {
-              this.$message({
-                type: "success",
-                message: "驳回成功",
-              });
-              this.handleQuery();
-            } else {
-              this.$message({
-                type: "error",
-                message: "驳回失败",
-              });
-            }
-          });
+          if (action === 'cancel'){
+            editById(obj).then((response) => {
+              if (response.code == 200) {
+                this.$message({
+                  type: "success",
+                  message: "驳回成功",
+                });
+                this.handleQuery();
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "驳回失败",
+                });
+              }
+            });
+          }
         });
     },
     refreshPassword(row) {

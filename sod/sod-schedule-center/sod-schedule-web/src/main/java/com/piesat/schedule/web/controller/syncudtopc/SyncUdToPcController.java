@@ -95,4 +95,13 @@ public class SyncUdToPcController {
         resultT.setData(mapList);
         return resultT;
     }
+
+    @ApiOperation(value = "查询同步任务物理库", notes = "查询同步任务物理库")
+    @GetMapping("/findDatabase")
+    public ResultT findDatabase(){
+        ResultT resultT=new ResultT<>();
+        List<Map<String,Object>> mapList=syncUdToPcService.findDatabase();
+        resultT.setData(mapList);
+        return resultT;
+    }
 }
