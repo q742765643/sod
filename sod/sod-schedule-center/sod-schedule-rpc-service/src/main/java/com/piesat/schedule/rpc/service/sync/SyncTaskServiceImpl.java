@@ -18,7 +18,7 @@ import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.AdvancedConfigDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
-import com.piesat.dm.rpc.dto.datatable.PartingDto;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.schedule.dao.sync.*;
 import com.piesat.schedule.entity.sync.*;
@@ -390,8 +390,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         tti.setUniqueKeys(unique_index);
 
         //目标表分库分表键
-        PartingDto partingDtos = shardingService.getDotByTableId(targetTableId);
-        String ttkeys = getPartitionKey(partingDtos);
+        TablePartDto tablePartDtos = shardingService.getDotByTableId(targetTableId);
+        String ttkeys = getPartitionKey(tablePartDtos);
         if (StringUtils.isNotNullString(ttkeys)) {
             tti.setIfpatitions("1");
             tti.setPartitionKeys(ttkeys);
@@ -476,14 +476,14 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     /**
      * 分库分表键
      *
-     * @param partingDto
+     * @param tablePartDto
      * @return
      */
-    public String getPartitionKey(PartingDto partingDto) {
+    public String getPartitionKey(TablePartDto tablePartDto) {
         try {
             String partitionKey = "";//分库分表键，用逗号分隔
-            if (partingDto != null) {
-                    partitionKey += partingDto.getPartitions();
+            if (tablePartDto != null) {
+                    partitionKey += tablePartDto.getPartitions();
             }
             return partitionKey;
         } catch (Exception e) {

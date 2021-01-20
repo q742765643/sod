@@ -33,14 +33,14 @@ public class AuzFactory {
                 con = CassandraSource.getConnection(pid, connectVo);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
-                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid, OwnException.get(throwables)));
+                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid));
             }
         } else {
             try {
                 con = CommDataSource.getConnection(pid, connectVo);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid, OwnException.get(throwables)));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid));
             }
         }
         if (con == null) {

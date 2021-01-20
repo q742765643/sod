@@ -144,6 +144,10 @@ public class ResultT<T> implements Serializable {
         this.msg = message;
     }
 
+    public void setTitle(String title){
+        this.processMsg.append(title + "\n");
+    }
+
     public int getCode() {
         return code;
     }

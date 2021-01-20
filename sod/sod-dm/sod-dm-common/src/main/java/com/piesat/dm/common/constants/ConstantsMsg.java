@@ -16,7 +16,7 @@ public class ConstantsMsg {
     public static final String MSG6 = "修改数据库【%s】-用户【%s】密码-%s;\n";
     public static final String MSG7 = "修改数据库【%s】-用户【%s】绑定IP-%s;\n";
 
-    public static final String MSG8 = "获取数据库【%s】连接出错，ERROR:[%s];\n";
+    public static final String MSG8 = "获取数据库【%s】连接出错;\n";
     public static final String MSG9 = "表【%s】未配置数据库信息！\n";
     public static final String MSG10 = "表【%s】未配置数据库信息或配置错误！\n";
     public static final String MSG11 = "数据库【%s】连接获取失败！\n";
@@ -29,5 +29,8 @@ public class ConstantsMsg {
     public static final String OPE_DROP = "删除用户";
     public static final String OPE_ALERT_PWD = "修改密码";
     public static final String OPE_ALERT_WHITELIST = "修改白名单";
+
+    public static final String TITLE1 = "【样例数据查询】";
+    public static final String TITLE2 = "【验证表结构是否存在】";
 
 }

@@ -95,16 +95,21 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList) {
-        return tableColumnDtoList.stream().map(e -> {
-            TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(e);
-            if (StringUtils.isEmpty(tableColumnEntity.getId())) {
-                tableColumnEntity.setVersion(0);
-                tableColumnEntity.setCreateTime(new Date());
-                tableColumnEntity.setId(null);
-            }
-            tableColumnEntity = this.saveNotNull(tableColumnEntity);
-            return this.tableColumnMapper.toDto(tableColumnEntity);
-        }).collect(Collectors.toList());
+        if (tableColumnDtoList != null && tableColumnDtoList.size() > 0) {
+            return tableColumnDtoList.stream().map(e -> {
+                TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(e);
+                if (StringUtils.isEmpty(tableColumnEntity.getId())) {
+                    tableColumnEntity.setVersion(0);
+                    tableColumnEntity.setCreateTime(new Date());
+                    tableColumnEntity.setId(null);
+                }
+                tableColumnEntity = this.saveNotNull(tableColumnEntity);
+                return this.tableColumnMapper.toDto(tableColumnEntity);
+            }).collect(Collectors.toList());
+        } else {
+            return null;
+        }
+
     }
 
     @Override
@@ -149,7 +154,4 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
         TableColumnEntity tableColumnEntity = this.getById(id);
         return this.tableColumnMapper.toDto(tableColumnEntity);
     }
-
-
-
 }

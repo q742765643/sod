@@ -102,9 +102,9 @@ public class Actuator {
             s = con.createStatement();
             s.execute(sql);
             s.close();
-        } catch (SQLException throwables) {
-            log.error(OwnException.get(throwables));
-            resultT.setErrorMessage(OwnException.get(throwables));
+        } catch (Exception e) {
+            log.error(OwnException.get(e));
+            resultT.setErrorMessage(OwnException.get(e));
         }
     }
 
@@ -129,8 +129,8 @@ public class Actuator {
                 b = r.next() ? true : false;
                 r.close();
                 s.close();
-            } catch (SQLException throwables) {
-                log.error(OwnException.get(throwables));
+            } catch (Exception e) {
+                log.error(OwnException.get(e));
             } finally {
                 try {
                     closeCon(s, r);
@@ -164,6 +164,9 @@ public class Actuator {
     public List<Map<String, Object>> exeQuery(String sql, ResultT t) {
         List<Map<String, Object>> list = new ArrayList<>();
         if (databaseType.equals(DatabaseTypesEnum.CASSANDRA)) {
+            if (session == null){
+                return list;
+            }
             com.datastax.driver.core.ResultSet rs = session.execute(sql);
             List<ColumnDefinitions.Definition> definitions = rs.getColumnDefinitions().asList();
             List<String> names = definitions.stream().map(ColumnDefinitions.Definition::getName).collect(Collectors.toList());
@@ -177,6 +180,9 @@ public class Actuator {
         } else {
             Statement s = null;
             ResultSet r = null;
+            if (con==null){
+                return list;
+            }
             try {
                 s = con.createStatement();
                 r = s.executeQuery(sql);
@@ -200,7 +206,7 @@ public class Actuator {
                 }
                 r.close();
                 s.close();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error(OwnException.get(e));
                 t.setErrorMessage("查询数据出错！");
             } finally {

@@ -34,6 +34,7 @@ import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.datatable.TableForeignKeyMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
+import com.piesat.util.ReturnCodeEnum;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.apache.shiro.SecurityUtils;
@@ -122,7 +123,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public DataTableInfoDto getDotById(String id) {
         DataTableInfoDto dataTableInfoDto = this.dataTableMapper.toDto(this.getById(id));
-        if (dataTableInfoDto==null){
+        if (dataTableInfoDto == null) {
             return null;
         }
         SchemaDto schemaDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
@@ -266,6 +267,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     public ResultT getSampleData(SampleData sampleData) {
         SchemaDto schemaDto = this.schemaService.getDotById(sampleData.getDatabaseId());
         ResultT r = new ResultT();
+        r.setTitle(ConstantsMsg.TITLE1);
         if (schemaDto == null) {
             r.setErrorMessage(ConstantsMsg.MSG10, sampleData.getTableName());
             return r;
@@ -278,6 +280,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         s.setTableName(sampleData.getTableName());
         actuator.sampleData(s, r);
         actuator.close();
+        r.setMessage(String.valueOf(r.getProcessMsg()));
         return r;
     }
 
@@ -303,7 +306,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         for (DataTableInfoEntity copy : copys) {
             DataTableInfoEntity dte = new DataTableInfoEntity();
             BeanUtils.copyProperties(copy, dte);
-            PartingEntity parting = this.shardingDao.findById(dte.getId()).orElse(null);
+            TablePartEntity parting = this.shardingDao.findById(dte.getId()).orElse(null);
             dte.setNameCn(dataClassEntity.getClassName());
             dte.setCreateTime(new Date());
             dte.setId(null);
@@ -336,7 +339,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             dte.setTableIndexList(til);
             DataTableInfoEntity save = this.dataTableDao.saveNotNull(dte);
 
-            PartingEntity sde = new PartingEntity();
+            TablePartEntity sde = new TablePartEntity();
             BeanUtils.copyProperties(parting, sde);
             sde.setId(save.getId());
             sde.setCreateTime(new Date());
@@ -369,6 +372,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public ResultT existTable(TableSqlDto tableSqlDto) {
         ResultT r = new ResultT();
+        r.setTitle(ConstantsMsg.TITLE2);
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
@@ -376,6 +380,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         r.setData(actuator.existTable(a, r));
         actuator.close();
+        r.setMessage(String.valueOf(r.getProcessMsg()));
         return r;
     }
 
@@ -412,6 +417,10 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), resultT);
+        if (!resultT.isSuccess()) {
+            resultT.setMessage(ReturnCodeEnum.SUCCESS, resultT.getMsg());
+            return;
+        }
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         List<Map<String, Object>> c = null;
         List<Map<String, Object>> i = null;

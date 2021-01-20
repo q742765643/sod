@@ -152,7 +152,7 @@ public class ExportMateApp {
 
     public static void toFile(List<String> sqlList, String dated, String tableName) throws IOException {
         String date = DateUtils.dateTime();
-        String path = "D:\\file\\存储元数据导出\\" + date;
+        String path = "D:\\file\\export\\" + date;
         File file = new File(path);
         //判断文件夹是否存在
         if (!file.exists()) {

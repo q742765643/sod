@@ -364,11 +364,11 @@ public class GrpcService {
         t.setTableDesc(dataTableInfoDto.getNameCn());
         t.setColumnVos(columnVo);
         t.setIndexVos(indexVo);
-        PartingEntity partingEntity = this.shardingDao.findById(tableId).orElse(null);
-        if (partingEntity != null) {
-            t.setPartColumn(partingEntity.getPartitions());
-            t.setPartDimension(partingEntity.getPartDimension());
-            t.setPartUnit(partingEntity.getPartUnit());
+        TablePartEntity tablePartEntity = this.shardingDao.findById(tableId).orElse(null);
+        if (tablePartEntity != null) {
+            t.setPartColumn(tablePartEntity.getPartitions());
+            t.setPartDimension(tablePartEntity.getPartDimension());
+            t.setPartUnit(tablePartEntity.getPartUnit());
         }
         TableSqlDto ts = new TableSqlDto();
         ResultT r = new ResultT();

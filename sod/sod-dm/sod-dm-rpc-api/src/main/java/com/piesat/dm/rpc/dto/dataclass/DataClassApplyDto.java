@@ -1,11 +1,11 @@
 package com.piesat.dm.rpc.dto.dataclass;
 
-import com.piesat.common.annotation.Excel;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
+import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.util.BaseDto;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +44,8 @@ public class DataClassApplyDto extends BaseDto {
      * 名称
      */
     private String className;
+
+    private String tableId;
 
     /**
      * 表英文名称
@@ -100,4 +102,6 @@ public class DataClassApplyDto extends BaseDto {
 
 
     private List<TableColumnDto> tableColumns;
+    private List<TableIndexDto> tableIndexList;
+    private List<TablePartDto> tableParts;
 }

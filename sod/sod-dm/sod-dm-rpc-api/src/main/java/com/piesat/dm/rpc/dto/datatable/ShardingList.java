@@ -15,5 +15,5 @@ public class ShardingList {
 
     private static final long serialVersionUID = 1L;
 
-    private List<PartingDto> shardingList;
+    private List<TablePartDto> shardingList;
 }

@@ -32,7 +32,7 @@ public class CommDataSource {
         dataSource.setTestOnBorrow(true);
         dataSource.setTestOnReturn(true);
         dataSource.setTestWhileIdle(true);
-        dataSource.setMaxWait(60000);
+        dataSource.setMaxWait(3000);
         dataSource.setBreakAfterAcquireFailure(true);
         dataSource.setFailFast(true);
         dataSource.setConnectionErrorRetryAttempts(0);

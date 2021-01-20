@@ -3,9 +3,9 @@ package com.piesat.dm.rpc.service.datatable;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.datatable.ShardingDao;
-import com.piesat.dm.entity.datatable.PartingEntity;
+import com.piesat.dm.entity.datatable.TablePartEntity;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
-import com.piesat.dm.rpc.dto.datatable.PartingDto;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.mapper.datatable.ShardingMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,47 +20,47 @@ import java.util.List;
  * @date 2019年 12月09日 14:07:13
  */
 @Service
-public class ShardingServiceImpl extends BaseService<PartingEntity> implements ShardingService {
+public class ShardingServiceImpl extends BaseService<TablePartEntity> implements ShardingService {
     @Autowired
     private ShardingDao shardingDao;
     @Autowired
     private ShardingMapper shardingMapper;
 
     @Override
-    public BaseDao<PartingEntity> getBaseDao() {
+    public BaseDao<TablePartEntity> getBaseDao() {
         return shardingDao;
     }
 
     @Override
-    public PartingDto saveDto(PartingDto partingDto) {
-        PartingEntity partingEntity = this.shardingMapper.toEntity(partingDto);
-        partingEntity = this.saveNotNull(partingEntity);
-        return this.shardingMapper.toDto(partingEntity);
+    public TablePartDto saveDto(TablePartDto tablePartDto) {
+        TablePartEntity tablePartEntity = this.shardingMapper.toEntity(tablePartDto);
+        tablePartEntity = this.saveNotNull(tablePartEntity);
+        return this.shardingMapper.toDto(tablePartEntity);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<PartingDto> saveDto(List<PartingDto> partingDto) {
-        List<PartingEntity> partingEntity = this.shardingMapper.toEntity(partingDto);
-        partingEntity = this.saveNotNull(partingEntity);
-        return this.shardingMapper.toDto(partingEntity);
+    public List<TablePartDto> saveDto(List<TablePartDto> tablePartDto) {
+        List<TablePartEntity> tablePartEntity = this.shardingMapper.toEntity(tablePartDto);
+        tablePartEntity = this.saveNotNull(tablePartEntity);
+        return this.shardingMapper.toDto(tablePartEntity);
     }
 
     @Override
-    public List<PartingDto> all() {
-        List<PartingEntity> all = this.getAll();
+    public List<TablePartDto> all() {
+        List<TablePartEntity> all = this.getAll();
         return this.shardingMapper.toDto(all);
     }
 
     @Override
-    public PartingDto getDotById(String id) {
-        PartingEntity partingEntity = this.getById(id);
-        return this.shardingMapper.toDto(partingEntity);
+    public TablePartDto getDotById(String id) {
+        TablePartEntity tablePartEntity = this.getById(id);
+        return this.shardingMapper.toDto(tablePartEntity);
     }
 
     @Override
-    public PartingDto getDotByTableId(String id) {
-        PartingEntity all = this.shardingDao.findById(id).orElse(null);
+    public TablePartDto getDotByTableId(String id) {
+        TablePartEntity all = this.shardingDao.findById(id).orElse(null);
         return this.shardingMapper.toDto(all);
     }
 }

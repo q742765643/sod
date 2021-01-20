@@ -1,0 +1,201 @@
+server:
+  port: 28028
+  servlet:
+    context-path: /cmadaas/sod/
+  tomcat:
+    remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+    max-threads: 10
+    background-processor-delay: 30
+    basedir: ${user.home}/tomcat/
+    #ssl:
+    #key-store: classpath:keystore.https
+    #key-store-password: qwe123
+    #keyStoreType: PKCS12
+    #keyAlias: hthta
+  max-http-header-size: 102400
+jasypt:
+  encryptor:
+    password: HT95279527
+grpc:
+  server:
+    port: 58228
+  client:
+    schedule-client-server:
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+spring:
+  application:
+    name: schedule-server
+  sleuth:
+    sampler:
+      probability: 1
+  http:
+    encoding:
+      force: true
+      charset: utf-8
+      enabled: true
+  servlet:
+    multipart:
+      max-file-size: 1000000000
+      max-request-size: 1000000000
+  datasource:
+    driver-class-name: com.xugu.cloudjdbc.Driver
+    #url: jdbc:xugu://10.40.16.40:5138/BABJ_SMDB?char_set=utf8
+    #username: ENC(YxpGRv4xpm1043WVImWDSw==)
+    #password: ENC(CdLv+YfIh9EDGt1ro0UTuK/9wf9Wzcjy)
+    url: jdbc:xugu://10.1.7.82:5138/BABJ_SMDB?recv_mode=0&char_set=utf8
+    username: USR_SOD
+    password: Pnmic_qwe123
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initialSize: 1
+      minIdle: 3
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      #maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      #minEvictableIdleTimeMillis: 30000
+      validationQuery: select 1
+      testWhileIdle: true
+      testOnBorrow: true
+      testOnReturn: true
+      maxWait: 60000
+      breakAfterAcquireFailure: true
+      failFast: true
+      connectionErrorRetryAttempts: 2
+      #druid recycle Druid的连接回收机制
+      #超过时间限制是否回收
+      removeAbandoned: true
+      #超时时间；单位为秒。180秒=3分钟
+      removeAbandonedTimeout: 180
+      #关闭abanded连接时输出错误日志
+      logAbandoned: true
+
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          #auto: validate
+          auto: update
+        dialect: com.piesat.common.jpa.dialect.XuguDialect
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+  redis:
+    host: 10.1.7.82
+    port: 56379
+    timeout: 50000
+#    password: ENC(5jvCobFBdeuGb4WpOUBcWzA3U9uogwG0)
+mybatis:
+  type-aliases-package: com.piesat.*.entity
+  mapper-locations: classpath*:mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
+#分页插件
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://10.1.7.82:58328/eureka/
+
+DITASKADDURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/add?apikey=e10adc3949ba59abbe56e057f2gg88dd
+DITASKDELURL: http://smart-view.nmic.cma/bdtiming/openapi/taskConfig/detele?apikey=e10adc3949ba59abbe56e057f2gg88dd
+
+log:
+  path: ../../logs
+  level: INFO
+
+#数据库可视化部署节点
+mng:
+  ip: 10.40.17.44,10.40.17.45
+
+#公共元数据接口
+mmd:
+  userName: dsmsys
+  password: ENC(AlDOo637OgQ1iDRNQUoJCDTum0rjjw33)
+
+#归档系统接口
+are:
+  userName: usr_music
+  password: ENC(odKCJcYCq5dm43Fm2r6ikLKBI7ILGegx)
+
+
+#博云中间件接口
+cloudDeploy:
+  loginUrl: http://10.20.64.167:8081/api/cloud/iams/login
+  url: http://10.20.64.167:8087/api/cloud/usms/v1/middlewares/
+  cloudName: multifort
+  cloudPassword: Admin#11
+
+
+serverfile:
+  dbfile: /space/cmadaas/sod/src/sod/file/upload/dbfile
+  filePath: /space/cmadaas/sod/src/sod/file/upload/filePath
+  dfcheck: /space/cmadaas/sod/src/sod/file/upload/dfcheck
+  special: /space/cmadaas/sod/src/sod/file/upload/special
+  cloud: /space/cmadaas/sod/src/sod/file/upload/cloud
+  user: /space/cmadaas/sod/src/sod/file/upload/user
+  yun: /space/cmadaas/sod/src/sod/file/upload/yun
+  sdkfile: /space/cmadaas/sod/src/sod/file/upload/sdkfile
+  portalfile: /space/cmadaas/sod/src/sod/file/upload/portalfile
+  #  dbfile: D:/file
+  #  filePath: D:/file
+  #  dfcheck: D:/file
+  #  special: D:/file
+  #  cloud: D:/file
+  #  user: D:/file
+
+  static:
+    template:
+      add-column: /space/cmadaas/sod/src/sod/file/static/字段模板.xlsx
+      clouddatabase-application: /space/cmadaas/sod/src/sod/file/static/云数据库申请表模板.docx
+      databaseuser-application: /space/cmadaas/sod/src/sod/file/static/大数据云平台存储账户申请模板.docx
+      dataregister-application: /space/cmadaas/sod/src/sod/file/static/个人数据注册上传模板.xlsx
+      topic-application: /space/cmadaas/sod/src/sod/file/static/专题库申请表模板.docx
+      table-export-standard: /space/cmadaas/sod/src/sod/file/static/template_standard.ftl
+    database-client:
+      xugu-client: /space/cmadaas/sod/src/sod/file/static/虚谷数据库V9.0.zip
+      gbase-client: /space/cmadaas/sod/src/sod/file/static/GBaseDataStudio.zip
+      cassandra-client: /space/cmadaas/sod/src/sod/file/static/Dbeaver.zip
+
+fileUpload:
+  savaPath: /space/cmadaas/sod/src/sod/file/upload
+  httpPath: /upload
+  portal_file: /upload
+
+
+businessParameters:
+  databaseUserDefaultPassword: Asd123
+
+fidbDownloadUrl: http://10.40.17.34:8028/fileApi
+
+product:
+  enable: true
+  mmdneed: true
+
+#单位为秒
+session:
+  timeout: 7200
+
+#数据库系统用户
+database:
+  sys-users: usr_sod,usr_music,usr_manager,information_schema,sysdba,root,gbase
+

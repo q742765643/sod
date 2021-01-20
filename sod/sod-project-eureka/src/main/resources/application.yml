@@ -7,7 +7,7 @@ spring:
 
 eureka:
   instance:
-    hostname: sodweb01
+    hostname: 10.1.7.82
     prefer-ip-address: true
     status-page-url-path: /actuator/info
     health-check-url-path: /actuator/health
@@ -17,7 +17,7 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://sodweb01:28328/eureka/
+      defaultZone: http://localhost:58328/eureka/
   server:
     enable-self-preservation: false
 management:

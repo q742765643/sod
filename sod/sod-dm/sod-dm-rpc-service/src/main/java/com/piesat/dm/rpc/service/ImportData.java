@@ -402,7 +402,7 @@ public class ImportData {
 //            sql = "select * from DMIN_SHARDING where TABLE_ID ='" + table_id + "'";
 //            List<Map> shardings = CodeDOM.getList(sql);
 //            for (Map<String, Object> sMap : shardings) {
-//                PartingEntity se = new PartingEntity();
+//                TablePartEntity se = new TablePartEntity();
 //                se.setTableId(dt.getId());
 //                String field = toString(sMap.get("FIELD"));
 //                se.setColumnName(field);

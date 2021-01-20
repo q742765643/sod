@@ -12,7 +12,7 @@ import java.util.Date;
  * @date 2019年 12月16日 15:52:04
  */
 @Data
-public class PartingDto {
+public class TablePartDto {
     private static final long serialVersionUID = 1L;
 
     private String id;

@@ -54,6 +54,11 @@ public class DataClassApplyEntity extends BaseEntity {
     private String className;
 
     /**
+     * 绑定表id
+     */
+    @Column(name = "table_id")
+    private String tableId;
+    /**
      * 表英文名称
      */
     @Column(name = "table_name", length = 64)

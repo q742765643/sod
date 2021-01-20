@@ -2,7 +2,7 @@ package com.piesat.dm.rpc.service.datatable;
 
 import com.piesat.dm.core.enums.ColumnEnum;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
-import com.piesat.dm.rpc.dto.datatable.PartingDto;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
@@ -25,7 +25,7 @@ public class DatabaseSqlService {
     private final String[] indexTypes = {"BTREE", "INDEX", "RTREE", "IDX", "TREE"};
     private final String[] uniqueType = {"UNIQUE", "UK", "PK", "唯一索引"};
 
-    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
+    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -62,7 +62,7 @@ public class DatabaseSqlService {
         }
         String dp_shard = "";
 
-        for (PartingDto s : sharding) {
+        for (TablePartDto s : sharding) {
                 dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
@@ -153,7 +153,7 @@ public class DatabaseSqlService {
     }
 
 
-    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
+    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -192,7 +192,7 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        for (PartingDto s : sharding) {
+        for (TablePartDto s : sharding) {
                 dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
@@ -248,7 +248,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
+    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
         List<String> key_columns = new ArrayList<>();
         StringBuffer columns = new StringBuffer();
         for (TableColumnDto ds : dataStructures) {
@@ -307,7 +307,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<PartingDto> sharding, String schema) throws Exception {
+    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }
@@ -341,7 +341,7 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        for (PartingDto s : sharding) {
+        for (TablePartDto s : sharding) {
                 dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();

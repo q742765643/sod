@@ -334,9 +334,9 @@ public class NewdataApplyController {
     }*/
     @ApiOperation(value = "根据表id获取表分库分表信息", notes = "根据表id获取表分库分表信息")
     @PostMapping("/findSharding/{id}")
-    public ResultT<PartingDto> findSharding(@PathVariable String id) {
-        PartingDto partingDtos = shardingService.getDotByTableId(id);
-        return ResultT.success(partingDtos);
+    public ResultT<TablePartDto> findSharding(@PathVariable String id) {
+        TablePartDto tablePartDtos = shardingService.getDotByTableId(id);
+        return ResultT.success(tablePartDtos);
     }
 
     /**

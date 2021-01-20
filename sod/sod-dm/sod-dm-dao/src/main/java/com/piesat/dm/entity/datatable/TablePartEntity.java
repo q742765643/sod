@@ -17,7 +17,7 @@ import java.awt.*;
 @Data
 @Table(name = "T_SOD_DATA_TABLE_PARTING")
 @Entity
-public class PartingEntity extends BaseEntity {
+public class TablePartEntity extends BaseEntity {
 
     /**
      * 分库键

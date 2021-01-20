@@ -621,10 +621,10 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                     }
                     // 分库分表部分
                     List<Map<String, Object>> listSharding = new ArrayList<Map<String, Object>>();
-//                    List<PartingEntity> shardingList = shardingDao.findByTableId(table_id);
+//                    List<TablePartEntity> shardingList = shardingDao.findByTableId(table_id);
 //                    int shardNum = 1;
 //                    if (StringUtils.isBlank(shard)) {
-//                        for (PartingEntity sharding : shardingList) {
+//                        for (TablePartEntity sharding : shardingList) {
 //                            Map<String, Object> mapSharding = new HashMap<String, Object>();
 //
 //                            mapSharding.put("shardId", " ");
@@ -638,7 +638,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
 //                            listSharding.add(mapSharding);
 //                        }
 //                    } else if (columns.equals("0")) {
-//                        for (PartingEntity sharding : shardingList) {
+//                        for (TablePartEntity sharding : shardingList) {
 //                            Map<String, Object> mapSharding = new HashMap<String, Object>();
 //                            mapSharding.put("shardId", shardNum++);
 //                            Integer sharding_type = sharding.getShardingType();
