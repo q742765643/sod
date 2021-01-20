@@ -20,8 +20,11 @@ import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
+import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataLogicMapper;
 import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 资料用途分类
@@ -74,51 +78,23 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DataClassLogicDto saveDto(DataClassLogicDto dataLogicDto) {
-        boolean isAdd = false;
-        if (StringUtils.isEmpty(dataLogicDto.getId())) {
-            isAdd = true;
-        }
         dataLogicDto.setCreateTime(new Date());
         DataClassAndTableEntity dataLogicEntity = this.dataLogicMapper.toEntity(dataLogicDto);
         dataLogicEntity = this.dataLogicDao.saveNotNull(dataLogicEntity);
-        if (isAdd) {
-            StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
-            storageConfigurationDto.setClassLogicId(dataLogicEntity.getId());
-            storageConfigurationDto.setStorageDefineIdentifier(2);
-            storageConfigurationDto.setSyncIdentifier(2);
-            storageConfigurationDto.setCleanIdentifier(2);
-            storageConfigurationDto.setMoveIdentifier(2);
-            storageConfigurationDto.setBackupIdentifier(2);
-            storageConfigurationDto.setArchivingIdentifier(2);
-            storageConfigurationService.saveDto(storageConfigurationDto);
-        }
         return this.dataLogicMapper.toDto(dataLogicEntity);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<DataClassLogicDto> saveList(List<DataClassLogicDto> dataLogicList) {
         List<DataClassAndTableEntity> dataLogicEntities = this.dataLogicMapper.toEntity(dataLogicList);
         for (DataClassAndTableEntity d : dataLogicEntities) {
-            boolean isAdd = false;
             if (StringUtils.isEmpty(d.getId())) {
-                isAdd = true;
                 d.setCreateTime(new Date());
             }
             d = this.dataLogicDao.saveNotNull(d);
-            if (isAdd) {
-                StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
-                storageConfigurationDto.setClassLogicId(d.getId());
-                storageConfigurationDto.setStorageDefineIdentifier(2);
-                storageConfigurationDto.setSyncIdentifier(2);
-                storageConfigurationDto.setCleanIdentifier(2);
-                storageConfigurationDto.setMoveIdentifier(2);
-                storageConfigurationDto.setBackupIdentifier(2);
-                storageConfigurationDto.setArchivingIdentifier(2);
-                storageConfigurationService.saveDto(storageConfigurationDto);
-            }
         }
         return this.dataLogicMapper.toDto(dataLogicEntities);
     }
@@ -153,47 +129,61 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     }
 
     @Override
-    public List<DataLogicDto> findByDataClassIdAndLogicFlagAndStorageType(DataLogicDto dataLogicDto) {
-        List<DataLogicEntity> byDataClassIdAndLogicFlagAndStorageType = dataLogicDao.findByDataClassIdAndLogicFlagAndStorageType(dataLogicDto.getDataClassId(), dataLogicDto.getLogicFlag(), dataLogicDto.getStorageType());
-        return this.dataLogicMapper.toDto(byDataClassIdAndLogicFlagAndStorageType);
+    public List<DataClassLogicDto> findByDataClassId(String dataClassId) {
+        List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
+        List<DataClassLogicDto > dataClassLogicDtos = this.dataLogicMapper.toDto(byDataClassId);
+        if (dataClassLogicDtos != null && dataClassLogicDtos.size() > 0) {
+            dataClassLogicDtos = dataClassLogicDtos.stream().map(e -> {
+                String tableId = e.getTableId();
+                String databaseId = this.dataTableService.getDotById(tableId).getDatabaseId();
+                SchemaDto dotById = this.schemaService.getDotById(databaseId);
+                e.setDatabaseId(databaseId);
+                e.setDatabasePid(dotById.getDatabase().getId());
+                return e;
+            }).collect(Collectors.toList());
+        }
+        return dataClassLogicDtos;
     }
 
     @Override
-    public List<DataLogicDto> findByDataClassId(String dataClassId) {
-        List<DataLogicEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
-        return this.dataLogicMapper.toDto(byDataClassId);
+    public List<DataTableInfoDto> getDataLogic(String dataclassId, String databaseId, String tableName) {
+        List<DataTableInfoEntity> dataLogic = this.mybatisQueryMapper.getDataLogic(dataclassId, databaseId, tableName);
+        return this.dataTableMapper.toDto(dataLogic);
     }
 
     @Override
-    public List<DataLogicDto> getDataLogic(String dataclassId, String databaseId, String tableName) {
-        List<DataLogicEntity> dataLogic = this.mybatisQueryMapper.getDataLogic(dataclassId, databaseId, tableName);
-        return this.dataLogicMapper.toDto(dataLogic);
+    public List<DataClassLogicDto> findByTableId(String tableId) {
+        List<DataClassAndTableEntity> byTableId = this.dataLogicDao.findByTableId(tableId);
+        return this.dataLogicMapper.toDto(byTableId);
     }
 
     @Override
-    public DataLogicDto getDotById(String id) {
-        DataLogicEntity dataLogicEntity = this.getById(id);
+    public DataClassLogicDto getDotById(String id) {
+        DataClassAndTableEntity dataLogicEntity = this.getById(id);
         return this.dataLogicMapper.toDto(dataLogicEntity);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(String id) {
-        DataLogicDto dotById = this.getDotById(id);
-        dataTableService.deleteByClassLogicId(dotById.getId());
+        DataClassLogicDto d = this.getDotById(id);
+        if (d != null) {
+            this.dataTableService.delete(d.getTableId());
+            if (StringUtils.isNotEmpty(d.getSubTableId())) {
+                this.dataTableService.delete(d.getSubTableId());
+            }
+        }
         this.delete(id);
-        String dataClassId = dotById.getDataClassId();
-        List<DataLogicDto> byDataClassId = this.findByDataClassId(dataClassId);
-        if (byDataClassId==null||byDataClassId.size()==0){
+        String dataClassId = d.getDataClassId();
+        List<DataClassLogicDto> dc = this.findByDataClassId(dataClassId);
+        if (dc == null || dc.size() == 0) {
             this.dataClassDao.deleteByDataClassId(dataClassId);
         }
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void onlyDeleteById(String id) {
-        DataLogicDto dotById = this.getDotById(id);
-        dataTableService.deleteByClassLogicId(dotById.getId());
         this.delete(id);
     }
 
@@ -317,27 +307,29 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
         HashMap<String, List<String>> map = new HashMap<>();
         if(StringUtils.isNotEmpty(logics)){
             //List<DatabaseDto> databaseDtos = databaseService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
-            List<DatabaseDto> databaseDtos = databaseService.findByDatabaseDefineIdIn(Arrays.asList(logics.split(",")));
-            for(int i=0;i<databaseDtos.size();i++){
+            List<SchemaDto> schemaDtos = schemaService.findByDatabaseDefineIdIn(Arrays.asList(logics.split(",")));
+            for(int i=0;i<schemaDtos.size();i++){
                 DatabaseDcl databaseDcl = null;
                 try {
-                    databaseDcl = DatabaseUtil.getDatabase(databaseDtos.get(i), databaseInfo);
+                    databaseDcl = DatabaseUtil.getDatabase(schemaDtos.get(i), databaseInfo);
                 }catch (Exception e){
                     if (e.getMessage().contains("用户不存在")){
-                        if(databaseDcl != null) databaseDcl.closeConnect();
+                        if(databaseDcl != null) {
+                            databaseDcl.closeConnect();
+                        }
                         continue;
                     }
                 }
 
                 try{
-                    ResultT resultT = databaseDcl.queryAllTableName(databaseDtos.get(i).getSchemaName());
+                    ResultT resultT = databaseDcl.queryAllTableName(schemaDtos.get(i).getSchemaName());
                     if(resultT.isSuccess() && resultT.getData() != null){
-                        List<String> tableList = map.get(databaseDtos.get(i).getDatabaseDefine().getId());
+                        List<String> tableList = map.get(schemaDtos.get(i).getDatabase().getId());
                         if(tableList != null){
                             tableList.addAll((List<String>)resultT.getData());
-                            map.put(databaseDtos.get(i).getDatabaseDefine().getId(),tableList);
+                            map.put(schemaDtos.get(i).getDatabase().getId(),tableList);
                         }else{
-                            map.put(databaseDtos.get(i).getDatabaseDefine().getId(),(List<String>)resultT.getData());
+                            map.put(schemaDtos.get(i).getDatabase().getId(),(List<String>)resultT.getData());
                         }
                     }
                     databaseDcl.closeConnect();
