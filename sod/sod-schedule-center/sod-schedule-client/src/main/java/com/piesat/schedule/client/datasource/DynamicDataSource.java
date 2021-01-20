@@ -131,8 +131,8 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         dataSource.setFailFast(true);
         dataSource.setConnectionErrorRetryAttempts(0);
         dataSource.setMaxOpenPreparedStatements(0);
-        //dataSource.setRemoveAbandoned(true);
-        //dataSource.setRemoveAbandonedTimeout(300);
+        dataSource.setRemoveAbandoned(true);
+        dataSource.setRemoveAbandonedTimeout(86400);
         //dataSource.setLogAbandoned(true);
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
         dataSource.setValidationQuery("select 1 ");

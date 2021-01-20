@@ -236,7 +236,7 @@ import {
   getByDatabaseId,
   getByDatabaseIdAndClassId,
   getNextTime,
-} from "@/api/schedule/syncAll/syncToFile/syncToFile";
+} from "@/api/schedule/syncAll/syncUdToPc/syncUdToPc";
 export default {
   name: "handleClearDialog",
   props: {

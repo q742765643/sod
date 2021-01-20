@@ -461,7 +461,7 @@ import {
   downFile
 } from "@/api/schedule/syncAll/syncUdToPc/syncUdToPcLog";
 import { formatDate } from "@/utils/index";
-import handleDialog from "@/views/schedule/syncAll/syncToFile/handleDialog";
+import handleDialog from "@/views/schedule/syncAll/syncUdToPc/handleDialog";
 
 export default {
   components: {
