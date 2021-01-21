@@ -7,10 +7,7 @@ import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.common.util.TemplateUtil;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
-import com.piesat.dm.core.model.AuthorityVo;
-import com.piesat.dm.core.model.Constructor;
-import com.piesat.dm.core.model.TableVo;
-import com.piesat.dm.core.model.UserInfo;
+import com.piesat.dm.core.model.*;
 import com.piesat.dm.core.parser.ManagerUser;
 import com.piesat.dm.core.template.SqlTemplate;
 import com.piesat.util.ResultT;
@@ -145,6 +142,78 @@ public class AuzDatabase extends AuzBase {
     public void dropTable(AuthorityVo authorityVo, ResultT<String> resultT) {
         authorityVo.format(this.databaseType);
         String sql = TemplateUtil.rendering(DROP_TABLE, authorityVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void addColumn(ColumnVo columnVo, ResultT resultT) {
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_ADD_COLUMN, columnVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void dropColumn(ColumnVo columnVo, ResultT resultT) {
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_DROP_COLUMN, columnVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void renameColumn(ColumnVo columnVo, ResultT resultT) {
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_RENAME_COLUMN, columnVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void alterColumnAttr(ColumnVo columnVo, ResultT resultT) {
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_COLUMN_ATTR, columnVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void setDefault(ColumnVo columnVo, ResultT resultT) {
+        if (StringUtils.isEmpty(ALTER_COLUMN_SET_DEFAULT)){
+            resultT.setErrorMessage(ConstantsMsg.MSG14);
+            return;
+        }
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_COLUMN_SET_DEFAULT, columnVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void dropDefault(ColumnVo columnVo, ResultT resultT) {
+        if (StringUtils.isEmpty(ALTER_COLUMN_DROP_DEFAULT)){
+            resultT.setErrorMessage(ConstantsMsg.MSG14);
+            return;
+        }
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_COLUMN_DROP_DEFAULT, columnVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void setNotnull(ColumnVo columnVo, ResultT resultT) {
+        if (StringUtils.isEmpty(ALTER_COLUMN_SET_NOTNULL)){
+            resultT.setErrorMessage(ConstantsMsg.MSG14);
+            return;
+        }
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_COLUMN_SET_NOTNULL, columnVo);
+        this.exe(sql, resultT);
+    }
+
+    @Override
+    public void dropNotnull(ColumnVo columnVo, ResultT resultT) {
+        if (StringUtils.isEmpty(ALTER_COLUMN_DROP_NOTNULL)){
+            resultT.setErrorMessage(ConstantsMsg.MSG14);
+            return;
+        }
+        columnVo.format();
+        String sql = TemplateUtil.rendering(ALTER_COLUMN_DROP_NOTNULL, columnVo);
         this.exe(sql, resultT);
     }
 

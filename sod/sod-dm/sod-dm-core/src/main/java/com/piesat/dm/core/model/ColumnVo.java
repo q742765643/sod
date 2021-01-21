@@ -39,7 +39,9 @@ public class ColumnVo {
 
     public void format() {
         if (!Arrays.asList(Constants.TIME_TYPES).contains(type.toUpperCase())) {
-            def = Constants.APOSTROPHE + def + Constants.APOSTROPHE;
+            if (!def.contains(Constants.APOSTROPHE)) {
+                def = Constants.APOSTROPHE + def + Constants.APOSTROPHE;
+            }
         }
     }
 }

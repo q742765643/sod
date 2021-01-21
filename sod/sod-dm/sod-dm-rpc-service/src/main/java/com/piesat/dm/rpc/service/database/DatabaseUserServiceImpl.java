@@ -253,6 +253,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             DatabaseDto database = this.databaseService.getDotById(e);
             ConnectVo coreInfo = database.getCoreInfo();
             AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+            if (!r.isSuccess()) {
+                return false;
+            }
             AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
             UserInfo u = new UserInfo();
             u.setUserName(databaseUserDto.getDatabaseUpId());

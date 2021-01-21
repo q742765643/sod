@@ -108,6 +108,7 @@ public class DataTableInfoDto extends BaseDto {
                     : Constants.LEFT_BRACKET + nameCn + Constants.RIGHT_BRACKET;
             c.setComment(eleName + nameCn);
             c.setDef(e.getDefaultValue());
+            c.format();
             return c;
         }).collect(Collectors.toList()) : null;
     }

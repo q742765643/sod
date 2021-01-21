@@ -1,5 +1,6 @@
 package com.piesat.dm.core.factory;
 
+import com.datastax.driver.core.Session;
 import com.piesat.common.constant.Constants;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
@@ -23,23 +24,37 @@ import java.sql.SQLException;
  */
 public class AuzFactory {
     private DagTypeEnum dagType;
-    private Object con;
+    private Object con = null;
     private Actuator actuator;
     private Actuator commData;
 
     public AuzFactory(String pid, ConnectVo connectVo, DatabaseTypesEnum databaseType, ResultT resultT) {
         if (databaseType.equals(DatabaseTypesEnum.CASSANDRA)) {
+            Session connection = null;
             try {
-                con = CassandraSource.getConnection(pid, connectVo);
+                connection = CassandraSource.getConnection(pid, connectVo);
+                con = connection;
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
+                if (connection != null) {
+                    connection.close();
+                }
                 resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid));
             }
         } else {
+            Connection connection = null;
             try {
-                con = CommDataSource.getConnection(pid, connectVo);
+                connection = CommDataSource.getConnection(pid, connectVo);
+                con = connection;
             } catch (SQLException e) {
                 e.printStackTrace();
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                }
                 resultT.setErrorMessage(String.format(ConstantsMsg.MSG8, pid));
             }
         }
@@ -64,7 +79,7 @@ public class AuzFactory {
             String sql = TemplateUtil.rendering(template, tableVo);
             resultT.setData(sql);
         } catch (Exception e) {
-            resultT.setErrorMessage("生成sql出错！");
+            resultT.setErrorMessage(ConstantsMsg.MSG12);
             resultT.setData(OwnException.get(e));
         }
     }
@@ -75,7 +90,7 @@ public class AuzFactory {
             String sql = TemplateUtil.rendering(template, tableVo);
             resultT.setData(sql);
         } catch (Exception e) {
-            resultT.setErrorMessage("生成sql出错！");
+            resultT.setErrorMessage(ConstantsMsg.MSG12);
             resultT.setData(OwnException.get(e));
         }
     }
@@ -86,7 +101,7 @@ public class AuzFactory {
             String sql = TemplateUtil.rendering(template, tableVo);
             resultT.setData(sql);
         } catch (Exception e) {
-            resultT.setErrorMessage("生成sql出错！");
+            resultT.setErrorMessage(ConstantsMsg.MSG12);
             resultT.setData(OwnException.get(e));
         }
     }

@@ -377,6 +377,9 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
         AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+        if (!r.isSuccess()) {
+            return r;
+        }
         AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
         r.setData(actuator.existTable(a, r));
         actuator.close();

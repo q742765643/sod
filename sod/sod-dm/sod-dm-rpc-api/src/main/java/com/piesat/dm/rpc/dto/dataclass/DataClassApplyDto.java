@@ -45,7 +45,6 @@ public class DataClassApplyDto extends BaseDto {
      */
     private String className;
 
-    private String tableId;
 
     /**
      * 表英文名称
@@ -104,4 +103,5 @@ public class DataClassApplyDto extends BaseDto {
     private List<TableColumnDto> tableColumns;
     private List<TableIndexDto> tableIndexList;
     private TablePartDto tablePart;
+    private List<DataClassLogicDto> DataClassLogicList;
 }

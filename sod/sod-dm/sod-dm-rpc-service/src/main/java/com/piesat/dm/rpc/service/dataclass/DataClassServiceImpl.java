@@ -110,39 +110,19 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     @Transactional(rollbackFor = Exception.class)
     public DataClassDto saveDto(DataClassDto dataClassDto) {
-        NewdataApplyDto newdataApplyDto = null;
-        if (StringUtils.isNotBlank(dataClassDto.getApplyId())) {
-            newdataApplyDto = this.newdataApplyService.getDotById(dataClassDto.getApplyId());
-            dataClassDto.setCreateBy(newdataApplyDto.getUserId());
-        } else {
-            UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
-            dataClassDto.setCreateBy(loginUser.getUserName());
-        }
+
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+        dataClassDto.setCreateBy(loginUser.getUserName());
+
         DataClassEntity dataClassEntity = this.dataClassMapper.toEntity(dataClassDto);
         List<DataClassLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(dataClassDto.getDataClassId());
-        if (newdataApplyDto != null) {
-            newdataApplyDto.setDataClassId(dataClassEntity.getDataClassId());
-            this.newdataApplyService.saveDto(newdataApplyDto);
-//            String databaseId = dataClassDto.getDataLogicList().get(0).getDatabaseId();
-//            SchemaEntity byId = this.databaseDao.findById(databaseId).orElse(null);
-//            DatabaseSpecialReadWriteDto d = new DatabaseSpecialReadWriteDto();
-//            d.setSdbId(byId.getTdbId());
-//            d.setApplyAuthority(2);
-//            d.setDatabaseId(databaseId);
-//            d.setDataClassId(dataClassEntity.getDataClassId());
-//            d.setTypeId("9999");
-//            d.setEmpowerAuthority(2);
-//            d.setExamineStatus(1);
-//            d.setDataType(1);
-//            d.setCreateTime(new DateTime());
-//            this.databaseSpecialReadWriteService.saveDto(d);
-        }
+
         List<DataClassLogicDto> dataLogicList = dataClassDto.getDataLogicList();
 
         List<String> all = byDataClassId.stream().map(DataClassLogicDto::getId).collect(Collectors.toList());
         List<String> nnn = new ArrayList<>();
-        boolean isNotNull = dataLogicList != null && StringUtils.isNotEmpty(dataLogicList.get(0).getDataClassId());
-        if (isNotNull) {
+        boolean haveTable = dataLogicList != null && StringUtils.isNotEmpty(dataLogicList.get(0).getDataClassId());
+        if (haveTable) {
             nnn = dataLogicList.stream().map(DataClassLogicDto::getId).collect(Collectors.toList());
         }
         all.removeAll(nnn);
@@ -151,7 +131,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         }
         dataClassEntity = this.saveNotNull(dataClassEntity);
         List<DataClassLogicDto> dataLogicDtos = null;
-        if (isNotNull) {
+        if (haveTable) {
             dataLogicDtos = this.dataLogicService.saveList(dataLogicList);
             for (DataClassLogicDto d : dataLogicDtos) {
                 List<AdvancedConfigDto> sc = this.advancedConfigService.findByTableId(d.getTableId());
@@ -693,22 +673,22 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public void deleteByBizUserId(String bizUserid) {
         //删除业务用户注册资料
         List<NewdataApplyDto> newdataApplyDtos = this.newdataApplyService.findByUserId(bizUserid);
-        if(newdataApplyDtos != null && newdataApplyDtos.size()>0){
-            for(int i=0;i<newdataApplyDtos.size();i++){
+        if (newdataApplyDtos != null && newdataApplyDtos.size() > 0) {
+            for (int i = 0; i < newdataApplyDtos.size(); i++) {
                 newdataApplyService.deleteById(newdataApplyDtos.get(i).getId());
             }
         }
         //专题库
         List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.findByUserId(bizUserid);
-        if(databaseSpecialDtos != null && databaseSpecialDtos.size()>0){
-            for(int i=0;i<databaseSpecialDtos.size();i++){
+        if (databaseSpecialDtos != null && databaseSpecialDtos.size() > 0) {
+            for (int i = 0; i < databaseSpecialDtos.size(); i++) {
                 databaseSpecialService.deleteById(databaseSpecialDtos.get(i).getId());
             }
         }
         //数据库访问账户
         List<DatabaseUserDto> databaseUserDtos = this.databaseUserService.getByUserId(bizUserid);
-        if(databaseUserDtos != null && databaseUserDtos.size()>0){
-            for(int i=0;i<databaseUserDtos.size();i++){
+        if (databaseUserDtos != null && databaseUserDtos.size() > 0) {
+            for (int i = 0; i < databaseUserDtos.size(); i++) {
                 this.databaseUserService.deleteById(databaseUserDtos.get(i).getId());
             }
         }

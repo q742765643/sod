@@ -41,6 +41,7 @@ public interface ReviewLogService {
      * 查询所有
      * @return
      */
+    @Deprecated
     List<ReviewLogDto> all();
 
     /**

@@ -4,6 +4,7 @@ import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.piesat.common.utils.OwnException;
+import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.parser.ManagerUser;
@@ -43,8 +44,15 @@ public class Actuator {
     public String DROP_SCHEMA = "DROP SCHEMA ${schema} ";
     public String DROP_TABLE = "DROP TABLE ${schema}.${tableName}";
     public String ALTER_ADD_COLUMN = "ALTER TABLE ${schema}.${tableName} ADD COLUMN ${columnName} ${type}(${precision}) ${isNull} ${def}";
+    public String ALTER_DROP_COLUMN = "ALTER TABLE ${schema}.${tableName} DROP COLUMN ${columnName}";
     public String ALTER_RENAME_COLUMN = "ALTER TABLE ${schema}.${tableName} RENAME COLUMN ${oldColumnName} TO ${columnName}";
+    public String ALTER_COLUMN_ATTR = "ALTER TABLE ${schema}.${tableName} ALTER COLUMN ${columnName} ${type}<#if length??> (${length}<#if precision??>,${precision}</#if>)</#if>";
+    public String ALTER_COLUMN_SET_DEFAULT = "ALTER TABLE ${schema}.${tableName} ALTER COLUMN ${columnName} SET DEFAULT ${def}";
+    public String ALTER_COLUMN_DROP_DEFAULT = "ALTER TABLE ${schema}.${tableName} ALTER COLUMN ${columnName} DROP DEFAULT";
+    public String ALTER_COLUMN_SET_NOTNULL = "ALTER TABLE ${schema}.${tableName} ALTER COLUMN ${columnName} SET NOT NULL";
+    public String ALTER_COLUMN_DROP_NOTNULL = "ALTER TABLE ${schema}.${tableName} ALTER COLUMN ${columnName} DROP NOT NULL";
     public String QUERY_COLUMN = "SELECT TABLE_SCHEMA,TABLE_NAME,UPPER(COLUMN_NAME) COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' AND TABLE_SCHEMA = '${schema}'";
+    public String QUERY_COLUMN_ATTR = "SELECT TABLE_SCHEMA,TABLE_NAME,UPPER(COLUMN_NAME) COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${tableName}' AND TABLE_SCHEMA = '${schema}' AND COLUMN_NAME = 'columnName'";
     public String QUERY_INDEX = "SELECT * FROM INFORMATION_SCHEMA.INDEX WHERE TABLE_NAME = '${tableName}' AND SCHEMA_NAME = '${schema}'";
     public String QUERY_TABLES = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '${schema}'";
 
@@ -208,7 +216,7 @@ public class Actuator {
                 s.close();
             } catch (Exception e) {
                 log.error(OwnException.get(e));
-                t.setErrorMessage("查询数据出错！");
+                t.setErrorMessage(ConstantsMsg.MSG13);
             } finally {
                 try {
                     closeCon(s, r);
@@ -295,8 +303,8 @@ public class Actuator {
                 if (!c.isClosed()){
                     c.close();
                 }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }

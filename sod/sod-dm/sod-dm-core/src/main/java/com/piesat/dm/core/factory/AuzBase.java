@@ -2,6 +2,7 @@ package com.piesat.dm.core.factory;
 
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.model.AuthorityVo;
+import com.piesat.dm.core.model.ColumnVo;
 import com.piesat.dm.core.model.TableVo;
 import com.piesat.dm.core.model.UserInfo;
 import com.piesat.util.ResultT;
@@ -123,7 +124,66 @@ public abstract class AuzBase extends Actuator {
     public abstract void dropTable(AuthorityVo authorityVo, ResultT<String> resultT);
 
     /**
+     * 数据库新增字段
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void addColumn(ColumnVo columnVo, ResultT resultT);
+
+    /**
+     * 删除数据库字段
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void dropColumn(ColumnVo columnVo, ResultT resultT);
+
+    /**
+     * 字段名重命名
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void renameColumn(ColumnVo columnVo, ResultT resultT);
+
+    /**
+     * 修改字段信息
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void alterColumnAttr(ColumnVo columnVo, ResultT resultT);
+
+
+    /**
+     * 设置默认值
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void setDefault(ColumnVo columnVo, ResultT resultT);
+
+    /**
+     * 删除默认值
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void dropDefault(ColumnVo columnVo, ResultT resultT);
+
+    /**
+     * 设置非空
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void setNotnull(ColumnVo columnVo, ResultT resultT);
+
+    /**
+     * 删除非空
+     * @param columnVo
+     * @param resultT
+     */
+    public abstract void dropNotnull(ColumnVo columnVo, ResultT resultT);
+
+
+    /**
      * 表是否存在
+     *
      * @param authorityVo
      * @param resultT
      * @return
@@ -148,8 +208,9 @@ public abstract class AuzBase extends Actuator {
 
     /**
      * 查询所有表
+     *
      * @param authorityVo
      * @param resultT
      */
-    public abstract void allTables(AuthorityVo authorityVo,  ResultT<List<Map<String, Object>>> resultT);
+    public abstract void allTables(AuthorityVo authorityVo, ResultT<List<Map<String, Object>>> resultT);
 }

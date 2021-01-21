@@ -24,7 +24,7 @@ public class AppRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+ ArrayUtil.containsIgnoreCase(ManagerUser.sysUser.split(Constants.COMMA),"USR_SOD"));
+//        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+ ArrayUtil.containsIgnoreCase(ManagerUser.sysUser.split(Constants.COMMA),"USR_SOD"));
     }
 }
 
