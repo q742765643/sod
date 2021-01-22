@@ -20,9 +20,12 @@ public class ConstantsMsg {
     public static final String MSG9 = "表【%s】未配置数据库信息！\n";
     public static final String MSG10 = "表【%s】未配置数据库信息或配置错误！\n";
     public static final String MSG11 = "数据库【%s】连接获取失败！\n";
-    public static final String MSG12 = "SQL生成失败！\n";
-    public static final String MSG13 = "SQL查询出错！\n";
-    public static final String MSG14 = "暂不支持此操作！\n";
+
+    public static final String MSG12 = "SQL生成失败！";
+    public static final String MSG13 = "SQL查询出错！";
+    public static final String MSG14 = "暂不支持此操作！";
+    public static final String MSG15 = "存储编码重复！";
+    public static final String MSG16 = "用户id缺失！";
 
     public static final String SUCCESS = "【成功】";
     public static final String FAIL = "【失败】[ERROR:%s]";

@@ -19,6 +19,7 @@ public class BaseDto implements Serializable {
 
     private Date updateTime;
 
+    private Integer version;
 
     private String delFlag="0";
 

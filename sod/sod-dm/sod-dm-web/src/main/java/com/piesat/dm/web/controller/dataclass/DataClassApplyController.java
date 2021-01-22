@@ -1,10 +1,13 @@
 package com.piesat.dm.web.controller.dataclass;
 
 import com.piesat.dm.rpc.api.dataclass.DataClassApplyService;
+import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassApplyDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -31,13 +34,17 @@ public class DataClassApplyController {
     @Log(title = "资料申请", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
     public ResultT save(@RequestBody DataClassApplyDto dataClassApplyDto) {
-        try {
-            dataClassApplyDto = this.dataClassApplyService.saveDto(dataClassApplyDto);
-            return ResultT.success(dataClassApplyDto);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
+        return this.dataClassApplyService.saveDto(dataClassApplyDto);
+    }
+
+
+
+    @GetMapping("/list")
+    @RequiresPermissions("dm:dataclassapply:list")
+    @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
+    public ResultT<PageBean> list(DataClassApplyDto dataClassApplyDto, int pageNum, int pageSize) {
+        PageForm<DataClassApplyDto> pageForm = new PageForm<>(pageNum, pageSize, dataClassApplyDto);
+        return this.dataClassApplyService.list(pageForm);
     }
 
     @ApiOperation(value = "根据id查询")

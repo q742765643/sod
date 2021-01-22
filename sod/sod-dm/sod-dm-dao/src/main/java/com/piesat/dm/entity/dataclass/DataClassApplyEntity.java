@@ -89,7 +89,7 @@ public class DataClassApplyEntity extends BaseEntity {
      * 1-待审核 ,2-审核通过 ,3-审核不通过，4-删除申请中，5-已删除
      */
     @Column(name = "status")
-    private String status;
+    private Integer status;
 
     /**
      * 申请人

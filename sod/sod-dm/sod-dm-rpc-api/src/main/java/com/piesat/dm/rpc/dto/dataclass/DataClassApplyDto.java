@@ -1,10 +1,13 @@
 package com.piesat.dm.rpc.dto.dataclass;
 
+import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.util.BaseDto;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -72,7 +75,7 @@ public class DataClassApplyDto extends BaseDto {
      * 审核状态
      * 1-待审核 ,2-审核通过 ,3-审核不通过，4-删除申请中，5-已删除
      */
-    private String status;
+    private Integer status;
 
     /**
      * 申请人
@@ -100,8 +103,20 @@ public class DataClassApplyDto extends BaseDto {
     private String remark;
 
 
-    private List<TableColumnDto> tableColumns;
+    private List<TableColumnDto> columns;
     private List<TableIndexDto> tableIndexList;
     private TablePartDto tablePart;
-    private List<DataClassLogicDto> DataClassLogicList;
+    private List<DataClassLogicDto> dataLogicList;
+
+    public DataClassDto getDataClass() {
+        DataClassDto d = new DataClassDto();
+        BeanUtils.copyProperties(this, d);
+        return d;
+    }
+
+    public DataTableInfoDto getTableInfo() {
+        DataTableInfoDto t = new DataTableInfoDto();
+        BeanUtils.copyProperties(this, t);
+        return t;
+    }
 }

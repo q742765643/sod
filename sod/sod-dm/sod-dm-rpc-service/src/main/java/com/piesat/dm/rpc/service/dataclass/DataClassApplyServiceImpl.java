@@ -2,23 +2,38 @@ package com.piesat.dm.rpc.service.dataclass;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.common.enums.StatusEnum;
 import com.piesat.dm.dao.ReviewLogDao;
 import com.piesat.dm.dao.dataclass.DataClassApplyDao;
+import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
 import com.piesat.dm.entity.dataclass.DataClassApplyEntity;
 import com.piesat.dm.rpc.api.ReviewLogService;
 import com.piesat.dm.rpc.api.dataclass.DataClassApplyService;
+import com.piesat.dm.rpc.api.dataclass.DataClassService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.ReviewLogDto;
+import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassApplyDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassApplyMapper;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +53,8 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     @Autowired
     private DataClassApplyDao dataClassApplyDao;
     @Autowired
+    private DataClassService dataClassService;
+    @Autowired
     private DataClassApplyMapper dataClassApplyMapper;
     @Autowired
     private TableColumnService tableColumnService;
@@ -47,7 +64,10 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     private ShardingService shardingService;
     @Autowired
     private ReviewLogService reviewLogService;
-
+    @Autowired
+    private DataLogicService dataLogicService;
+    @Autowired
+    private DataTableService dataTableService;
 
     @Override
     public BaseDao<DataClassApplyEntity> getBaseDao() {
@@ -56,41 +76,92 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public DataClassApplyDto saveDto(DataClassApplyDto dataClassApplyDto) {
-        List<TableColumnDto> tableColumns = dataClassApplyDto.getTableColumns();
+    public ResultT saveDto(DataClassApplyDto dataClassApplyDto) {
+        DataClassDto dataClassDto = this.dataClassService.findByDataClassId(dataClassApplyDto.getDataClassId());
+        if (dataClassDto != null) {
+            return ResultT.failed(ConstantsMsg.MSG15);
+        }
+        List<DataClassLogicDto> dataClassLogicList = dataClassApplyDto.getDataLogicList();
+        List<TableColumnDto> tableColumns = dataClassApplyDto.getColumns();
         List<TableIndexDto> tableIndexList = dataClassApplyDto.getTableIndexList();
         TablePartDto tablePart = dataClassApplyDto.getTablePart();
         DataClassApplyEntity save = this.save(this.dataClassApplyMapper.toEntity(dataClassApplyDto));
         DataClassApplyDto dataClassApply = this.dataClassApplyMapper.toDto(save);
-        Optional.ofNullable(tableColumns).ifPresent(e -> {
-            e.forEach(e1 -> {
-                e1.setTableId(save.getId());
+        if (dataClassLogicList != null && dataClassLogicList.size() > 0) {
+            dataClassLogicList.forEach(e -> {
+                this.dataLogicService.saveDto(e);
             });
-            List<TableColumnDto> tableColumnDtos = this.tableColumnService.saveDtoList(e);
-            dataClassApply.setTableColumns(tableColumnDtos);
-        });
-        Optional.ofNullable(tableIndexList).ifPresent(e -> {
-            e.forEach(e1 -> {
-                e1.setTableId(save.getId());
-                this.tableIndexService.saveDto(e1);
+        } else {
+            Optional.ofNullable(tableColumns).ifPresent(e -> {
+                e.forEach(e1 -> {
+                    e1.setTableId(save.getId());
+                });
+                List<TableColumnDto> tableColumnDtos = this.tableColumnService.saveDtoList(e);
+                dataClassApply.setColumns(tableColumnDtos);
             });
-        });
-        Optional.ofNullable(tablePart).ifPresent(e -> {
-            this.shardingService.saveDto(e);
-        });
+            Optional.ofNullable(tableIndexList).ifPresent(e -> {
+                e.forEach(e1 -> {
+                    e1.setTableId(save.getId());
+                    this.tableIndexService.saveDto(e1);
+                });
+            });
+            Optional.ofNullable(tablePart).ifPresent(e -> {
+                this.shardingService.saveDto(e);
+            });
+        }
+
         ReviewLogDto rl = new ReviewLogDto();
         rl.setBindId(save.getId());
         rl.setUserId(save.getUserId());
         rl.setStatusInfo(ConstantsMsg.STATUS1);
         this.reviewLogService.saveDto(rl);
-        return dataClassApply;
+        return ResultT.success(dataClassApply);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultT review(DataClassApplyDto dca) {
+        DataClassApplyEntity dca_ = this.dataClassApplyMapper.toEntity(dca);
+        if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核未通过) {
+            dca_ = this.save(dca_);
+        } else if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核通过) {
+            DataClassDto dataClass = dca.getDataClass();
+            DataClassDto dataClassDto = this.dataClassService.saveDto(dataClass);
+            List<DataClassLogicDto> dataLogicList = dca.getDataLogicList();
+            if (dataLogicList != null && dataLogicList.size() > 0) {
+                this.dataLogicService.saveList(dataLogicList);
+            } else {
+                DataTableInfoDto tableInfo = dca.getTableInfo();
+                DataTableInfoDto dataTableInfoDto = this.dataTableService.saveDto(tableInfo);
+                DataClassLogicDto d = new DataClassLogicDto();
+                d.setTableId(dataTableInfoDto.getId());
+                d.setDataClassId(dataClassDto.getDataClassId());
+                this.dataLogicService.saveDto(d);
+            }
+        }
+        return ResultT.success(dca_);
+    }
+
+    @Override
+    public ResultT list(PageForm<DataClassApplyDto> pageForm) {
+        DataClassApplyDto t = pageForm.getT();
+        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
+        if (StringUtils.isEmpty(t.getUserId())) {
+            return ResultT.failed(ConstantsMsg.MSG16);
+        }
+        specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(), t.getUserId());
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime", "reviewTime");
+        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
+        List<DataClassApplyEntity> list = (List<DataClassApplyEntity>) pageBean.getPageData();
+        pageBean.setPageData(this.dataClassApplyMapper.toDto(list));
+        return ResultT.success(pageBean);
     }
 
     @Override
     public DataClassApplyDto getDotById(String id) {
         DataClassApplyDto dataClassApplyDto = this.dataClassApplyMapper.toDto(this.getById(id));
         List<TableColumnDto> tableColumn = this.tableColumnService.findByTableId(dataClassApplyDto.getId());
-        dataClassApplyDto.setTableColumns(tableColumn);
+        dataClassApplyDto.setColumns(tableColumn);
         List<TableIndexDto> tableIndex = this.tableIndexService.findByTableId(dataClassApplyDto.getId());
         dataClassApplyDto.setTableIndexList(tableIndex);
         TablePartDto tablePartDto = this.shardingService.getDotByTableId(dataClassApplyDto.getId());
