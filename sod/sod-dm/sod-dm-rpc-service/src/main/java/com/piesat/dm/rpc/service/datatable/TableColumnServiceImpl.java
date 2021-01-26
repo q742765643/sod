@@ -95,7 +95,7 @@ public class TableColumnServiceImpl extends BaseService<TableColumnEntity> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<TableColumnDto> saveDtoList(List<TableColumnDto> tableColumnDtoList) {
-        if (tableColumnDtoList != null && tableColumnDtoList.size() > 0) {
+        if (tableColumnDtoList != null && !tableColumnDtoList.isEmpty()) {
             return tableColumnDtoList.stream().map(e -> {
                 TableColumnEntity tableColumnEntity = this.tableColumnMapper.toEntity(e);
                 if (StringUtils.isEmpty(tableColumnEntity.getId())) {

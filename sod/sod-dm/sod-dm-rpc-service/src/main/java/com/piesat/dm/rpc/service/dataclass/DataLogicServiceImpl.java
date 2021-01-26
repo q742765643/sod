@@ -132,7 +132,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     public List<DataClassLogicDto> findByDataClassId(String dataClassId) {
         List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
         List<DataClassLogicDto > dataClassLogicDtos = this.dataLogicMapper.toDto(byDataClassId);
-        if (dataClassLogicDtos != null && dataClassLogicDtos.size() > 0) {
+        if (dataClassLogicDtos != null && !dataClassLogicDtos.isEmpty()) {
             dataClassLogicDtos = dataClassLogicDtos.stream().map(e -> {
                 String tableId = e.getTableId();
                 String databaseId = this.dataTableService.getDotById(tableId).getDatabaseId();

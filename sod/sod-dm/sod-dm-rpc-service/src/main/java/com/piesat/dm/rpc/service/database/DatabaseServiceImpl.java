@@ -177,7 +177,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
         DatabaseEntity databaseEntity = this.getById(id);
         DatabaseDto databaseDto = this.databaseDefineMapper.toDto(databaseEntity);
         List<SchemaEntity> databaseEntities = this.schemaDao.findByDatabase_IdAndDatabaseName(id, "基础库");
-        if (databaseEntities.size() > 0) {
+        if (databaseEntities != null && !databaseEntities.isEmpty()) {
             SchemaDto schemaDto = this.databaseMapper.toDto(databaseEntities).get(0);
             databaseDto.setSchemaDto(schemaDto);
         }
@@ -194,7 +194,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
             for (int j = 0; j < databases.size(); j++) {
                 SchemaEntity database = databases.get(j);
                 List<DataTableInfoEntity> logicList = this.dataTableDao.findByDatabaseId(database.getId());
-                if (logicList.size() > 0) {
+                if (logicList!=null && !logicList.isEmpty()) {
                     return ResultT.failed("数据库存在资料，请先删除相关资料，如表名为：" + logicList.get(0).getTableName());
                 }
             }

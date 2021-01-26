@@ -95,11 +95,11 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         if (dataTableDto.getId() != null) {
             DataTableInfoDto dotById = this.getDotById(dataTableDto.getId());
             List<DataClassAndTableEntity> dataClassLogic = this.dataLogicDao.findByTableId(dataTableDto.getId());
-            if (dataClassLogic.size() > 0) {
+            if (dataClassLogic != null && !dataClassLogic.isEmpty()) {
                 String dataClassId = dataClassLogic.get(0).getDataClassId();
                 List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
                         .findByDataClassIdAndUserId(dataClassId, dotById.getUserId());
-                if (NewdataApplyDtos.size() > 0) {
+                if (NewdataApplyDtos != null && !NewdataApplyDtos.isEmpty()) {
                     NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
                     newdataApplyDto.setTableName(dataTableDto.getTableName());
                     this.newdataApplyService.saveDto(newdataApplyDto);
@@ -181,7 +181,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     public List<Map<String, Object>> getMultiDataInfoByClassId(String dataClassId) {
         //根据存储编码查询表信息
         List<Map<String, Object>> tableInfoLists = mybatisQueryMapper.getTableInfoByClassId(dataClassId);
-        if (tableInfoLists != null && tableInfoLists.size() > 0) {
+        if (tableInfoLists != null && !tableInfoLists.isEmpty()) {
             for (int i = 0; i < tableInfoLists.size(); i++) {
                 Map<String, Object> tableInfo = tableInfoLists.get(i);
 
@@ -192,7 +192,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
                 List<String> indexField = new ArrayList<String>();
                 JSONObject indexFieldJson = new JSONObject();
                 LinkedHashSet<TableIndexDto> tableIndexList = dataTableDto.getTableIndexList();
-                if (tableIndexList != null && tableIndexList.size() > 0) {
+                if (tableIndexList != null && !tableIndexList.isEmpty()) {
                     for (TableIndexDto tableIndexDto : tableIndexList) {
                         String indexColumn = tableIndexDto.getIndexColumn();
                         for (String column : indexColumn.split(",")) {
@@ -244,11 +244,11 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             map.put("K", keyTable == null ? "" : keyTable.getTableName());
             map.put("E", eleTable == null ? "" : eleTable.getTableName());
             List<TableForeignKeyEntity> foreignKeyEntities = this.tableForeignKeyDao.findByTableId(keyTable.getId());
-            if (foreignKeyEntities.size() > 0) {
+            if (foreignKeyEntities != null && !foreignKeyEntities.isEmpty()) {
                 map.put("foreignKey", this.tableForeignKeyMapper.toDto(foreignKeyEntities));
             }
             List<TableColumnEntity> primaryKey = this.tableColumnDao.findByTableIdAndIsPrimaryKeyTrue(keyTable.getId());
-            if (primaryKey.size() > 0) {
+            if (primaryKey != null && !primaryKey.isEmpty()) {
                 map.put("primaryKey", primaryKey.get(0).getDbEleCode());
             }
             map.put("database", schemaDto);
@@ -348,7 +348,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         }
         List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
                 .findByDataClassIdAndUserId(dataClassEntity.getDataClassId(), dataClassEntity.getCreateBy());
-        if (NewdataApplyDtos.size() > 0 && copys.size() > 0) {
+        if (NewdataApplyDtos !=null && !NewdataApplyDtos.isEmpty() && copys!=null && !copys.isEmpty()) {
             NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
             newdataApplyDto.setTableName(copys.get(0).getTableName());
             this.newdataApplyService.saveDto(newdataApplyDto);

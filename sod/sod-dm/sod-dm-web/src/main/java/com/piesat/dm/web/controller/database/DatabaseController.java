@@ -227,8 +227,8 @@ public class DatabaseController {
             List<String> list = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
             //逻辑库对应的databaseId（父级databaseId）
             List<LogicDefineDto> logicDefineDtos = logicDefineService.findByLogicFlag(logicId);
-            if(logicDefineDtos != null && logicDefineDtos.size() >0){
-                if(logicDefineDtos.get(0).getLogicDatabaseEntityList() != null && logicDefineDtos.get(0).getLogicDatabaseEntityList().size() > 0) {
+            if(logicDefineDtos != null && !logicDefineDtos.isEmpty()){
+                if(logicDefineDtos.get(0).getLogicDatabaseEntityList() != null && !logicDefineDtos.get(0).getLogicDatabaseEntityList().isEmpty()) {
                     for (LogicDatabaseDto logicDatabaseDto : logicDefineDtos.get(0).getLogicDatabaseEntityList()) {
                         if(list.contains(logicDatabaseDto.getDatabaseId())){
                             targetDatabaseIdList.add(logicDatabaseDto.getDatabaseId());

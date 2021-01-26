@@ -59,7 +59,7 @@ public enum ColumnEnum {
         System.out.println(s);
         int timestamp = ColumnEnum.getLength(s);
         System.out.println(timestamp);
-String accuracy = "ss.1ss";
+        String accuracy = "ss.1ss";
         boolean contains = accuracy.contains(".");
         System.out.println(contains);
         accuracy = accuracy.split("\\.")[0];

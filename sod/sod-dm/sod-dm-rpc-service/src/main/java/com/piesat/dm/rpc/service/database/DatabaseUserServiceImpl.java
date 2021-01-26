@@ -127,7 +127,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         List<DatabaseUserDto> databaseUserDtoList = databaseUserMapper.toDto(databaseUserEntityList);
         //获取数据库列表，查询展示数据库中文名称
         List<DatabaseEntity> databaseDefineEntities = databaseDao.findAll();
-        if (databaseUserDtoList != null && databaseUserDtoList.size() > 0 && databaseDefineEntities != null && databaseDefineEntities.size() > 0) {
+        if (databaseUserDtoList != null && !databaseUserDtoList.isEmpty() && databaseDefineEntities != null && databaseDefineEntities.size() > 0) {
             for (DatabaseUserDto dto : databaseUserDtoList) {
                 dto.setDatabaseUpPassword("");
                 //获取数据库中文名称
@@ -232,7 +232,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public DatabaseUserDto findByUserIdAndDatabaseUpId(String userId, String upId) {
         List<DatabaseUserEntity> byUserId = this.databaseUserDao.findByUserIdAndDatabaseUpId(userId, upId);
         DatabaseUserEntity d = null;
-        if (byUserId != null && byUserId.size() > 0) {
+        if (byUserId != null && !byUserId.isEmpty()) {
             d = byUserId.get(0);
         }
         return this.databaseUserMapper.toDto(d);

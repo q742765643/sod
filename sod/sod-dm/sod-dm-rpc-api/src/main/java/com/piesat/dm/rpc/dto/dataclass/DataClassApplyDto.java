@@ -61,6 +61,11 @@ public class DataClassApplyDto extends BaseDto {
     private String databaseId;
 
     /**
+     * 数据库名称
+     */
+    private String databaseName;
+
+    /**
      * 表描述
      */
     private String tableDesc;

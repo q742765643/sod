@@ -12,6 +12,7 @@ import com.piesat.dm.dao.dataclass.DataClassApplyDao;
 import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
 import com.piesat.dm.entity.dataclass.DataClassApplyEntity;
 import com.piesat.dm.rpc.api.ReviewLogService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassApplyService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
@@ -21,6 +22,7 @@ import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.ReviewLogDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
@@ -68,6 +70,9 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     private DataLogicService dataLogicService;
     @Autowired
     private DataTableService dataTableService;
+    @Autowired
+    private SchemaService schemaService;
+
 
     @Override
     public BaseDao<DataClassApplyEntity> getBaseDao() {
@@ -87,7 +92,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         TablePartDto tablePart = dataClassApplyDto.getTablePart();
         DataClassApplyEntity save = this.save(this.dataClassApplyMapper.toEntity(dataClassApplyDto));
         DataClassApplyDto dataClassApply = this.dataClassApplyMapper.toDto(save);
-        if (dataClassLogicList != null && dataClassLogicList.size() > 0) {
+        if (dataClassLogicList != null && !dataClassLogicList.isEmpty()) {
             dataClassLogicList.forEach(e -> {
                 this.dataLogicService.saveDto(e);
             });
@@ -128,7 +133,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
             DataClassDto dataClass = dca.getDataClass();
             DataClassDto dataClassDto = this.dataClassService.saveDto(dataClass);
             List<DataClassLogicDto> dataLogicList = dca.getDataLogicList();
-            if (dataLogicList != null && dataLogicList.size() > 0) {
+            if (dataLogicList != null && !dataLogicList.isEmpty()) {
                 this.dataLogicService.saveList(dataLogicList);
             } else {
                 DataTableInfoDto tableInfo = dca.getTableInfo();
@@ -153,7 +158,16 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime", "reviewTime");
         PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<DataClassApplyEntity> list = (List<DataClassApplyEntity>) pageBean.getPageData();
-        pageBean.setPageData(this.dataClassApplyMapper.toDto(list));
+        List<DataClassApplyDto> dataClassApplyDtos = this.dataClassApplyMapper.toDto(list);
+        dataClassApplyDtos.forEach(e -> {
+            if (StringUtils.isNotEmpty(e.getDatabaseId())) {
+                SchemaDto dotById = this.schemaService.getDotById(e.getDatabaseId());
+                if (dotById != null) {
+                    e.setDatabaseName(dotById.getDatabase().getDatabaseName());
+                }
+            }
+        });
+        pageBean.setPageData(dataClassApplyDtos);
         return ResultT.success(pageBean);
     }
 

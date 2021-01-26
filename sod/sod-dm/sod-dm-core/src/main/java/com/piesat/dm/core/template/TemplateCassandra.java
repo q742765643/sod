@@ -14,4 +14,12 @@ public class TemplateCassandra {
     public static final String CREATE_SCHEMA = "CREATE KEYSPACE IF NOT EXISTS ${schema} WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 4}";
     public static final String GRANT_ANY_TABLE = "GRANT CREATE ON KEYSPACE ${grantStr} TO '${userName}' ";
     public static final String QUERY_TABLES = "SELECT TABLE_NAME FROM SYSTEM_SCHEMA.TABLES WHERE KEYSPACE_NAME = '${schema}'";
+    public static final String ALTER_ADD_COLUMN = "ALTER TABLE ${schema}.${tableName} ADD ${columnName} ${type}";
+    public static final String ALTER_DROP_COLUMN = "ALTER TABLE ${schema}.${tableName} DROP ${columnName}";
+    public static final String ALTER_RENAME_COLUMN = "";
+    public static final String ALTER_COLUMN_ATTR = "";
+    public static final String ALTER_COLUMN_SET_DEFAULT = "";
+    public static final String ALTER_COLUMN_DROP_DEFAULT = "";
+    public static final String ALTER_COLUMN_SET_NOTNULL = "";
+    public static final String ALTER_COLUMN_DROP_NOTNULL = "";
 }

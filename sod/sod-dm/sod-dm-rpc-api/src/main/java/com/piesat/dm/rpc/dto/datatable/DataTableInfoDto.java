@@ -90,7 +90,7 @@ public class DataTableInfoDto extends BaseDto {
 
 
     public List<ColumnVo> getColumnVo() {
-        return columns != null && columns.size() > 0 ? columns.stream().map(e -> {
+        return columns != null && !columns.isEmpty() ? columns.stream().map(e -> {
             ColumnVo c = new ColumnVo();
             c.setColumnName(e.getDbEleCode());
             c.setType(e.getType());
