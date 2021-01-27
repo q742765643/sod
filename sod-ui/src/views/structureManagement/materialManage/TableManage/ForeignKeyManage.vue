@@ -87,7 +87,7 @@
 <script>
 import {
   findByTableId,
-  foreignKeyList,
+  // foreignKeyList,
   foreignKeySave,
   delByIdsKey,
 } from "@/api/structureManagement/materialManage/StructureManageTable";
