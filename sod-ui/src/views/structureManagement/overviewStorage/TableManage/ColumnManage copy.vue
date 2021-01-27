@@ -16,7 +16,11 @@
         @click="columnAdd"
         >新增</el-button
       >
-      <el-button type="primary" size="small" icon="el-icon-edit"
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-edit"
+        @click="columnEdit"
         >编辑</el-button
       >
       <el-button
@@ -80,43 +84,122 @@
         >同步服务名称</el-button
       >
     </el-button-group>
-    <!-- 字段表格 -->
+    <!-- <el-scrollbar wrap-class="scrollbar-wrapper"> -->
     <el-table
       :data="columnData"
       border
-      stripe
       @selection-change="(res) => (selColumnData = res)"
       height="550"
       ref="selectionTable"
       @row-click="handleClickTableRow"
     >
+      <el-table-column type="index" label="序号" width="70"></el-table-column>
+      <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column
-        :key="field"
-        :label="column.label"
-        :prop="field"
-        :width="column.width"
-        v-for="(column, field) of exampleDesc"
+        label="公共元数据字段"
+        prop="dbEleCode"
+        width="200px"
+        v-if="tableStructureManageContral"
+        :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
-          <ele-editable
-            :custom-data="{
-              id: scope.row.id,
-            }"
-            :default-value="column.defaultValue"
-            :empty-text="column.emptyText"
-            :field="field"
-            :inline="column.inline"
-            :options="column.options"
-            :request-fn="handleChange"
-            :rules="column.rules"
-            :title="column.label"
-            :type="column.type"
-            :value-formatter="column.valueFormatter"
-            v-model="scope.row[field]"
-          />
+          <el-input size="small" v-model="scope.row.dbEleCode">
+            <span>{{ scope.row.dbEleCode }}</span>
+          </el-input>
         </template>
       </el-table-column>
+      <el-table-column
+        label="字段编码"
+        prop="celementCode"
+        width="200px"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        label="服务代码"
+        prop="userEleCode"
+        width="200px"
+        v-if="tableStructureManageContral"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        label="中文简称"
+        prop="eleName"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        label="数据类型"
+        prop="type"
+        width="100px"
+        :show-overflow-tooltip="true"
+      ></el-table-column>
+      <el-table-column
+        label="数据精度"
+        prop="accuracy"
+        width="100px"
+      ></el-table-column>
+      <el-table-column
+        label="数据长度"
+        prop="length"
+        width="100px"
+      ></el-table-column>
+      <el-table-column
+        label="要素单位"
+        prop="unit"
+        width="100px"
+      ></el-table-column>
+      <el-table-column label="是否可空" prop="isNull" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isNull == true">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否可改" prop="isUpdate" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isUpdate == true">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否显示" prop="isShow" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isShow == true">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否主键" prop="isPrimaryKey" width="100px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isPrimaryKey == true">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="中文描述"
+        prop="nameCn"
+        width="100px"
+      ></el-table-column>
+      <el-table-column label="是否管理字段" prop="isManager" width="120px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.isManager == true">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>
+      <!--<el-table-column label="是否修改数据库" prop="updateDatabase" width="140px">
+        <template slot-scope="scope">
+          <span v-if="scope.row.updateDatabase">是</span>
+          <span v-else>否</span>
+        </template>
+      </el-table-column>-->
+      <el-table-column
+        label="默认值"
+        prop="defaultValue"
+        width="100px"
+      ></el-table-column>
+      <el-table-column
+        label="序号"
+        prop="serialNumber"
+        width="100px"
+      ></el-table-column>
     </el-table>
+    <!-- </el-table-column> -->
     <el-dialog
       :close-on-click-modal="false"
       v-dialogDrag
@@ -710,7 +793,6 @@ export default {
       }
     };
     return {
-      exampleDesc: {},
       uploadTableId: "",
       uploadTableType: "",
       uploadColumnData: [],
@@ -778,132 +860,7 @@ export default {
       AllManageGroup: [],
     };
   },
-  async created() {
-    await this.getDictByTypeMethods("table_column_type");
-    this.exampleDesc = {
-      index: {
-        label: "序号",
-        width: 50,
-      },
-      dbEleCode: {
-        label: "公共元数据字段",
-        type: "input",
-        width: 200,
-        rules: {
-          required: true,
-          message: "公共元数据字段不能为空",
-        },
-      },
-      celementCode: {
-        label: "字段编码",
-        type: "input",
-        rules: {
-          required: true,
-          message: "字段编码不能为空",
-        },
-      },
-      userEleCode: {
-        label: "服务名称",
-        type: "input",
-        rules: {
-          required: true,
-          message: "服务名称不能为空",
-        },
-      },
-      eleName: {
-        label: "中文简称",
-        type: "input",
-        rules: {
-          required: true,
-          message: "中文简称不能为空",
-        },
-      },
-      type: {
-        label: "数据类型",
-        type: "select",
-        options: this.dataTypes,
-        rules: {
-          required: true,
-          message: "数据类型不能为空",
-        },
-      },
-      unit: {
-        label: "要素单位",
-        type: "input",
-        rules: {
-          required: true,
-          message: "要素单位不能为空",
-        },
-      },
-      accuracy: {
-        label: "数据精度",
-        type: "number",
-      },
-      length: {
-        label: "数据长度",
-        type: "number",
-      },
-      isNull: {
-        label: "是否可空",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
-      isUpdate: {
-        label: "是否可改",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
-      isShow: {
-        label: "是否显示",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
-      isPrimaryKey: {
-        label: "是否主键",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
-      isManager: {
-        label: "是否管理字段",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
-      defaultValue: {
-        label: "默认值",
-        type: "input",
-      },
-      nameCn: {
-        label: "中文描述",
-        type: "input",
-      },
-      serialNumber: {
-        label: "序号",
-        width: 50,
-        type: "number",
-        rules: {
-          required: true,
-          message: "序号不能为空",
-        },
-      },
-    };
-  },
   methods: {
-    handleChange() {},
     reseatNum(val) {
       if (val == "datetime" || val == "int" || val == "double") {
         this.columnEditData.accuracy = 0;
@@ -983,42 +940,58 @@ export default {
       });
     },
     columnAdd() {
-      let obj = {
-        index: this.columnData.length + 1,
+      if (!this.tableInfo.id) {
+        this.$message({
+          type: "error",
+          message: "表不存在",
+        });
+        return;
+      }
+      this.columnEditData = {
         unit: "N",
         isManager: false,
         isPrimaryKey: false,
         isShow: false,
         isUpdate: false,
         isNull: false,
-        tableId: this.tableInfo.id,
       };
+      this.getDictByTypeMethods("table_column_type");
+      this.codeTitle = "新增字段";
       if (this.columnData.length == 0) {
-        obj.serialNumber = 0;
+        this.columnEditData.serialNumber = 0;
       } else {
-        obj.serialNumber = Number(
+        this.columnEditData.serialNumber = Number(
           this.columnData[this.columnData.length - 1].serialNumber + 1
         );
       }
-      if (this.tableType == "E-Kshow") {
-        obj.isKvK = true;
-      } else if (this.tableType == "E-Eshow") {
-        obj.isKvK = false;
+
+      this.dialogStatus.columnDialog = true;
+    },
+
+    columnEdit() {
+      if (this.selColumnData.length != 1) {
+        this.$message({
+          message: "请选择一条数据！",
+          type: "error",
+        });
+      } else {
+        this.codeTitle = "编辑字段";
+        this.getDictByTypeMethods("table_column_type");
+        getColumDatailById({ id: this.selColumnData[0].id }).then(
+          (response) => {
+            if (response.code == 200) {
+              this.columnEditData = response.data;
+              this.dialogStatus.columnDialog = true;
+            }
+          }
+        );
       }
-      this.columnData.push(obj);
     },
     // 根据类型查询字典信息
-    async getDictByTypeMethods(dictType) {
-      await getDictByType({ dictType: dictType }).then((response) => {
+    getDictByTypeMethods(dictType) {
+      getDictByType({ dictType: dictType }).then((response) => {
         if (response.code == 200) {
-          this.dataTypes = [];
-          response.data.forEach((element) => {
-            let obj = {
-              text: element.dictLabel,
-              value: element.dictValue,
-            };
-            this.dataTypes.push(obj);
-          });
+          this.dataTypes = response.data;
         }
       });
     },

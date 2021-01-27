@@ -382,6 +382,7 @@
       class="scrollDialog"
     >
       <StructureManageTable
+        ref="StructureManageTableRef"
         v-if="structureManageVisible"
         v-bind:parentRowData="rowData"
         :tableBaseInfo="tableBaseInfo"
