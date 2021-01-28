@@ -5,6 +5,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.IdUtils;
 import com.piesat.common.utils.MD5Util;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.dao.UserManageDao;
@@ -19,6 +20,7 @@ import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service("userManageService")
@@ -119,6 +121,17 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         String password = userManageEntity.getPassword();
         password = MD5Util.MD5Encode(password);
         userManageEntity.setPassword(password);
+        userManageEntity = this.saveNotNull(userManageEntity);
+        return userManageMapstruct.toDto(userManageEntity);
+    }
+
+    @Override
+    public UserManageDto saveDto(UserManageDto userManageDto) {
+        UserManageEntity userManageEntity = userManageMapstruct.toEntity(userManageDto);
+        if(StringUtils.isEmpty(userManageEntity.getId())){
+            userManageEntity.setId(IdUtils.simpleUUID());
+        }
+        userManageEntity.setUpdateTime(new Date());
         userManageEntity = this.saveNotNull(userManageEntity);
         return userManageMapstruct.toDto(userManageEntity);
     }
