@@ -129,6 +129,13 @@ are:
   userName: usr_music
   password: ENC(odKCJcYCq5dm43Fm2r6ikLKBI7ILGegx)
 
+ #博云中间件接口
+cloudDeploy:
+  loginUrl: http://10.20.64.167:8081/api/cloud/iams/login
+  url: http://10.20.64.167:8087/api/cloud/usms/v1/middlewares/
+  cloudName: multifort
+  cloudPassword: Admin#11
+
 serverfile:
   dbfile: /space/cmadaas/sod/src/sod/file/upload/dbfile
   filePath: /space/cmadaas/sod/src/sod/file/upload/filePath
@@ -136,6 +143,7 @@ serverfile:
   special: /space/cmadaas/sod/src/sod/file/upload/special
   cloud: /space/cmadaas/sod/src/sod/file/upload/cloud
   user: /space/cmadaas/sod/src/sod/file/upload/user
+  yun: /space/cmadaas/sod/src/sod/file/upload/yun
   sdkfile: /space/cmadaas/sod/src/sod/file/upload/sdkfile
   portalfile: /space/cmadaas/sod/src/sod/file/upload/portalfile
   #  dbfile: D:/file
