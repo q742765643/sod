@@ -362,3 +362,12 @@ export function getArchive(query) {
     params: query
   })
 }
+
+//批量保存
+export function saveTableCloumn(query) {
+  return request({
+    url: baseUrl + '/dm/tableColumn/saveList',
+    method: 'post',
+    data: query
+  })
+}
