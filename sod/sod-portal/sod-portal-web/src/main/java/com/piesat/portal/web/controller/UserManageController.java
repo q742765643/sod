@@ -1,5 +1,6 @@
 package com.piesat.portal.web.controller;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.rpc.api.UserManageService;
 import com.piesat.portal.rpc.dto.UserManageDto;
 import com.piesat.sso.client.annotation.Log;
@@ -10,6 +11,7 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -21,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 public class UserManageController {
     @Autowired
     private UserManageService userManageService;
+
+    @Value("${sysLevel.value:P}")
+    private String sysLevel;
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
@@ -83,6 +88,23 @@ public class UserManageController {
         try {
             UserManageDto save = this.userManageService.saveDto(userManageDto);
             return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "获取部署级别")
+    @GetMapping(value = "/getSysLevel")
+    public ResultT<String> getSysLevel() {
+        ResultT<String> resultT=new ResultT<>();
+        try {
+            if(StringUtils.isEmpty(this.sysLevel)){
+                this.sysLevel = "P";
+            }
+            String sysLevel = this.sysLevel;
+            resultT.setData(sysLevel);
+            return resultT;
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
