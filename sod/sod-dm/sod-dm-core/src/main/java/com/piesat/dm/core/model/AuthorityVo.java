@@ -30,7 +30,7 @@ public class AuthorityVo {
     }
 
     public AuthorityVo(String schema){
-        this.schema = schema;
+        this.schema = schema.toUpperCase();
     }
 
     public void setSchema(String schema) {
@@ -54,6 +54,18 @@ public class AuthorityVo {
             this.schema = schema.toUpperCase();
             this.tableName = tableName.toUpperCase();
         }
+    }
+
+    public void lower(Boolean b){
+        if (b){
+            this.schema = schema.toLowerCase();
+            this.tableName = tableName.toLowerCase();
+        }
+    }
+
+    public void upper(){
+        this.schema = schema.toUpperCase();
+        this.tableName = tableName.toUpperCase();
     }
 
     private String[] grantArr;

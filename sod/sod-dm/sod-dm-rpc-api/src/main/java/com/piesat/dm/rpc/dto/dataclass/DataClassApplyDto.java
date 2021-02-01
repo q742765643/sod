@@ -75,6 +75,10 @@ public class DataClassApplyDto extends BaseDto {
      */
     private Integer isAccess;
 
+    /**
+     * 提交类型（1.关联表，2.新增表）
+     */
+    private Integer subType;
 
     /**
      * 审核状态

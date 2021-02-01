@@ -83,6 +83,11 @@ public class DataClassApplyEntity extends BaseEntity {
     @Column(name = "is_access", columnDefinition = "integer DEFAULT 1 ")
     private Integer isAccess;
 
+    /**
+     * 提交类型（1.关联表，2.新增表）
+     */
+    @Column(name = "sub_type")
+    private Integer subType;
 
     /**
      * 审核状态

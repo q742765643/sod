@@ -6,7 +6,7 @@ package com.piesat.dm.core.template;
  * @author cwh
  * @date 2020年 09月17日 12:41:55
  */
-public class TemplateCassandra {
+public class SqlTemplateCassandra extends SqlTemplateComm {
     public static final String QUERY_SCHEMA = "SELECT * FROM DBA_SCHEMAS WHERE SCHEMA_NAME = '${schema}'";
     public static final String QUERY_USER = "LIST USERS";
     public static final String QUERY_COLUMN = "SELECT KEYSPACE_NAME AS TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME AS COLUMN_NAME,TYPE AS COLUMN_TYPE FROM SYSTEM_SCHEMA.COLUMNS WHERE KEYSPACE_NAME = '${schema}' AND TABLE_NAME = '${tableName}' ";

@@ -32,7 +32,7 @@ public class AuzFactory {
         if (databaseType.equals(DatabaseTypesEnum.CASSANDRA)) {
             Session connection = null;
             try {
-                connection = CassandraSource.getConnection(pid, connectVo);
+                connection = CassandraSource.getConnection(connectVo);
                 con = connection;
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
@@ -44,7 +44,7 @@ public class AuzFactory {
         } else {
             Connection connection = null;
             try {
-                connection = CommDataSource.getConnection(pid, connectVo);
+                connection = CommDataSource.getConnection(connectVo);
                 con = connection;
             } catch (SQLException e) {
                 e.printStackTrace();

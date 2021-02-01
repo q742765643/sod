@@ -11,18 +11,19 @@ public class ConstantsMsg {
     public static final String MSG2_1 = "数据库【%s】管理账户缺失，或存管数据库未配置！";
     public static final String MSG3 = "数据库【%s】未对本账户授权！";
 
-    public static final String MSG4 = "新增数据库【%s】-用户【%s】-%s;\n";
-    public static final String MSG5 = "删除数据库【%s】-用户【%s】-%s;\n";
-    public static final String MSG6 = "修改数据库【%s】-用户【%s】密码-%s;\n";
-    public static final String MSG7 = "修改数据库【%s】-用户【%s】绑定IP-%s;\n";
+    public static final String MSG4 = "新增数据库【%s】-用户【%s】-%s;";
+    public static final String MSG5 = "删除数据库【%s】-用户【%s】-%s;";
+    public static final String MSG6 = "修改数据库【%s】-用户【%s】密码-%s;";
+    public static final String MSG7 = "修改数据库【%s】-用户【%s】绑定IP-%s;";
 
-    public static final String MSG8 = "获取数据库【%s】连接出错;\n";
-    public static final String MSG9 = "表【%s】未配置数据库信息！\n";
-    public static final String MSG10 = "表【%s】未配置数据库信息或配置错误！\n";
-    public static final String MSG11 = "数据库【%s】连接获取失败！\n";
+    public static final String MSG8 = "获取数据库【%s】连接出错;";
+    public static final String MSG9 = "表【%s】未配置数据库信息！";
+    public static final String MSG10 = "表【%s】未配置数据库信息或配置错误！";
+    public static final String MSG11 = "数据库【%s】连接获取失败！";
 
     public static final String MSG12 = "SQL生成失败！";
     public static final String MSG13 = "SQL查询出错！";
+    public static final String MSG17 = "SQL执行出错！";
     public static final String MSG14 = "暂不支持此操作！";
     public static final String MSG15 = "存储编码重复！";
     public static final String MSG16 = "用户id缺失！";

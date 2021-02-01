@@ -1,5 +1,6 @@
 package com.piesat.dm.core.model;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.constants.Constants;
 import lombok.Data;
 
@@ -39,7 +40,7 @@ public class ColumnVo {
 
     public void format() {
         if (!Arrays.asList(Constants.TIME_TYPES).contains(type.toUpperCase())) {
-            if (!def.contains(Constants.APOSTROPHE)) {
+            if (StringUtils.isNotEmpty(def) && !def.contains(Constants.APOSTROPHE)) {
                 def = Constants.APOSTROPHE + def + Constants.APOSTROPHE;
             }
         }

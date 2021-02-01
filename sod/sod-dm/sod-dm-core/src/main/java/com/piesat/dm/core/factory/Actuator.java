@@ -8,10 +8,10 @@ import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.parser.ManagerUser;
-import com.piesat.dm.core.template.TemplateCassandra;
-import com.piesat.dm.core.template.TemplateGbase;
-import com.piesat.dm.core.template.TemplatePostgreSql;
-import com.piesat.dm.core.template.TemplateXuGu;
+import com.piesat.dm.core.template.SqlTemplateCassandra;
+import com.piesat.dm.core.template.SqlTemplateGbase;
+import com.piesat.dm.core.template.SqlTemplatePostgreSql;
+import com.piesat.dm.core.template.SqlTemplateXuGu;
 import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -72,13 +72,13 @@ public class Actuator {
         }
         this.databaseType = databaseType;
         if (DatabaseTypesEnum.XUGU.equals(databaseType)) {
-            loadProp(TemplateXuGu.class);
+            loadProp(SqlTemplateXuGu.class);
         } else if (DatabaseTypesEnum.GBASE.equals(databaseType)) {
-            loadProp(TemplateGbase.class);
+            loadProp(SqlTemplateGbase.class);
         } else if (DatabaseTypesEnum.CASSANDRA.equals(databaseType)) {
-            loadProp(TemplateCassandra.class);
+            loadProp(SqlTemplateCassandra.class);
         } else if (DatabaseTypesEnum.POSTGRESQL.equals(databaseType)) {
-            loadProp(TemplatePostgreSql.class);
+            loadProp(SqlTemplatePostgreSql.class);
         }
     }
 

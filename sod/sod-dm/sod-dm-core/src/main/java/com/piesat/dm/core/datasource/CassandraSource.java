@@ -24,13 +24,14 @@ public class CassandraSource {
     public static Map<Object, ConnectVo> connectVoMap = new ConcurrentHashMap();
     public static Map<Object, Session> connectSessionMap = new ConcurrentHashMap();
 
-    public static Session getConnection(String pid, ConnectVo connectVo) throws SQLException {
+    public static Session getConnection(ConnectVo connectVo) throws SQLException {
+        String pid = connectVo.getPid();
         Session session = connectSessionMap.get(pid);
-        if (session != null && !session.isClosed()) {
+        if (null != session && !session.isClosed()) {
             return session;
         }
         Object o = _targetDataSources.get(pid);
-        if (o == null) {
+        if (null == o) {
             CassandraSource dataSource = new CassandraSource();
             dataSource.getDataSource(pid, connectVo, false);
             o = _targetDataSources.get(pid);
@@ -64,7 +65,7 @@ public class CassandraSource {
             connectSessionMap.remove(pid);
         }
         Cluster cluster = this.createDataSource(connectVo);
-        connectVoMap.put(pid,connectVo);
+        connectVoMap.put(pid, connectVo);
         _targetDataSources.put(pid, cluster);
     }
 
@@ -73,7 +74,7 @@ public class CassandraSource {
         PoolingOptions poolingOptions = new PoolingOptions();
         poolingOptions
                 .setConnectionsPerHost(HostDistance.LOCAL, 6, 12)
-                .setMaxRequestsPerConnection(HostDistance.LOCAL, 32768);
+                .setMaxRequestsPerConnection(HostDistance.LOCAL, 1024);
         Cluster.Builder clusterBuilder = Cluster.builder()
                 .addContactPoints(idArray)
                 .withPoolingOptions(poolingOptions)

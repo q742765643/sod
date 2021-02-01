@@ -46,8 +46,8 @@ public class CommDataSource {
         return dataSource;
     }
 
-    public static Connection getConnection(String pid, ConnectVo connectVo) throws SQLException {
-
+    public static Connection getConnection(ConnectVo connectVo) throws SQLException {
+        String pid = connectVo.getPid();
         Object o = _targetDataSources.get(pid);
         if (o == null) {
             CommDataSource dataSource = new CommDataSource();

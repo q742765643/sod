@@ -109,7 +109,7 @@ public class Main {
 //            c.setUserName("usr_manager");
 //            c.setPassWord("Cass@admin2019");
 //            Session radb = CassandraSource.getConnection("RADB", c);
-            Connection stdb = CommDataSource.getConnection("STDB", c);
+            Connection stdb = CommDataSource.getConnection(c);
 
             AuzDatabase a = new AuzDatabase(DatabaseTypesEnum.GBASE, stdb);
 

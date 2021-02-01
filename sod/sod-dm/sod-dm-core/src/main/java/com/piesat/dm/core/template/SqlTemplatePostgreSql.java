@@ -6,7 +6,7 @@ package com.piesat.dm.core.template;
  * @author cwh
  * @date 2020年 09月17日 12:41:55
  */
-public class TemplatePostgreSql {
+public class SqlTemplatePostgreSql extends SqlTemplateComm {
 
     public static final String CREATE_USER = "CREATE USER ${userName} WITH PASSWORD '${password}'";
 

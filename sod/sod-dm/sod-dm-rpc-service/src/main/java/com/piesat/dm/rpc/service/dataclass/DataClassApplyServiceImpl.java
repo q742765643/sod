@@ -7,9 +7,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.common.enums.StatusEnum;
-import com.piesat.dm.dao.ReviewLogDao;
 import com.piesat.dm.dao.dataclass.DataClassApplyDao;
-import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
 import com.piesat.dm.entity.dataclass.DataClassApplyEntity;
 import com.piesat.dm.rpc.api.ReviewLogService;
 import com.piesat.dm.rpc.api.database.SchemaService;
@@ -21,7 +19,6 @@ import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
 import com.piesat.dm.rpc.dto.ReviewLogDto;
-import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
@@ -39,10 +36,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 资料申请
@@ -91,6 +86,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         List<TableIndexDto> tableIndexList = dataClassApplyDto.getTableIndexList();
         TablePartDto tablePart = dataClassApplyDto.getTablePart();
         DataClassApplyEntity save = this.save(this.dataClassApplyMapper.toEntity(dataClassApplyDto));
+        save.setStatus(StatusEnum.待审核.getCode());
         DataClassApplyDto dataClassApply = this.dataClassApplyMapper.toDto(save);
         if (dataClassLogicList != null && !dataClassLogicList.isEmpty()) {
             dataClassLogicList.forEach(e -> {
@@ -165,6 +161,12 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                 if (dotById != null) {
                     e.setDatabaseName(dotById.getDatabase().getDatabaseName());
                 }
+            }
+        });
+        dataClassApplyDtos.forEach(e -> {
+            if (e.getSubType().equals(1)) {
+                List<DataClassLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(e.getDataClassId());
+                e.setDataLogicList(byDataClassId);
             }
         });
         pageBean.setPageData(dataClassApplyDtos);

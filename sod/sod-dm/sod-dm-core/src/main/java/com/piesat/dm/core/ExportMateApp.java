@@ -88,7 +88,7 @@ public class ExportMateApp {
         c.setUserName("usr_sod");
         c.setPassWord("Pnmic_qwe123");
 
-        Connection smdb = CommDataSource.getConnection("SMDB", c);
+        Connection smdb = CommDataSource.getConnection(c);
         AuzDatabase a = new AuzDatabase(DatabaseTypesEnum.XUGU, smdb);
         ResultT r = new ResultT();
         List<String> sqlList = new ArrayList<>();

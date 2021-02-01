@@ -6,7 +6,7 @@ package com.piesat.dm.core.template;
  * @author cwh
  * @date 2020年 09月17日 12:41:55
  */
-public class TemplateGbase {
+public class SqlTemplateGbase extends SqlTemplateComm {
     public static final String CREATE_USER = "CREATE USER ${userName} IDENTIFIED BY '${password}'<#if whitelistStr??> hosts '${whitelistStr}'</#if>";
 
     public static final String QUERY_USER = "SELECT * FROM GBASE.USER WHERE  UPPER(USER) = UPPER('${userName}')";
