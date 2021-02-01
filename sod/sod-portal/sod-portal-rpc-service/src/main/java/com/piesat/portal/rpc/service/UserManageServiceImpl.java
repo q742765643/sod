@@ -10,6 +10,7 @@ import com.piesat.common.utils.MD5Util;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.dao.UserManageDao;
 import com.piesat.portal.entity.UserManageEntity;
+import com.piesat.portal.mapper.UserManageMapper;
 import com.piesat.portal.rpc.api.DepartManageService;
 import com.piesat.portal.rpc.api.UserManageService;
 import com.piesat.portal.rpc.dto.DepartManageDto;
@@ -34,6 +35,9 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
 
     @Autowired
     private DepartManageService departManageService;
+
+    @Autowired
+    private UserManageMapper userManageMapper;
 
     @Override
     public BaseDao<UserManageEntity> getBaseDao() {
@@ -110,8 +114,17 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
 
     @Override
     public UserManageDto updateDto(UserManageDto userManageDto) {
-        UserManageEntity userManageEntity = userManageMapstruct.toEntity(userManageDto);
-        userManageEntity = this.saveNotNull(userManageEntity);
+        UserManageEntity userManageEntity = this.getById(userManageDto.getId());
+        if(StringUtils.isNotEmpty(userManageDto.getIscheck())){
+            userManageEntity.setIscheck(userManageDto.getIscheck());
+        }
+        if(userManageEntity.getVersion()==null){
+            userManageEntity.setVersion(0);
+        }else{
+            userManageEntity.setVersion(userManageEntity.getVersion()+1);
+        }
+        //userManageEntity = this.saveNotNull(userManageEntity);
+        userManageMapper.updateUser(userManageEntity);
         return userManageMapstruct.toDto(userManageEntity);
     }
 
@@ -119,9 +132,10 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
     public UserManageDto resetPwd(UserManageDto userManageDto) {
         UserManageEntity userManageEntity = userManageMapstruct.toEntity(userManageDto);
         String password = userManageEntity.getPassword();
-        password = MD5Util.MD5Encode(password);
+        password = MD5Util.MD5Encode(password).toUpperCase();
         userManageEntity.setPassword(password);
-        userManageEntity = this.saveNotNull(userManageEntity);
+        //userManageEntity = this.saveNotNull(userManageEntity);
+        userManageMapper.updateUser(userManageEntity);
         return userManageMapstruct.toDto(userManageEntity);
     }
 
