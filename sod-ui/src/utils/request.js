@@ -35,6 +35,7 @@ service.interceptors.request.use(
     if (config.url.indexOf("interfaceId") > -1) {
       return config;
     }
+
     if (getToken()) {
       config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     } else {

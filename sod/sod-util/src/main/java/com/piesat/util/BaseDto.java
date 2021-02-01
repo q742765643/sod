@@ -19,6 +19,7 @@ public class BaseDto implements Serializable {
 
     private Date updateTime;
 
+    private Integer version;
 
     private String delFlag="0";
 
@@ -81,5 +82,13 @@ public class BaseDto implements Serializable {
 
     public void setParams(String params) {
         this.params = params;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }

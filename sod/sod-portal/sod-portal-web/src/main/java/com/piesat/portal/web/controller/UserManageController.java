@@ -68,7 +68,7 @@ public class UserManageController {
     }
 
     @PutMapping("/resetPwd")
-    @ApiOperation(value = "修改密码", notes = "修改密码")
+    @ApiOperation(value = "编辑", notes = "编辑")
     public ResultT<UserManageDto> resetPwd(@RequestBody UserManageDto userManageDto)
     {
         ResultT<UserManageDto> resultT=new ResultT<>();
@@ -77,9 +77,9 @@ public class UserManageController {
         return resultT;
     }
 
-    @PostMapping(value="/savePortalUser")
-    @ApiOperation(value="新增用户（portal）",notes="新增用户（portal）")
-    public ResultT savePortalUser(@RequestBody UserManageDto userManageDto){
+    @PostMapping(value = "/save")
+    @ApiOperation(value = "添加",notes = "添加")
+    public ResultT save(@RequestBody UserManageDto userManageDto) {
         try {
             UserManageDto save = this.userManageService.saveDto(userManageDto);
             return ResultT.success(save);

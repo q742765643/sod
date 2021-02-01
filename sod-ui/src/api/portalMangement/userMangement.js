@@ -44,4 +44,12 @@ export function resetPwd(data) {
     data: data
   })
 }
+// 修改审核状态
+export function save(data) {
+  return request({
+    url: baseUrl + '/portal/userManage/save',
+    method: 'post',
+    data: data
+  })
+}
 
