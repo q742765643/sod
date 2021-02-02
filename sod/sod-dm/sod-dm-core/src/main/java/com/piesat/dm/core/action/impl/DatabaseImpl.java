@@ -1,20 +1,18 @@
 package com.piesat.dm.core.action.impl;
 
-import com.datastax.driver.core.ColumnDefinitions;
-import com.datastax.driver.core.Row;
 import com.piesat.common.utils.OwnException;
 import com.piesat.dm.common.constants.ConstantsMsg;
-import com.piesat.dm.core.action.BaseAction;
 import com.piesat.dm.core.action.impl.abs.BaseAbs;
 import com.piesat.dm.core.datasource.CommDataSource;
-import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.util.ResultT;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author cwh

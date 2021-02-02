@@ -12,7 +12,6 @@ import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.constants.Constants;
-import com.piesat.dm.core.factory.AuzDatabase;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.model.UserInfo;
 import com.piesat.dm.core.parser.DatabaseInfo;
@@ -255,7 +254,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return Arrays.stream(ids).anyMatch(e -> {
             DatabaseDto database = this.databaseService.getDotById(e);
             ConnectVo coreInfo = database.getCoreInfo();
-            ExcAbs exc = new Build().init(coreInfo, r).getExc();
+            ExcAbs exc = new Build()
+                    .init(coreInfo, r)
+                    .getExc();
             if (!r.isSuccess()) {
                 return false;
             }

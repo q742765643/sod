@@ -5,10 +5,8 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.piesat.dm.common.constants.ConstantsMsg;
-import com.piesat.dm.core.action.BaseAction;
 import com.piesat.dm.core.action.impl.abs.BaseAbs;
 import com.piesat.dm.core.datasource.CassandraSource;
-import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.util.ResultT;
 

@@ -4,9 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.dm.core.action.build.DataBuild;
 import com.piesat.dm.core.datasource.CommDataSource;
-import com.piesat.dm.core.enums.DatabaseTypesEnum;
-import com.piesat.dm.core.factory.AuzDatabase;
-import com.piesat.dm.core.factory.AuzFactory;
 import com.piesat.dm.core.model.*;
 import com.piesat.util.ResultT;
 
@@ -112,7 +109,7 @@ public class Main {
 //            Session radb = CassandraSource.getConnection("RADB", c);
             Connection stdb = CommDataSource.getConnection(c);
 
-            AuzDatabase a = new AuzDatabase(DatabaseTypesEnum.GBASE, stdb);
+//            AuzDatabase a = new AuzDatabase(DatabaseTypesEnum.GBASE, stdb);
 
             SelectVo s = new SelectVo();
             s.setSchema("usr_sod");

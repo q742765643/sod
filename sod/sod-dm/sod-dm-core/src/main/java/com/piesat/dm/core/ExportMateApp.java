@@ -1,12 +1,14 @@
 package com.piesat.dm.core;
 
-import com.alibaba.fastjson.JSON;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.core.action.exc.Exc;
+import com.piesat.dm.core.action.exc.impl.ExcImpl;
+import com.piesat.dm.core.action.impl.DatabaseImpl;
+import com.piesat.dm.core.action.impl.abs.BaseAbs;
 import com.piesat.dm.core.datasource.CommDataSource;
-import com.piesat.dm.core.enums.DatabaseTypesEnum;
-import com.piesat.dm.core.factory.AuzDatabase;
 import com.piesat.dm.core.model.ConnectVo;
+import com.piesat.dm.core.template.SqlTemplateXuGu;
 import com.piesat.util.ResultT;
 import org.apache.commons.collections.MapUtils;
 
@@ -79,7 +81,7 @@ public class ExportMateApp {
     private static String input = "D:\\file\\input.txt";
 
     public static void main(String[] args) throws SQLException, IOException {
-
+        ResultT r = new ResultT();
         arr = toArrayByFileReader();
         ConnectVo c = new ConnectVo();
         c.setUrl("jdbc:xugu://10.20.64.168:5138/BABJ_SMDB?ips=10.20.64.167,10.20.64.169&recv_mode=0");
@@ -88,9 +90,7 @@ public class ExportMateApp {
         c.setUserName("usr_sod");
         c.setPassWord("Pnmic_qwe123");
 
-        Connection smdb = CommDataSource.getConnection(c);
-        AuzDatabase a = new AuzDatabase(DatabaseTypesEnum.XUGU, smdb);
-        ResultT r = new ResultT();
+        BaseAbs a = new DatabaseImpl().init(c, r);
         List<String> sqlList = new ArrayList<>();
         for (int i = 0; i < arr.length; i++) {
             if (StringUtils.isEmpty(arr[i])) {
