@@ -125,43 +125,41 @@ public class DatabaseImpl extends BaseAbs {
 
     @Override
     public Map<String, Object> exeQueryOne(String sql, ResultT r) {
-
-            Statement s = null;
-            ResultSet rs = null;
-            try {
-                s = con.createStatement();
-                rs = s.executeQuery(sql);
-                List<String> names = new ArrayList<>();
-                ResultSetMetaData m = rs.getMetaData();
-                for (int i = 1; i <= m.getColumnCount(); i++) {
-                    String columnName = m.getColumnName(i);
-                    names.add(columnName);
-                }
-                while (rs.next()) {
-                    Map<String, Object> map = new HashMap<>();
-                    for (int i = 0; i < names.size(); i++) {
-                        String e = names.get(i);
-                        try {
-                            map.put(e, rs.getObject(e));
-                        } catch (SQLException exc) {
-                            log.error(OwnException.get(exc));
-                        }
-                    }
-                    return map;
-                }
-                rs.close();
-                s.close();
-            } catch (SQLException e) {
-                log.error(OwnException.get(e));
-                r.setErrorMessage("查询数据出错！");
-            } finally {
-                try {
-                    closeCon(s, rs);
-                } catch (SQLException exc) {
-                    log.error(OwnException.get(exc));
-                }
+        Statement s = null;
+        ResultSet rs = null;
+        try {
+            s = con.createStatement();
+            rs = s.executeQuery(sql);
+            List<String> names = new ArrayList<>();
+            ResultSetMetaData m = rs.getMetaData();
+            for (int i = 1; i <= m.getColumnCount(); i++) {
+                String columnName = m.getColumnName(i);
+                names.add(columnName);
             }
-
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < names.size(); i++) {
+                    String e = names.get(i);
+                    try {
+                        map.put(e, rs.getObject(e));
+                    } catch (SQLException exc) {
+                        log.error(OwnException.get(exc));
+                    }
+                }
+                return map;
+            }
+            rs.close();
+            s.close();
+        } catch (SQLException e) {
+            log.error(OwnException.get(e));
+            r.setErrorMessage(ConstantsMsg.MSG13);
+        } finally {
+            try {
+                closeCon(s, rs);
+            } catch (SQLException exc) {
+                log.error(OwnException.get(exc));
+            }
+        }
         return null;
     }
 
