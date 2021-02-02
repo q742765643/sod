@@ -10,17 +10,19 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.Constants;
 import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.core.action.build.Build;
+import com.piesat.dm.core.action.build.DataBuild;
+import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.enums.CountEnum;
-import com.piesat.dm.core.factory.AuzDatabase;
-import com.piesat.dm.core.factory.AuzFactory;
-import com.piesat.dm.core.factory.CommData;
-import com.piesat.dm.core.model.*;
+import com.piesat.dm.core.model.AuthorityVo;
+import com.piesat.dm.core.model.ConnectVo;
+import com.piesat.dm.core.model.SelectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.*;
-import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
+import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
@@ -28,9 +30,12 @@ import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
-import com.piesat.dm.rpc.dto.datatable.*;
-import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
+import com.piesat.dm.rpc.dto.datatable.SampleData;
+import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
+import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
+import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.mapper.datatable.TableForeignKeyMapper;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
@@ -273,13 +278,16 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
             return r;
         }
         ConnectVo coreInfo = schemaDto.getConnectVo();
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        CommData actuator = (CommData) af.getActuator(false);
+
         SelectVo s = new SelectVo();
         s.setSchema(schemaDto.getSchemaName());
         s.setTableName(sampleData.getTableName());
-        actuator.sampleData(s, r);
-        actuator.close();
+
+        new DataBuild()
+                .init(coreInfo,r)
+                .sampleData(s,r)
+                .close();
+
         r.setMessage(String.valueOf(r.getProcessMsg()));
         return r;
     }
@@ -361,11 +369,13 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         ResultT r = new ResultT();
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
-        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-        actuator.exe(tableSqlDto.getCreateSql(), r);
-        actuator.close();
+
+        new Build()
+                .init(coreInfo,r)
+                .getExc()
+                .exc(tableSqlDto.getCreateSql(), r)
+                .close();
+
         return r;
     }
 
@@ -376,13 +386,12 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+        ExcAbs exc = new Build().init(coreInfo, r).getExc();
         if (!r.isSuccess()) {
             return r;
         }
-        AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-        r.setData(actuator.existTable(a, r));
-        actuator.close();
+        r.setData(exc.existTable(a, r));
+        exc.close();
         r.setMessage(String.valueOf(r.getProcessMsg()));
         return r;
     }
@@ -419,22 +428,23 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         dataTableInfoDto.setDatabasePid(schemaDto.getDatabase().getId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName());
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), resultT);
+        ExcAbs exc = new Build().init(coreInfo, resultT).getExc();
         if (!resultT.isSuccess()) {
             resultT.setMessage(ReturnCodeEnum.SUCCESS, resultT.getMsg());
             return;
         }
-        AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
+
         List<Map<String, Object>> c = null;
         List<Map<String, Object>> i = null;
         ResultT<List<Map<String, Object>>> r = new ResultT<>();
-        actuator.columnInfo(a, r);
+
+        exc.columnInfo(a, r);
         if (r.isSuccess()) {
             c = r.getData();
         }
         r = new ResultT<>();
-        actuator.indexInfo(a, r);
-        actuator.close();
+        exc.indexInfo(a, r);
+        exc.close();
         if (r.isSuccess()) {
             i = r.getData();
         }
@@ -455,13 +465,16 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         ResultT<Map<CountEnum, String>> r = new ResultT();
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        CommData actuator = (CommData) af.getActuator(false);
+
         SelectVo s = new SelectVo();
         s.setSchema(schemaDto.getSchemaName());
         s.setTableName(tableSqlDto.getTableName());
-        actuator.countData(s, true, r);
-        actuator.close();
+
+        new DataBuild()
+                .init(coreInfo,r)
+                .countData(s,true,r)
+                .close();
+
         return Integer.valueOf(r.getData().get(CountEnum.ALL_COUNT));
     }
 

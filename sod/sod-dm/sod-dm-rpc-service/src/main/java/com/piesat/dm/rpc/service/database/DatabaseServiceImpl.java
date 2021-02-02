@@ -5,8 +5,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.core.factory.Actuator;
-import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
@@ -129,9 +128,9 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
         DatabaseDto database = this.getDotById(id);
         ConnectVo coreInfo = database.getCoreInfo();
         ResultT r = new ResultT();
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        Actuator actuator = af.getActuator(false);
-        actuator.close();
+        new Build()
+                .init(coreInfo,r)
+                .close();
         if (r.isSuccess()) {
             database.setCheckConn(1);
         } else {
@@ -146,9 +145,9 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     public ResultT connStatus(DatabaseDto database) {
         ConnectVo coreInfo = database.getCoreInfo();
         ResultT r = new ResultT();
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        Actuator actuator = af.getActuator(false);
-        actuator.close();
+        new Build()
+                .init(coreInfo,r)
+                .close();
         return r;
     }
 

@@ -8,20 +8,23 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.core.action.build.Build;
+import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.constants.Constants;
-import com.piesat.dm.core.factory.Actuator;
 import com.piesat.dm.core.factory.AuzDatabase;
-import com.piesat.dm.core.factory.AuzFactory;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.model.UserInfo;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.database.*;
+import com.piesat.dm.dao.database.DatabaseAdministratorDao;
+import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.DatabaseUserDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
-import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
+import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
@@ -252,15 +255,14 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return Arrays.stream(ids).anyMatch(e -> {
             DatabaseDto database = this.databaseService.getDotById(e);
             ConnectVo coreInfo = database.getCoreInfo();
-            AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
+            ExcAbs exc = new Build().init(coreInfo, r).getExc();
             if (!r.isSuccess()) {
                 return false;
             }
-            AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
             UserInfo u = new UserInfo();
             u.setUserName(databaseUserDto.getDatabaseUpId());
-            boolean b = actuator.existUser(u, r);
-            actuator.close();
+            boolean b = exc.existUser(u, r);
+            exc.close();
             return b;
         });
     }
@@ -828,9 +830,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (connectVo == null) {
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
-            AuzDatabase factory = getFactory(databaseId, connectVo, r);
-            factory.doCreateUser(u, r);
-            factory.close();
+            new Build()
+                    .init(connectVo,r)
+                    .getExc()
+                    .doCreateUser(u,r)
+                    .close();
+
             e_databaseIds.add(databaseId);
             String log = String.format(ConstantsMsg.MSG4
                     , connectVo.getIp()
@@ -934,9 +939,11 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (connectVo == null) {
                 resultT.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
-            AuzDatabase factory = getFactory(databaseId, connectVo, resultT);
-            factory.dropUser(u, resultT);
-            factory.close();
+            new Build()
+                    .init(connectVo,resultT)
+                    .getExc()
+                    .dropUser(u,resultT)
+                    .close();
         }
     }
 
@@ -973,9 +980,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (connectVo == null) {
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
-            AuzDatabase factory = getFactory(databaseId, connectVo, r);
-            factory.alterPwd(u, r);
-            factory.close();
+            new Build()
+                    .init(connectVo,r)
+                    .getExc()
+                    .alterPwd(u,r)
+                    .close();
+
             String log = String.format(ConstantsMsg.MSG6
                     , connectVo.getIp()
                     , u.getUserName()
@@ -1038,9 +1048,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (connectVo == null) {
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
-            AuzDatabase factory = getFactory(databaseId, connectVo, r);
-            factory.alterWhitelist(u, r);
-            factory.close();
+
+            new Build()
+                    .init(connectVo,r)
+                    .getExc()
+                    .alterWhitelist(u,r)
+                    .close();
+
             String log = String.format(ConstantsMsg.MSG7
                     , connectVo.getIp()
                     , u.getUserName()
@@ -1068,19 +1082,6 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
         databaseUserDto.setList(list);
         resultT.setData(databaseUserDto);
-    }
-
-    /**
-     * 获取数据库方法
-     *
-     * @param databaseId
-     * @param connectVo
-     * @param resultT
-     * @return
-     */
-    public AuzDatabase getFactory(String databaseId, ConnectVo connectVo, ResultT resultT) {
-        AuzFactory auzFactory = new AuzFactory(databaseId, connectVo, connectVo.getDatabaseType(), resultT);
-        return (AuzDatabase) auzFactory.getActuator(true);
     }
 
     /**

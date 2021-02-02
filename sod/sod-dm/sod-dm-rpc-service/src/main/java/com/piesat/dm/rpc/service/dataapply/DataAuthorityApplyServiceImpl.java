@@ -8,10 +8,9 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DbaEnum;
-import com.piesat.dm.core.factory.AuzDatabase;
-import com.piesat.dm.core.factory.AuzFactory;
 import com.piesat.dm.core.model.AuthorityVo;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
@@ -268,10 +267,13 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             ConnectVo coreInfo = schemaDto.getConnectVo();
             DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
             AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
-            AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-            AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-            actuator.grantTable(a, r);
-            actuator.close();
+
+            new Build()
+                    .init(coreInfo, r)
+                    .getExc()
+                    .grantTable(a, r)
+                    .close();
+
             mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(), dataAuthorityRecordDto.getAuthorize(), dataAuthorityRecordDto.getCause());
         }
         return r;
@@ -301,10 +303,13 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         ConnectVo coreInfo = schemaDto.getConnectVo();
         DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-        actuator.grantTable(a, r);
-        actuator.close();
+
+        new Build()
+                .init(coreInfo, r)
+                .getExc()
+                .grantTable(a, r)
+                .close();
+
         mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(), dataAuthorityRecordDto.getAuthorize(), dataAuthorityRecordDto.getCause());
         return r;
     }
@@ -333,10 +338,11 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 ConnectVo coreInfo = schemaDto.getConnectVo();
                 DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
                 AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
-                AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-                AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-                actuator.revokeTable(a, r);
-                actuator.close();
+                new Build()
+                        .init(coreInfo, r)
+                        .getExc()
+                        .revokeTable(a, r)
+                        .close();
             }
             mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordDto.getId(), dataAuthorityRecordDto.getAuthorize(), dataAuthorityRecordDto.getCause());
         }

@@ -1,9 +1,8 @@
 package com.piesat.dm.core.enums;
 
-import com.piesat.dm.core.action.BaseAction;
 import com.piesat.dm.core.action.exc.abs.ExcAbs;
-import com.piesat.dm.core.action.exc.impl.Exc;
-import com.piesat.dm.core.action.exc.impl.cus.CassandraExc;
+import com.piesat.dm.core.action.exc.impl.ExcImpl;
+import com.piesat.dm.core.action.exc.impl.cus.CassandraExcImpl;
 import com.piesat.dm.core.action.impl.CassandraDatabaseImpl;
 import com.piesat.dm.core.action.impl.DatabaseImpl;
 import com.piesat.dm.core.action.impl.abs.BaseAbs;
@@ -16,10 +15,10 @@ import com.piesat.util.ResultT;
  */
 
 public enum DatabaseTypesEnum {
-    XUGU("XUGU", new DatabaseImpl(), new Exc(), new SqlTemplateXuGu())
-    , GBASE("GBASE8A", new DatabaseImpl(), new Exc(), new SqlTemplateGbase())
-    , CASSANDRA("CASSANDRA", new CassandraDatabaseImpl(), new CassandraExc(), new SqlTemplateCassandra())
-    , POSTGRESQL("POSTGRESQL", new DatabaseImpl(), new Exc(), new SqlTemplatePostgreSql());
+    XUGU("XUGU", new DatabaseImpl(), new ExcImpl(), new SqlTemplateXuGu())
+    , GBASE("GBASE8A", new DatabaseImpl(), new ExcImpl(), new SqlTemplateGbase())
+    , CASSANDRA("CASSANDRA", new CassandraDatabaseImpl(), new CassandraExcImpl(), new SqlTemplateCassandra())
+    , POSTGRESQL("POSTGRESQL", new DatabaseImpl(), new ExcImpl(), new SqlTemplatePostgreSql());
 
     /**
      * 数据库名称
@@ -50,9 +49,13 @@ public enum DatabaseTypesEnum {
         return null;
     }
 
-    public ExcAbs init(ConnectVo c, ResultT r){
+    public ExcAbs build(ConnectVo c, ResultT r){
         BaseAbs ba = this.getBaseAbs().init(c, r);
         return this.getExcAbs().init(ba,this.getSt());
+    }
+
+    public BaseAbs getConn(ConnectVo c, ResultT r){
+        return this.getBaseAbs().init(c, r);
     }
 
     public String getName() {

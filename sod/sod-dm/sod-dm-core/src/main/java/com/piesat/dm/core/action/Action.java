@@ -18,5 +18,10 @@ public interface Action {
      * @param r
      * @return
      */
-    Action init(ConnectVo c, DatabaseTypesEnum databaseType, ResultT r);
+    Action init(ConnectVo c, ResultT r);
+
+    /**
+     * 关闭连接
+     */
+    void close();
 }

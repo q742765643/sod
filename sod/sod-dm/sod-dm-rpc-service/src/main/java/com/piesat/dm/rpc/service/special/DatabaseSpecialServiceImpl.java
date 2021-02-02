@@ -11,26 +11,25 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.common.tree.Ztree;
+import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
 import com.piesat.dm.core.enums.DbaEnum;
-import com.piesat.dm.core.factory.AuzDatabase;
-import com.piesat.dm.core.factory.AuzFactory;
 import com.piesat.dm.core.model.AuthorityVo;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.ReadAuthorityDao;
-import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.dao.special.*;
 import com.piesat.dm.entity.ReadAuthorityEntity;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
-import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
+import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.special.*;
 import com.piesat.dm.mapper.MybatisModifyMapper;
@@ -50,7 +49,6 @@ import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAccessMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAuthorityMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialReadWriteMapper;
-import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
 import com.piesat.ucenter.entity.system.UserEntity;
 import com.piesat.util.ResultT;
@@ -389,10 +387,11 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             ConnectVo coreInfo = database.getCoreInfo();
             String databaseUpId = dul.get(0).getDatabaseUpId();
             AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), null, databaseUpId, DbaEnum.ALL);
-            AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-            AuzDatabase actuator = (AuzDatabase) af.getActuator(true);
-            actuator.revokeTable(a, r);
-            actuator.close();
+            new Build()
+                    .init(coreInfo,r)
+                    .getExc()
+                    .revokeTable(a,r)
+                    .close();
         }
         return r;
     }

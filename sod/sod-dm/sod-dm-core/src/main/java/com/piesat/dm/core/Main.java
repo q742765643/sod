@@ -2,6 +2,7 @@ package com.piesat.dm.core;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.dm.core.action.build.DataBuild;
 import com.piesat.dm.core.datasource.CommDataSource;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.factory.AuzDatabase;
@@ -68,13 +69,13 @@ public class Main {
         l1.add(i);
         t.setColumnVos(l);
         t.setIndexVos(null);
-        AuzFactory.createTableSql(t,r);
+        DataBuild.createTableSql(t,r);
         System.out.println(r.getData());
 
-        AuzFactory.insertTableSql(t,r);
+        DataBuild.insertTableSql(t,r);
         System.out.println(r.getData());
 
-        AuzFactory.queryTableSql(t,r);
+        DataBuild.queryTableSql(t,r);
         System.out.println(r.getData());
             Map<String,Boolean> map = new HashMap<>();
             Map<String,Object> m = new HashMap<>();

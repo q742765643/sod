@@ -1,6 +1,8 @@
 package com.piesat.dm.core.model;
 
+import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
+import com.piesat.util.ResultT;
 import lombok.Data;
 
 /**
@@ -20,5 +22,8 @@ public class ConnectVo {
     private String passWord;
     private String url;
 
+    public ExcAbs build(ResultT r){
+       return this.databaseType.build(this,r);
+    }
 }
 

@@ -6,8 +6,8 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.core.factory.AuzDatabase;
-import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.action.build.Build;
+import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.model.AuthorityVo;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
@@ -125,16 +125,15 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         compileResult.put("shardingResult", new ArrayList<>());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        AuzDatabase actuator = (AuzDatabase) af.getActuator(false);
-        actuator.allTables(a,r);
+        ExcAbs exc = new Build().init(coreInfo, r).getExc();
+        exc.allTables(a,r);
         if (r.isSuccess()){
             List<Map<String, Object>> maps = MapUtil.transformMapList( r.getData());
             ResultT<List<Map<String, Object>>> column = new ResultT();
             ResultT<List<Map<String, Object>>> index = new ResultT();
             maps.stream().map(e->String.valueOf(e.get(table_name))).forEach(tableName->{
-                actuator.columnInfo(a,column);
-                actuator.indexInfo(a,index);
+                exc.columnInfo(a,column);
+                exc.indexInfo(a,index);
                 //物理库表字段信息
                 Map<String, Map<String, Object>> columnInfos = null;
                 if (column.isSuccess()){
@@ -149,7 +148,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                 compareDifferences(databaseId, tableName.toUpperCase(), columnInfos, indexAndShardings, compileResult);
             });
         }
-        actuator.close();
+        exc.close();
         return compileResult;
     }
 
@@ -337,14 +336,13 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
-        AuzFactory af = new AuzFactory(coreInfo.getPid(), coreInfo, coreInfo.getDatabaseType(), r);
-        AuzDatabase actuator = (AuzDatabase) af.getActuator(false);
-        actuator.allTables(a,r);
+        ExcAbs exc = new Build().init(coreInfo, r).getExc();
+        exc.allTables(a,r);
         if (r.isSuccess()){
             List<Map<String, Object>> maps = MapUtil.transformMapList(r.getData());
             ResultT<List<Map<String, Object>>> column = new ResultT();
             maps.stream().map(e->String.valueOf(e.get(table_name))).forEach(tableName->{
-                actuator.columnInfo(a,column);
+                exc.columnInfo(a,column);
                 //物理库表字段信息
                 Map<String, Map<String, Object>> columnInfos = null;
                 if (column.isSuccess()){
@@ -353,7 +351,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
                 updateEleSubInfo(databaseId, tableName.toUpperCase(), columnInfos);
             });
         }
-        actuator.close();
+        exc.close();
     }
 
     public void updateEleSubInfo(String databaseId, String tableName, Map<String, Map<String, Object>> columnInfos) {

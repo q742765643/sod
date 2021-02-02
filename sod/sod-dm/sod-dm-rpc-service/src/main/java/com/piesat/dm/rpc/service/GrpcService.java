@@ -7,19 +7,21 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
-import com.piesat.dm.core.factory.AuzFactory;
+import com.piesat.dm.core.action.build.DataBuild;
 import com.piesat.dm.core.model.ColumnVo;
 import com.piesat.dm.core.model.IndexVo;
 import com.piesat.dm.core.model.TableVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.*;
-import com.piesat.dm.dao.database.SchemaDao;
+import com.piesat.dm.dao.AdvancedConfigDao;
 import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
-import com.piesat.dm.entity.*;
+import com.piesat.dm.entity.AdvancedConfigEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
-import com.piesat.dm.entity.datatable.*;
+import com.piesat.dm.entity.datatable.CmccElementEntity;
+import com.piesat.dm.entity.datatable.DatumTableEntity;
+import com.piesat.dm.entity.datatable.TablePartEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.SchemaService;
@@ -35,7 +37,7 @@ import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
-import com.piesat.dm.rpc.mapper.*;
+import com.piesat.dm.rpc.mapper.AdvancedConfigMapper;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
 import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.mapper.datatable.ShardingMapper;
@@ -61,7 +63,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -372,11 +377,11 @@ public class GrpcService {
         }
         TableSqlDto ts = new TableSqlDto();
         ResultT r = new ResultT();
-        AuzFactory.createTableSql(t, r);
+        DataBuild.createTableSql(t, r);
         ts.setCreateSql(String.valueOf(r.getData()));
-        AuzFactory.queryTableSql(t, r);
+        DataBuild.queryTableSql(t, r);
         ts.setQuerySql(String.valueOf(r.getData()));
-        AuzFactory.insertTableSql(t, r);
+        DataBuild.insertTableSql(t, r);
         ts.setInsertSql(String.valueOf(r.getData()));
         r.setData(ts);
         return r;
