@@ -4,41 +4,73 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="数据库类型">
-            <el-input v-model.trim="msgFormDialog.DATABASE_NAME_F" disabled size="small"></el-input>
+            <el-input
+              v-model.trim="msgFormDialog.DATABASE_NAME_F"
+              disabled
+              size="small"
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12" class="btnColBox">
-          <el-radio-group v-model="radioTable" style="margin-right:4px;" @change="changeTableType">
+          <el-radio-group
+            v-model="radioTable"
+            style="margin-right: 4px"
+            @change="changeTableType"
+          >
             <el-radio label="K">键表</el-radio>
             <el-radio label="E">要素表</el-radio>
           </el-radio-group>
-          <el-button @click="createSql" size="small" type="primary" icon="el-icon-money" plain>生成SQL</el-button>
+          <el-button
+            @click="createSql"
+            size="small"
+            type="primary"
+            icon="el-icon-money"
+            plain
+            >生成SQL</el-button
+          >
           <el-button
             @click="handleSaveSql"
             size="small"
             type="primary"
             icon="el-icon-wallet"
             plain
-          >保存SQL</el-button>
+            >保存SQL</el-button
+          >
           <el-button
             size="small"
             @click="createBase"
             type="primary"
             icon="el-icon-first-aid-kit"
             plain
-          >创建物理表</el-button>
+            >创建物理表</el-button
+          >
         </el-col>
       </el-row>
 
       <el-collapse v-model.trim="activeNames" @change="handleChange">
         <el-collapse-item title="CREATE" name="1">
-          <el-input type="textarea" size="small" v-model.trim="msgFormDialog.createSql" readonly></el-input>
+          <el-input
+            type="textarea"
+            size="small"
+            v-model.trim="msgFormDialog.createSql"
+            readonly
+          ></el-input>
         </el-collapse-item>
         <el-collapse-item title="INSERT" name="2">
-          <el-input type="textarea" size="small" v-model.trim="msgFormDialog.insertSql" readonly></el-input>
+          <el-input
+            type="textarea"
+            size="small"
+            v-model.trim="msgFormDialog.insertSql"
+            readonly
+          ></el-input>
         </el-collapse-item>
         <el-collapse-item title="SELECT" name="3">
-          <el-input type="textarea" size="small" v-model.trim="msgFormDialog.selectSql" readonly></el-input>
+          <el-input
+            type="textarea"
+            size="small"
+            v-model.trim="msgFormDialog.selectSql"
+            readonly
+          ></el-input>
         </el-collapse-item>
       </el-collapse>
     </el-form>

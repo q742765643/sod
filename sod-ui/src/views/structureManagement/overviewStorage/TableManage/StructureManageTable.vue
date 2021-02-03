@@ -1,12 +1,23 @@
 <template>
   <div class="scrollMain">
-    <el-alert
+    <!-- <el-alert
       title="物理库还未创建此表"
       type="error"
       :closable="false"
       v-show="!tipsFlag"
     >
-    </el-alert>
+    </el-alert> -->
+    <div class="el-alert el-alert--error is-light" v-show="!tipsFlag">
+      <div class="el-alert__content">物理库还未创建此表</div>
+      <el-button
+        size="small"
+        @click="showSQLManage"
+        type="primary"
+        icon="el-icon-first-aid-kit"
+        plain
+        >创建物理表</el-button
+      >
+    </div>
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-container class="structureManageTable">
         <el-main id="box">
@@ -206,6 +217,21 @@
         </el-collapse>
       </div>
     </el-scrollbar>
+    <!-- SQL建表 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      title="SQL建表"
+      :visible.sync="handleSQLDialog"
+      width="80%"
+      v-dialogDrag
+      append-to-body
+    >
+      <handle-SQl2
+        @cancelHandle="handleSQLDialog = false"
+        v-if="handleSQLDialog"
+        :handleSQLObj="handleSQLObj"
+      ></handle-SQl2>
+    </el-dialog>
   </div>
 </template>
 
@@ -226,6 +252,7 @@ import TableInfoManage from "@/views/structureManagement/overviewStorage/TableMa
 import ForeignKeyManage from "@/views/structureManagement/overviewStorage/TableManage/ForeignKeyManage";
 // DDl
 import handleSQL from "@/views/structureManagement/overviewStorage/TableManage/handleSQL";
+import handleSQL2 from "@/views/structureManagement/overviewStorage/TableManage/handleSQL2";
 import { getNorm, saveNorm } from "@/api/structureManagement/overviewStorage";
 import { dataTableGet } from "@/api/structureManagement/materialManage/index";
 export default {
@@ -238,6 +265,7 @@ export default {
     "table-info": TableInfoManage,
     "foreign-key": ForeignKeyManage,
     "handle-SQl": handleSQL,
+    "handle-SQl2": handleSQL2,
   },
   props: { parentRowData: Object, tableBaseInfo: Object },
   data() {
@@ -257,21 +285,34 @@ export default {
       tabs: {
         table: { common: true, ka: false },
       },
+      handleSQLDialog: false,
+      handleSQLObj: {},
     };
   },
   methods: {
+    showSQLManage() {
+      console.log(this.commonTableObj.tableInfo);
+      if (this.commonTableObj.tableInfo.id) {
+        this.handleSQLDialog = true;
+        this.handleSQLObj = this.commonTableObj.tableInfo;
+      } else {
+        this.$message({
+          message: "请先完善表信息",
+          type: "error",
+        });
+      }
+    },
     findTips(val) {
       console.log(val);
       this.tipsFlag = val;
     },
     async getTableInfo(val) {
-      if ((this.rowData && this.rowData.ID)||(val&&val!='init')) {
-        let id='';
-        if(this.rowData && this.rowData.ID){
-         id=this.rowData.ID;
-        }else{
-          id= val;
-          
+      if ((this.rowData && this.rowData.ID) || (val && val != "init")) {
+        let id = "";
+        if (this.rowData && this.rowData.ID) {
+          id = this.rowData.ID;
+        } else {
+          id = val;
         }
         await dataTableGet({ id: id }).then((res) => {
           if (

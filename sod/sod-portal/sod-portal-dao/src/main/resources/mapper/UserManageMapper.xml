@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.portal.mapper.UserManageMapper">
+    <update id="updateUser" parameterType="userManageEntity">
+        update T_SOD_PORTAL_USER
+        <set>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="ischeck != null">
+                ischeck = #{ischeck},
+            </if>
+        </set>
+        where  id = #{id}
+    </update>
+</mapper>

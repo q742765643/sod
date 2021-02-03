@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.IdUtils;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.dao.DepartManageDao;
 import com.piesat.portal.entity.DepartManageEntity;
@@ -20,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("departManageService")
@@ -120,6 +118,10 @@ public class DepartManageServiceImpl extends BaseService<DepartManageEntity> imp
     @Override
     public DepartManageDto saveDto(DepartManageDto departManageDto) {
         DepartManageEntity departManageEntity = departManageMapstruct.toEntity(departManageDto);
+        if(StringUtils.isEmpty(departManageEntity.getId())){
+            departManageEntity.setId(IdUtils.simpleUUID());
+        }
+        departManageEntity.setUpdateTime(new Date());
         departManageEntity = this.saveNotNull(departManageEntity);
         return this.departManageMapstruct.toDto(departManageEntity);
     }
