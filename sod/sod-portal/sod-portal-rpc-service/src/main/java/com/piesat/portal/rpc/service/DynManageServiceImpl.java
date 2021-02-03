@@ -38,6 +38,9 @@ public class DynManageServiceImpl extends BaseService<DynManageEntity> implement
         if(StringUtils.isNotEmpty(dynManageDto.getTitle())){
             specificationBuilder.add("title", SpecificationOperator.Operator.likeAll.name(),dynManageDto.getTitle());
         }
+        if(StringUtils.isNotEmpty(dynManageDto.getIspublished())){
+            specificationBuilder.add("ispublished", SpecificationOperator.Operator.eq.name(),dynManageDto.getIspublished());
+        }
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<DynManageEntity> DynManageEntities = (List<DynManageEntity>) pageBean.getPageData();
         List<DynManageDto> dynManageDtos = dynManageMapstruct.toDto(DynManageEntities);

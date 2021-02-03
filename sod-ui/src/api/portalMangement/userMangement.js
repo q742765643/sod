@@ -45,3 +45,11 @@ export function resetPwd(data) {
   })
 }
 
+// 获取部署级别
+export function getSysLevel() {
+  return request({
+    url: baseUrl + '/portal/userManage/getSysLevel',
+    method: 'get',
+  })
+}
+

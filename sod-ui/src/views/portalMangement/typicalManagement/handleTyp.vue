@@ -1,6 +1,11 @@
 <template>
   <section class="dataDialog">
-    <el-form :model="msgFormDialog" :rules="baseFormRules" ref="fromRef" label-width="120px">
+    <el-form
+      :model="msgFormDialog"
+      :rules="baseFormRules"
+      ref="fromRef"
+      label-width="120px"
+    >
       <el-form-item prop="classCode" label="应用类型:">
         <el-select v-model="msgFormDialog.classCode">
           <el-option label="国家级" value="C"></el-option>
@@ -18,7 +23,11 @@
         <el-input clearable size="small" v-model="msgFormDialog.url" />
       </el-form-item>
       <el-form-item prop="serialNumber" label="排序:">
-        <el-input-number clearable size="small" v-model="msgFormDialog.serialNumber" />
+        <el-input-number
+          clearable
+          size="small"
+          v-model="msgFormDialog.serialNumber"
+        />
       </el-form-item>
       <el-form-item prop="isshow" label="是否显示:">
         <el-select v-model="msgFormDialog.isshow">
@@ -38,7 +47,7 @@
 import {
   getById,
   editById,
-  typicalAppSave,
+  // typicalAppSave,
 } from "@/api/portalMangement/typicalManagement";
 export default {
   name: "dataDialog",
@@ -71,9 +80,7 @@ export default {
         orgName: [
           { required: true, message: "请输入机构名称 ", trigger: "blur" },
         ],
-        url: [
-          { required: true, message: "请输入应用连接 ", trigger: "blur" },
-        ],
+        url: [{ required: true, message: "请输入应用连接 ", trigger: "blur" }],
         serialNumber: [
           { required: true, message: "请输入排序编号 ", trigger: "blur" },
         ],

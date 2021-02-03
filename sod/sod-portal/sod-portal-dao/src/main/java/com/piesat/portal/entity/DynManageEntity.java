@@ -37,6 +37,7 @@ public class DynManageEntity extends BaseEntity {
 
     /**
      * 发布状态
+     * 1：已发布  0未发布
      */
     @Column(name="ISPUBLISHED")
     private String ispublished;

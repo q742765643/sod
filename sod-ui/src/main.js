@@ -36,13 +36,16 @@ import './utils/directives.js'
 // import './utils/dialog.js' //如果弹窗高度不超过可视范围，就可以完美拖拽并不会出界
 
 import AFTableColumn from 'af-table-column' //https://github.com/legendJaden/AFTableColumn 列宽自适应
-
+Vue.use(AFTableColumn)
 
 //全局引入 cron表达式
 import VueCron from 'vue-cron'
 Vue.use(VueCron); //使用方式：<vueCron></vueCron>
 
-Vue.use(AFTableColumn)
+//行内编辑
+import EleEditable from 'vue-ele-editable'
+Vue.use(EleEditable)//https://github.com/dream2023/vue-ele-editable/
+
 const uuid = require('uuid/v4')
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts

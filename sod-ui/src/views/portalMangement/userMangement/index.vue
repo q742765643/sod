@@ -15,7 +15,7 @@
           <el-option label="非国家级" value="02"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="ischeck" label="用户状态:">
+      <el-form-item prop="ischeck" label="用户状态:" v-show="sysLevel">
         <el-select v-model="queryParams.ischeck" size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
           <el-option label="未审核" value="0"></el-option>
@@ -60,7 +60,7 @@
           <span>{{ parseTime(scope.row.lastLoginTime) }}</span>
         </template>
       </el-table-column>-->
-      <el-table-column prop="ischeck" label="状态">
+      <el-table-column prop="ischeck" label="状态" v-show="sysLevel">
         <template slot-scope="scope">
           <span v-if="scope.row.ischeck=='0'">未审核</span>
           <span v-if="scope.row.ischeck=='1'">已审核</span>
@@ -80,14 +80,16 @@
             size="mini"
             type="text"
             @click="auditRow(scope.row)"
+            v-show="sysLevel"
           >审核</el-button>
           <el-button
             icon="el-icon-refresh"
             size="mini"
             type="text"
             @click="refreshPassword(scope.row)"
+            v-show="sysLevel"
           >重置密码</el-button>
-          <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)">删除</el-button>
+          <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)" v-show="sysLevel">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -119,7 +121,7 @@
 </template>
 
 <script>
-import { queryDataPage, delById, editById,resetPwd } from "@/api/portalMangement/userMangement";
+import { queryDataPage, delById, editById,resetPwd,getSysLevel } from "@/api/portalMangement/userMangement";
 import handleUser from "@/views/portalMangement/userMangement/handleUser";
 
 export default {
@@ -146,10 +148,21 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
+      //国家局false 省局true
+      sysLevel:true,
     };
   },
   /** 方法调用 */
-  created() {
+  async created() {
+    await getSysLevel().then((response) => {
+      if (response.code == 200) {
+          if(response.data && response.data=='C'){
+            this.sysLevel= false;
+          }else{
+            this.sysLevel= true;
+          }
+      }
+    });
     this.getList();
   },
   methods: {

@@ -1,5 +1,6 @@
 package com.piesat.portal.web.controller;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.rpc.api.UserManageService;
 import com.piesat.portal.rpc.dto.UserManageDto;
 import com.piesat.sso.client.annotation.Log;
@@ -10,6 +11,7 @@ import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -21,6 +23,9 @@ import org.springframework.web.bind.annotation.*;
 public class UserManageController {
     @Autowired
     private UserManageService userManageService;
+
+    @Value("${sysLevel.value:P}")
+    private String sysLevel;
 
     @GetMapping("/list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
@@ -68,12 +73,41 @@ public class UserManageController {
     }
 
     @PutMapping("/resetPwd")
-    @ApiOperation(value = "编辑", notes = "编辑")
+    @ApiOperation(value = "修改密码", notes = "修改密码")
     public ResultT<UserManageDto> resetPwd(@RequestBody UserManageDto userManageDto)
     {
         ResultT<UserManageDto> resultT=new ResultT<>();
         userManageDto = this.userManageService.resetPwd(userManageDto);
         resultT.setData(userManageDto);
         return resultT;
+    }
+
+    @PostMapping(value="/savePortalUser")
+    @ApiOperation(value="新增用户（portal）",notes="新增用户（portal）")
+    public ResultT savePortalUser(@RequestBody UserManageDto userManageDto){
+        try {
+            UserManageDto save = this.userManageService.saveDto(userManageDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "获取部署级别")
+    @GetMapping(value = "/getSysLevel")
+    public ResultT<String> getSysLevel() {
+        ResultT<String> resultT=new ResultT<>();
+        try {
+            if(StringUtils.isEmpty(this.sysLevel)){
+                this.sysLevel = "P";
+            }
+            String sysLevel = this.sysLevel;
+            resultT.setData(sysLevel);
+            return resultT;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 }
