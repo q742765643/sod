@@ -1,6 +1,5 @@
 package com.piesat.dm.core.action;
 
-import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.util.ResultT;
 
@@ -14,7 +13,6 @@ public interface Action {
     /**
      * 初始化
      * @param c
-     * @param databaseType
      * @param r
      * @return
      */
