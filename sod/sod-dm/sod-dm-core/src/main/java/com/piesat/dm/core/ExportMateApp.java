@@ -7,6 +7,7 @@ import com.piesat.dm.core.action.exc.impl.ExcImpl;
 import com.piesat.dm.core.action.impl.DatabaseImpl;
 import com.piesat.dm.core.action.impl.abs.BaseAbs;
 import com.piesat.dm.core.datasource.CommDataSource;
+import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.template.SqlTemplateXuGu;
 import com.piesat.util.ResultT;
@@ -40,7 +41,7 @@ public class ExportMateApp {
      * INSERT
      */
     private static String T_SOD_DATA_CLASS = "SELECT * FROM USR_SOD.T_SOD_DATA_CLASS WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s')";
-    private static String T_SOD_DATA_LOGIC = "SELECT * FROM USR_SOD.T_SOD_DATA_LOGIC WHERE DATA_CLASS_ID IN (SELECT B.DATA_CLASS_ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
+    private static String T_SOD_DATA_LOGIC = "SELECT B.* FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7')";
 
     private static String T_SOD_DATA_TABLE = "SELECT * FROM USR_SOD.T_SOD_DATA_TABLE WHERE CLASS_LOGIC_ID IN (SELECT B.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
     private static String T_SOD_STORAGE_CONFIGURATION = "SELECT * FROM USR_SOD.T_SOD_STORAGE_CONFIGURATION WHERE CLASS_LOGIC_ID IN (SELECT B.ID FROM USR_SOD.T_SOD_DATA_CLASS A INNER JOIN USR_SOD.T_SOD_DATA_LOGIC B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID INNER JOIN T_SOD_DATA_TABLE C ON B.ID = C.CLASS_LOGIC_ID WHERE D_DATA_ID = '%s' AND TABLE_NAME = '%s' AND DATABASE_ID NOT IN ('9ff99f38839a47d4a1f4dd1b8efed77a','16763c300b28487ab5e2fd9096eaccc7'))";
@@ -89,6 +90,8 @@ public class ExportMateApp {
         c.setClassName("com.xugu.cloudjdbc.Driver");
         c.setUserName("usr_sod");
         c.setPassWord("Pnmic_qwe123");
+        c.setDatabaseType(DatabaseTypesEnum.XUGU);
+        c.setPid("SMDB");
 
         BaseAbs a = new DatabaseImpl().init(c, r);
         List<String> sqlList = new ArrayList<>();

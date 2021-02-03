@@ -26,7 +26,7 @@ public class CassandraDatabaseImpl extends BaseAbs {
 
     @Override
     public BaseAbs init(ConnectVo c, ResultT r) {
-        lower = false;
+        this.lower = false;
         try {
             con = CassandraSource.getConnection(c);
         } catch (SQLException e) {

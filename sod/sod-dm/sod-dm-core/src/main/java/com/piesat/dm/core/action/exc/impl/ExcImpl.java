@@ -38,7 +38,7 @@ public class ExcImpl extends ExcAbs {
 
     @Override
     public Exc exc(String sql, ResultT<String> resultT) {
-        this.ba.exe(sql,resultT);
+        this.ba.exe(sql, resultT);
         return this;
     }
 

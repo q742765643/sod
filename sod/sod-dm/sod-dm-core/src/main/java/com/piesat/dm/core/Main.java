@@ -2,8 +2,10 @@ package com.piesat.dm.core;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.action.build.DataBuild;
 import com.piesat.dm.core.datasource.CommDataSource;
+import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.model.*;
 import com.piesat.util.ResultT;
 
@@ -66,27 +68,16 @@ public class Main {
         l1.add(i);
         t.setColumnVos(l);
         t.setIndexVos(null);
-        DataBuild.createTableSql(t,r);
+        DataBuild.createTableSql(t, r);
         System.out.println(r.getData());
 
-        DataBuild.insertTableSql(t,r);
+        DataBuild.insertTableSql(t, r);
         System.out.println(r.getData());
 
-        DataBuild.queryTableSql(t,r);
+        DataBuild.queryTableSql(t, r);
         System.out.println(r.getData());
-            Map<String,Boolean> map = new HashMap<>();
-            Map<String,Object> m = new HashMap<>();
-            m.put("status",true);
-            map.put("HADB",true);
-            map.put("STDB",true);
-            map.put("BFDB",false);
-        String s1 = JSON.toJSONString(map);
-        JSONObject jsonObject = JSON.parseObject("{\"STDB\":true,\"HADB\":true,\"FIDB\":true,\"RADB\":true}");
-//        System.out.println(jsonObject);
-//        System.out.println(s1);
-        if (true) {
-            return;
-        }
+
+
         ConnectVo c = new ConnectVo();
 //        c.setUrl("jdbc:xugu://10.20.63.196:5138/BABJ_STDB?ips=10.20.63.197,10.20.63.198,10.20.63.210,10.20.63.212,10.20.63.214&char_set=utf8&recv_mode=2");
 //        c.setPort(5138);
@@ -94,12 +85,19 @@ public class Main {
 //        c.setUserName("usr_manager");
 //        c.setPassWord("manager_123");
 
+        c.setUrl("jdbc:xugu://127.0.0.1:5138/BABJ_SMDB?char_set=utf8&recv_mode=2");
+        c.setPid("SMDB");
+        c.setPort(5138);
+        c.setClassName("com.xugu.cloudjdbc.Driver");
+        c.setUserName("usr_sod");
+        c.setPassWord("Pnmic_qwe123");
+        c.setDatabaseType(DatabaseTypesEnum.XUGU);
 
-        c.setUrl("jdbc:gbase://10.20.64.29:5258/usr_sod?useOldAliasMetadataBehavior=true&rewriteBatchedStatements=true&connectTimeout=0&hostList=10.20.64.29,10.20.64.30,10.20.64.31&failoverEnable=true");
-        c.setPort(5258);
-        c.setClassName("com.gbase.jdbc.Driver");
-        c.setUserName("usr_manager");
-        c.setPassWord("Manager_123");
+//        c.setUrl("jdbc:gbase://10.20.64.29:5258/usr_sod?useOldAliasMetadataBehavior=true&rewriteBatchedStatements=true&connectTimeout=0&hostList=10.20.64.29,10.20.64.30,10.20.64.31&failoverEnable=true");
+//        c.setPort(5258);
+//        c.setClassName("com.gbase.jdbc.Driver");
+//        c.setUserName("usr_manager");
+//        c.setPassWord("Manager_123");
 
         try {
 //            c.setIp("10.40.128.25");
@@ -107,18 +105,17 @@ public class Main {
 //            c.setUserName("usr_manager");
 //            c.setPassWord("Cass@admin2019");
 //            Session radb = CassandraSource.getConnection("RADB", c);
-            Connection stdb = CommDataSource.getConnection(c);
 
-//            AuzDatabase a = new AuzDatabase(DatabaseTypesEnum.GBASE, stdb);
 
             SelectVo s = new SelectVo();
             s.setSchema("usr_sod");
-            s.setTableName("SURF_WEA_CHN_MAIN_HOR_TAB");
-//            AuthorityVo av = new AuthorityVo();
-//            av.setSchema("usr_sod");
-//            av.setTableName("surf_wea_chn_mul_min_tab");
+            s.setTableName("T_SOD_SQL_TEMPLATE");
+            AuthorityVo av = new AuthorityVo();
+            av.setSchema("usr_sod");
+            av.setTableName("T_SOD_SQL_TEMPLATE");
 
-//            a.indexInfo(av, r);
+            new DataBuild().init(c, r).sampleData(s, r).close();
+
             System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             System.out.println(JSON.toJSONString(r.getData()));
 

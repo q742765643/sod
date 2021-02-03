@@ -32,8 +32,8 @@ public class DataBuild implements Action {
 
     @Override
     public DataBuild init(ConnectVo c, ResultT r) {
-        this.ba = databaseType.getConn(c, r);
         this.databaseType = c.getDatabaseType();
+        this.ba = databaseType.getConn(c, r);
         return this;
     }
 
