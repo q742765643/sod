@@ -94,6 +94,31 @@
         ref="myDialog"
       ></fileEdit>
     </el-dialog>
+
+    <!--PDF 预览-->
+    <el-dialog title="PDF 预览"
+               :visible.sync="viewVisible" width="80%" center
+               @close='closeDialog'>
+
+      <div >
+        <pdf
+          :src="src1"
+          :page="pdfPage"
+          @num-pages="pageCount = $event"
+          @page-loaded="pdfPage = $event"
+          style="display: inline-block; width: 100%"
+        ></pdf>
+      </div>
+      <div style="margin-bottom: 15px; text-align: right">
+        <el-button type="primary" size="small" @click.stop="previousPage">
+          上一页
+        </el-button>
+        <el-button type="primary" size="small" @click.stop="nextPage">
+          下一页
+        </el-button>
+        <span>当前第{{pdfPage}}页 / 共{{pageCount}}页</span>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -104,12 +129,19 @@ import {
   delFileManage,
   getById,
   getDictDataByType,
+  pdfShow,
 } from "@/api/portalMangement/fileMangement";
+import {
+  createSign
+} from '@/utils/auth'
 import fileEdit from "@/views/portalMangement/fileMangement/fileEdit";
 import { downloadTable } from "@/api/structureManagement/exportTable";
+import pdf from 'vue-pdf';
+const uuid = require('uuid/v4')
 export default {
   components: {
     fileEdit,
+    pdf,
   },
   data() {
     return {
@@ -130,6 +162,11 @@ export default {
       msgFormDialog: false,
       handleObj: {},
       fileTypeBox: [],
+      viewVisible:false,
+      src1: null,
+      pdfPage : 1,
+      pageCount: 0,
+      pdfUrl:"",
     };
   },
   /** 方法调用 */
@@ -257,7 +294,24 @@ export default {
     },
     previewDocx(row) {
       if (row.filePath) {
-        window.open(baseUrl + row.filePath);
+        // var timestamp = new Date().getTime();
+        // var nonce = uuid();
+        // const param = {
+        //   "timestamp": timestamp,
+        //   "nonce": nonce,
+        // }
+        // let sign = createSign(param)
+        // window.open(baseUrl + row.filePath+'?timestamp='+timestamp+'&nonce='+nonce+'&sign='+sign);
+        pdfShow({ id: row.id }).then((res)=>{
+          debugger
+          const binaryData = [];
+          binaryData.push(res);
+          //获取blob链接
+          this.pdfUrl = window.URL.createObjectURL(res);
+          this.src1 = window.URL.createObjectURL(res);
+            this.viewVisible = true;
+
+        });
       } else {
         this.$message({
           type: "error",
@@ -265,6 +319,30 @@ export default {
         });
       }
     },
+    //PDF预览
+    previewPDF(row){
+      this.src1 = pdf.createLoadingTask(row.filePath);
+      this.src1.then((pdf) => {
+        this.viewVisible = true;
+      });
+    },
+
+    //关闭窗口初始化PDF页码
+    closeDialog(){
+      this.pdfPage = 1;
+    },
+
+    //PDF改变页数
+    previousPage(){
+      var p = this.pdfPage
+      p = p>1?p-1:this.pageCount
+      this.pdfPage = p
+    },
+    nextPage(){
+      var p = this.pdfPage
+      p = p<this.pageCount?p+1:1
+      this.pdfPage = p
+    }
   },
 };
 </script>

@@ -31,7 +31,7 @@
     <!-- 操作按钮 -->
     <el-row :gutter="10" class="handleTableBox">
       <el-col :span="1.5">
-        <el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>
+        <!--<el-button size="small" type="primary" @click="showDialog('add')" icon="el-icon-plus">新增</el-button>-->
       </el-col>
     </el-row>
     <!-- 数据展示列表 -->

@@ -139,7 +139,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row type="flex" class="row-bg" justify="center" v-if="msgFormDialog.externalPort !='0'&&msgFormDialog.externalPort !=null">
+          <el-row type="flex" class="row-bg" justify="center" v-if="msgFormDialog.externalPort !=''&&msgFormDialog.externalPort !=null">
             <el-col :span="8" >
               <el-form-item label="客户端连接端口" prop="externalPort">
                 <el-input
@@ -149,7 +149,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row type="flex" class="row-bg" justify="center" v-if="msgFormDialog.managerPort !='0'&&msgFormDialog.managerPort !=null">
+          <el-row type="flex" class="row-bg" justify="center" v-if="msgFormDialog.managerPort !=''&&msgFormDialog.managerPort !=null">
             <el-col :span="8" >
               <el-form-item label="管理服务端口" prop="managerPort">
                 <el-input
@@ -159,7 +159,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row type="flex" class="row-bg" justify="center" v-if="msgFormDialog.restApiport !='0'&&msgFormDialog.restApiport !=null">
+          <el-row type="flex" class="row-bg" justify="center" v-if="msgFormDialog.restApiport !=''&&msgFormDialog.restApiport !=null">
             <el-col :span="8" >
               <el-form-item label="API端口" prop="restApiport">
                 <el-input

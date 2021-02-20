@@ -206,7 +206,15 @@ public class YunDatabaseApplyController {
             YunDatabaseApplyDto yunDatabaseApplyDto = yunDatabaseApplyService.addorUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
             String logId = yunDatabaseApplyDto.getId();
             String examineMaterial = yunDatabaseApplyDto.getExamineMaterial();
-            yunDatabaseApplyLogService.addLogEdit1(parameterMap,logId,examineMaterial);
+            YunDatabaseApplyLogDto yunDatabaseApplyLogDto = yunDatabaseApplyLogService.addLogEdit1(parameterMap,logId,examineMaterial);
+            String aa = yunDatabaseApplyLogDto.getViewStatus();
+            if("8".equalsIgnoreCase(aa)){
+                yunDatabaseApplyLogDto = yunDatabaseApplyLogService.addLogEdit1(parameterMap,logId,examineMaterial);
+//                yunDatabaseApplyLogDto.setId(null);
+                yunDatabaseApplyLogDto.setViewStatus("2");
+                yunDatabaseApplyLogDto.setRejectReason("同意");
+                this.yunDatabaseApplyLogService.saveLog(yunDatabaseApplyLogDto);
+            }
             return ResultT.success(yunDatabaseApplyDto);
         } catch (Exception e) {
             e.printStackTrace();
@@ -249,6 +257,12 @@ public class YunDatabaseApplyController {
                         applyMaterial.transferTo(newFile);
                     }
                 }
+//                String userId = yunDatabaseApplyDto1.getUserId();
+//                UserDto userDto = userService.selectUserByUserName(userId);
+//                String[] roleids = userDto.getRoleIds();
+//                if(Arrays.asList(roleids).contains("1")){
+//
+//                }
                 YunDatabaseApplyDto yunDatabaseApplyDto = yunDatabaseApplyService.addorUpdate(parameterMap, newFile == null ? "" : newFile.getPath());
                 String logId = yunDatabaseApplyDto.getId();
                 String examineMaterial = yunDatabaseApplyDto.getExamineMaterial();
@@ -476,11 +490,22 @@ public class YunDatabaseApplyController {
         ResultT<String> resultT = new ResultT<>();
         YunDatabaseApplyDto yunDatabaseApplyDtos = this.yunDatabaseApplyService.getDotById(yunDatabaseApplyDto.getId());
 //        System.out.println(yunDatabaseApplyDtos.getItserviceId());
-        if(yunDatabaseApplyDtos.getItserviceId() != null){
-            resultT.setCode(400);
-        }else{
-            this.yunDatabaseApplyService.deleteById(yunDatabaseApplyDto.getId());
-        }
+            String userId = yunDatabaseApplyDtos.getUserId();
+            UserDto userDto = userService.selectUserByUserName(userId);
+            String[] roleids = userDto.getRoleIds();
+            if(Arrays.asList(roleids).contains("1")){
+                String id = yunDatabaseApplyDtos.getItserviceId();
+                String type = yunDatabaseApplyDtos.getStorageLogic();
+                String url = CloudURL+ "middlewares/"+type+"/"+id;
+                doDelete(url,loginUrl,cloudName,cloudPassword);
+                this.yunDatabaseApplyService.deleteById(yunDatabaseApplyDto.getId());
+            }else {
+                if(yunDatabaseApplyDtos.getItserviceId() != null){
+                    resultT.setCode(400);
+                }else{
+                    this.yunDatabaseApplyService.deleteById(yunDatabaseApplyDto.getId());
+                }
+            }
 
         return resultT;
     }

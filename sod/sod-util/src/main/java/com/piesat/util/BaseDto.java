@@ -83,4 +83,12 @@ public class BaseDto implements Serializable {
     public void setParams(String params) {
         this.params = params;
     }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 }

@@ -577,9 +577,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             m.put("C_END", tempele.get(i).get("C_END"));
             m.put("C_OBSFREQ", tempele.get(i).get("C_OBSFREQ"));
             if (m.get("C_OBSFREQ") != null && !"".equals(m.get("C_OBSFREQ"))) {
-                dataClassCoreInfos.setCBegin(m.get("C_BEGIN").toString());
-                dataClassCoreInfos.setCEnd(m.get("C_END").toString());
-                dataClassCoreInfos.setCObsfreq(m.get("C_OBSFREQ").toString());
+                dataClassCoreInfos.setCBegin(String.valueOf(m.get("C_BEGIN")));
+                dataClassCoreInfos.setCEnd(String.valueOf(m.get("C_END")));
+                dataClassCoreInfos.setCObsfreq(String.valueOf(m.get("C_OBSFREQ")));
             }
         }
         DataClassBaseInfoDto dataClassCoreInfo = dataClassCoreInfos;

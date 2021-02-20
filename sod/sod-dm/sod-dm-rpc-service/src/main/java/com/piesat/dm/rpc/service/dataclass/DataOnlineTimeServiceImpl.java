@@ -119,10 +119,19 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
     @Override
     public DataOnlineTimeDto updateTime(String dataClassId) {
         DataOnlineTimeEntity dataOnlineTimeEntity = dataOnlineTimeDao.findByDataClassId(dataClassId);
-//        dataOnlineTimeEntity.setExamineStatus(examineStatus);
-        dataOnlineTimeEntity.setExecuteTime(new Date());
-        dataOnlineTimeEntity = this.saveNotNull(dataOnlineTimeEntity);
-        return dataOnlineTimeMapper.toDto(dataOnlineTimeEntity);
+        if(StringUtils.isNotNull(dataOnlineTimeEntity)){
+            dataOnlineTimeEntity.setExecuteTime(new Date());
+            dataOnlineTimeEntity = this.saveNotNull(dataOnlineTimeEntity);
+            return dataOnlineTimeMapper.toDto(dataOnlineTimeEntity);
+        }else{
+            DataOnlineTimeEntity dataOnlineTimeEntity1 = new DataOnlineTimeEntity();
+            dataOnlineTimeEntity1.setExecuteTime(new Date());
+            dataOnlineTimeEntity1.setDataClassId(dataClassId);
+            dataOnlineTimeEntity1 = this.saveNotNull(dataOnlineTimeEntity1);
+            return dataOnlineTimeMapper.toDto(dataOnlineTimeEntity1);
+        }
+
+
     }
     @Override
     public void executeNew(DataOnlineTimeDto dataOnlineTimeDto){
