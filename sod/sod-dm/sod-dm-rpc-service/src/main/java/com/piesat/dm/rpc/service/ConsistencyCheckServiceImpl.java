@@ -6,7 +6,6 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.model.AuthorityVo;
 import com.piesat.dm.core.model.ConnectVo;
@@ -125,7 +124,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         compileResult.put("shardingResult", new ArrayList<>());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
-        ExcAbs exc = new Build().init(coreInfo, r).getExc();
+        ExcAbs exc = coreInfo.build(r);
         exc.allTables(a,r);
         if (r.isSuccess()){
             List<Map<String, Object>> maps = MapUtil.transformMapList( r.getData());
@@ -336,7 +335,7 @@ public class ConsistencyCheckServiceImpl extends BaseService<ConsistencyCheckEnt
         SchemaDto schemaDto = schemaService.getDotById(databaseId);
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName());
-        ExcAbs exc = new Build().init(coreInfo, r).getExc();
+        ExcAbs exc = coreInfo.build(r);
         exc.allTables(a,r);
         if (r.isSuccess()){
             List<Map<String, Object>> maps = MapUtil.transformMapList(r.getData());

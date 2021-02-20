@@ -8,7 +8,6 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
-import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DbaEnum;
 import com.piesat.dm.core.model.AuthorityVo;
@@ -268,9 +267,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
             AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
 
-            new Build()
-                    .init(coreInfo, r)
-                    .getExc()
+            coreInfo.build(r)
                     .grantTable(a, r)
                     .close();
 
@@ -304,9 +301,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
 
-        new Build()
-                .init(coreInfo, r)
-                .getExc()
+        coreInfo.build(r)
                 .grantTable(a, r)
                 .close();
 
@@ -338,9 +333,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 ConnectVo coreInfo = schemaDto.getConnectVo();
                 DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
                 AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
-                new Build()
-                        .init(coreInfo, r)
-                        .getExc()
+                coreInfo.build(r)
                         .revokeTable(a, r)
                         .close();
             }

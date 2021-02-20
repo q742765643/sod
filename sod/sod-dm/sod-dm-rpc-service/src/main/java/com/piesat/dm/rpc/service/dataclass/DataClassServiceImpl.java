@@ -560,7 +560,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             return map;
         }
         String use_base_info = dataclasslist.get(0).get("USE_BASE_INFO").toString();
-        DataClassBaseInfoDto dataClassCoreInfos = new DataClassBaseInfoDto();
+        DataClassBaseInfoDto dataClassCoreInfos;
 
         if ("1".equals(use_base_info)) {
             dataClassCoreInfos = dataClassBaseInfoService.getDataClassBaseInfo(dataClassId);

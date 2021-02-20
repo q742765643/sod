@@ -11,7 +11,6 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.common.tree.Ztree;
-import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
@@ -387,9 +386,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             ConnectVo coreInfo = database.getCoreInfo();
             String databaseUpId = dul.get(0).getDatabaseUpId();
             AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), null, databaseUpId, DbaEnum.ALL);
-            new Build()
-                    .init(coreInfo,r)
-                    .getExc()
+            coreInfo.build(r)
                     .revokeTable(a,r)
                     .close();
         }
@@ -638,13 +635,6 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             List<DatabaseUserEntity> databaseUserEntityList = databaseUserDao.findByUserId(userId);
             if (databaseUserEntityList != null && databaseUserEntityList.size() > 0) {
                 DatabaseUserEntity databaseUserEntity = databaseUserEntityList.get(0);
-                //up账户IP
-                String databaseUPIp = null;
-                if (StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIp())) {
-                    databaseUPIp = databaseUserEntity.getDatabaseUpIp();
-                } else if (StringUtils.isNotBlank(databaseUserEntity.getDatabaseUpIpSegment())) {
-                    databaseUPIp = databaseUserEntity.getDatabaseUpIpSegment();
-                }
                 //获取用户可用的物理库ID
                 String[] databaseIdArray = databaseUserEntity.getDatabaseUpId().split(",");
                 //获取申请ID对应的物理库

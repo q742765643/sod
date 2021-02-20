@@ -8,7 +8,6 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
-import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.constants.Constants;
@@ -254,9 +253,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return Arrays.stream(ids).anyMatch(e -> {
             DatabaseDto database = this.databaseService.getDotById(e);
             ConnectVo coreInfo = database.getCoreInfo();
-            ExcAbs exc = new Build()
-                    .init(coreInfo, r)
-                    .getExc();
+            ExcAbs exc = coreInfo.build(r);
             if (!r.isSuccess()) {
                 return false;
             }
@@ -831,9 +828,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (connectVo == null) {
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
-            new Build()
-                    .init(connectVo,r)
-                    .getExc()
+            connectVo.build(r)
                     .doCreateUser(u,r)
                     .close();
 
@@ -940,9 +935,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (connectVo == null) {
                 resultT.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
-            new Build()
-                    .init(connectVo,resultT)
-                    .getExc()
+            connectVo.build(resultT)
                     .dropUser(u,resultT)
                     .close();
         }
@@ -981,9 +974,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             if (connectVo == null) {
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
-            new Build()
-                    .init(connectVo,r)
-                    .getExc()
+            connectVo.build(r)
                     .alterPwd(u,r)
                     .close();
 
@@ -1050,9 +1041,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
 
-            new Build()
-                    .init(connectVo,r)
-                    .getExc()
+            connectVo.build(r)
                     .alterWhitelist(u,r)
                     .close();
 

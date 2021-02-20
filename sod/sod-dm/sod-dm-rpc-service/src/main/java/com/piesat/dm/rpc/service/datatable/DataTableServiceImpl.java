@@ -10,7 +10,6 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.Constants;
 import com.piesat.dm.common.constants.ConstantsMsg;
-import com.piesat.dm.core.action.build.Build;
 import com.piesat.dm.core.action.build.DataBuild;
 import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.enums.CountEnum;
@@ -370,9 +369,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
 
-        new Build()
-                .init(coreInfo,r)
-                .getExc()
+        coreInfo.build(r)
                 .exc(tableSqlDto.getCreateSql(), r)
                 .close();
 
@@ -386,7 +383,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
-        ExcAbs exc = new Build().init(coreInfo, r).getExc();
+        ExcAbs exc = coreInfo.build(r);
         if (!r.isSuccess()) {
             return r;
         }
@@ -428,7 +425,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         dataTableInfoDto.setDatabasePid(schemaDto.getDatabase().getId());
         ConnectVo coreInfo = schemaDto.getConnectVo();
         AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName());
-        ExcAbs exc = new Build().init(coreInfo, resultT).getExc();
+        ExcAbs exc = coreInfo.build(resultT);
         if (!resultT.isSuccess()) {
             resultT.setMessage(ReturnCodeEnum.SUCCESS, resultT.getMsg());
             return;

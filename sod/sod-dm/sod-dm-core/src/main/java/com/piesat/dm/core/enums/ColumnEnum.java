@@ -2,6 +2,7 @@ package com.piesat.dm.core.enums;
 
 /**
  * 数据库字段长度
+ * @author cuiwenhui
  */
 public enum ColumnEnum {
     DATETIME("DATETIME", -1),
