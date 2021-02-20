@@ -37,7 +37,7 @@ public class Test {
         System.out.println("pp:"+pp);
 
 
-        String are1 = textEncryptor.decrypt("96VzbNLBrPV6SDylYpAJZA==");
+        String are1 = textEncryptor.decrypt("yzPRYcBqwhCLAk5Uf9d/Bg==");
         System.out.println("are1:"+are1);
 
     }
