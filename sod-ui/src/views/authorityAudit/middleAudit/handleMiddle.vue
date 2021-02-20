@@ -445,7 +445,7 @@ export default {
         // telephone: "",tatus
         storageLogic: "",
         displayname: "",
-        applicationSystem: "",
+        // applicationSystem: "",
         storageSize: "",
         databaseUse: "",
         clusterSize:"",
@@ -455,7 +455,7 @@ export default {
         mountDirectory: "",
         examiner: "",
         examineMaterial: "",
-        token:"",
+        // token:"",
         remarks:[],
 
       },

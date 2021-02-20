@@ -26,6 +26,14 @@ export function executeNew(data) {
   })
 }
 
+export function updateTime(data) {
+  return request({
+    url: baseUrl + '/dm/onlineTime/updateTime',
+    method: 'get',
+    params: data
+  })
+}
+
 export function getByClassId(query) {
   return request({
     url: baseUrl + '/dm/onlineTime/getByClassId',
