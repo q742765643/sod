@@ -829,7 +829,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
             connectVo.build(r)
-                    .doCreateUser(u,r)
+                    .doCreateUser(u, r)
                     .close();
 
             e_databaseIds.add(databaseId);
@@ -896,7 +896,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             String log = String.format(ConstantsMsg.MSG5
                     , databaseId
                     , principal.getUserName()
-                    , resultT.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, resultT.getProcessMsg()));
+                    , resultT.isSuccess()
+                            ? ConstantsMsg.SUCCESS
+                            : String.format(ConstantsMsg.FAIL, resultT.getProcessMsg()));
             da.setDatabaseId(databaseId);
             da.setDatabaseUsername(principal.getUserName());
             da.setStatus(resultT.isSuccess());
@@ -936,7 +938,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 resultT.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
             connectVo.build(resultT)
-                    .dropUser(u,resultT)
+                    .dropUser(u, resultT)
                     .close();
         }
     }
@@ -975,7 +977,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
             }
             connectVo.build(r)
-                    .alterPwd(u,r)
+                    .alterPwd(u, r)
                     .close();
 
             String log = String.format(ConstantsMsg.MSG6
@@ -1042,7 +1044,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             }
 
             connectVo.build(r)
-                    .alterWhitelist(u,r)
+                    .alterWhitelist(u, r)
                     .close();
 
             String log = String.format(ConstantsMsg.MSG7

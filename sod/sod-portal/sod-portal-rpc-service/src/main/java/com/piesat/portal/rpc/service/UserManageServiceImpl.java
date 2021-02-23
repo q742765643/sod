@@ -150,10 +150,4 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         return userManageMapstruct.toDto(userManageEntity);
     }
 
-    @Override
-    public UserManageDto saveDto(UserManageDto userManageDto) {
-        UserManageEntity userManageEntity = userManageMapstruct.toEntity(userManageDto);
-        userManageEntity = this.saveNotNull(userManageEntity);
-        return userManageMapstruct.toDto(userManageEntity);
-    }
 }
