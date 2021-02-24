@@ -76,7 +76,7 @@ spring:
     properties:
       hibernate:
         hbm2ddl:
-          #auto: validate
+#          auto: validate
           auto: update
         dialect: com.piesat.common.jpa.dialect.XuguDialect
         format_sql: true
@@ -90,9 +90,10 @@ spring:
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
-  callSettersOnNulls: true
+#  callSettersOnNulls: true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
 #分页插件
 pagehelper:
   helper-dialect: mysql
