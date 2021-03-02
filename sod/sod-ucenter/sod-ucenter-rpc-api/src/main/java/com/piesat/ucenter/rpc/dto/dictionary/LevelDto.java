@@ -20,7 +20,7 @@ public class LevelDto extends BaseDto {
     /**
      * 层次类型
      */
-    private Integer levelType;
+    private String levelType;
 
     /**
      * 层次代码
