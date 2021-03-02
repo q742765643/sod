@@ -394,21 +394,23 @@ export default {
       });
     },
 
-    async deleteCell(row){
-      await this.$confirm("确定要删除这条数据吗?", "温馨提示", {
+     deleteCell(row){
+       this.$confirm("确定要删除这条数据吗?", "温馨提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
 
-      });
-      await deleteId({id:row.id}).then((response) =>{
-        if(response.code == 200){
-          console.log("删除成功");
-          this.handleQuery()
-        }else{
-          console.log("删除失败");
-        }
-      });
+      }).then(()=>{
+         deleteId({id:row.id}).then((response) =>{
+           if(response.code == 200){
+             console.log("删除成功");
+             this.handleQuery()
+           }else{
+             console.log("删除失败");
+           }
+         });
+       }).catch(() => {});
+
     },
 
   },

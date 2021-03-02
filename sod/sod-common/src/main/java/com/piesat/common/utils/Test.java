@@ -15,7 +15,7 @@ public class Test {
         textEncryptor.setPassword("HT95279527");
         //要加密的数据（数据库的用户名或密码）
         String username = textEncryptor.encrypt("USR_SOD");
-        String password = textEncryptor.encrypt("Pnmic_qwe123");
+        String password = textEncryptor.encrypt("sod_2020");
         System.out.println("username:"+username);
         System.out.println("password:"+password);
         String s1 = textEncryptor.encrypt("Pnmic_qwe123");
@@ -28,7 +28,7 @@ public class Test {
         System.out.println("mmd:"+mmd);
         String are = textEncryptor.encrypt("music#2020");
         System.out.println("are:"+are);
-        String are1 = textEncryptor.decrypt("HbaZNoUMJp0EsMMUFpNxiTUjZZvy9NKm");
+        String are1 = textEncryptor.decrypt("c6ac59a147fa349f1032c521b7e521a3");
         System.out.println("are1:"+are1);
         String pp = textEncryptor.encrypt("Pnmicxg2019");
         System.out.println("pp:"+pp);

@@ -149,4 +149,5 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         userManageEntity = this.saveNotNull(userManageEntity);
         return userManageMapstruct.toDto(userManageEntity);
     }
+
 }

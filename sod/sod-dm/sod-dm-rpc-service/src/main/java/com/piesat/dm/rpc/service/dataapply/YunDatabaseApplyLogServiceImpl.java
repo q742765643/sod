@@ -60,8 +60,6 @@ public  class YunDatabaseApplyLogServiceImpl extends BaseService<YunDatabaseAppl
                 yunDatabaseApplyLogEntity.setUserId(userId);
 //            }
         }
-//        yunDatabaseApplyLogEntity.setLogId(logId);
-//        yunDatabaseApplyLogEntity.setExamineMaterial(examineMaterial);
         yunDatabaseApplyLogEntity = this.saveNotNull(yunDatabaseApplyLogEntity);
         return yunDatabaseApplyLogMapper.toDto(yunDatabaseApplyLogEntity);
     }
@@ -79,7 +77,7 @@ public  class YunDatabaseApplyLogServiceImpl extends BaseService<YunDatabaseAppl
         }
         yunDatabaseApplyLogEntity.setLogId(logId);
         yunDatabaseApplyLogEntity.setExamineMaterial(examineMaterial);
-        yunDatabaseApplyLogEntity = this.saveNotNull(yunDatabaseApplyLogEntity);
+        yunDatabaseApplyLogEntity = this.save(yunDatabaseApplyLogEntity);
         return yunDatabaseApplyLogMapper.toDto(yunDatabaseApplyLogEntity);
     }
     @Override

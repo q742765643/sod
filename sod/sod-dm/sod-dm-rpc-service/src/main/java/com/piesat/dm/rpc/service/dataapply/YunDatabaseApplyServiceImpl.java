@@ -89,15 +89,15 @@ public  class YunDatabaseApplyServiceImpl extends BaseService<YunDatabaseApplyEn
         //调用接口获取所有的用户信息
         List<UserEntity> userEntities = userDao.findByUserType("11");
 
-        yunDatabaseApplyDtos = yunDatabaseApplyDtos.parallelStream().map(c -> {
-            UserEntity userEntity = userEntities.stream().filter(d -> c.getUserId().equals(d.getUserName())).findFirst().orElse(null);
-            if (userEntity != null) {
-                c.setWebuserName(userEntity.getWebUsername());
-                c.setTelephone(userEntity.getTutorPhone());
-                c.setDepartment(userEntity.getDeptName());
-            }
-            return c;
-        }).collect(Collectors.toList());
+//        yunDatabaseApplyDtos = yunDatabaseApplyDtos.parallelStream().map(c -> {
+//            UserEntity userEntity = userEntities.stream().filter(d -> c.getUserId().equals(d.getUserName())).findFirst().orElse(null);
+//            if (userEntity != null) {
+//                c.setWebuserName(userEntity.getWebUsername());
+//                c.setTelephone(userEntity.getTutorPhone());
+//                c.setDepartment(userEntity.getDeptName());
+//            }
+//            return c;
+//        }).collect(Collectors.toList());
 
         pageBean.setPageData(yunDatabaseApplyDtos);
         return pageBean;

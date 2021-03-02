@@ -2,9 +2,16 @@
   <section class="timeOnlineDialog">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <el-tooltip class="item" effect="dark" content="蓝框标注：开始时间最早时间，结束时间最晚时间" placement="top-start">
-        <span>资料在线时间统计规则？</span>
+        <div style="width: 50%;height:40px;float: left;">
+        <i class="el-icon-question" style="margin-top: 10px"></i>
+        <el-tooltip style="margin-top: 10px" class="item" effect="dark" content="统计该资料全部数据库中开始时间的最小值与结束时间的最大值。" placement="top-start">
+        <span>资料在线时间统计规则</span>
         </el-tooltip>
+        </div>
+        <div style="width: 50%;height:40px;float: right;" align="right">
+          <span style="margin-top: 10px">最新执行时间：</span><span style="margin-right: 20px" v-text="immediately"></span>
+          <el-button type="primary" @click="executeNewStart">立即执行</el-button>
+        </div>
       </div>
     <el-table
       border
@@ -80,6 +87,9 @@
       <div slot="header" class="clearfix">
         <el-checkbox-button size="small" @change="changeTime2" >修改</el-checkbox-button>
         <span style="margin-left: 10px">阈值配置</span>
+        <el-tooltip  class="item" effect="dark" content="可通过阈值范围统计该资料在线时间" placement="top-start">
+          <i class="el-icon-chat-dot-round"></i>
+        </el-tooltip>
         <!--<el-button type="primary" @click="" style="width:40px;height:20px;border-radius:10px;background: #1e9fff"></el-button>-->
       </div>
       <el-row type="flex" class="row-bg" justify="left">
@@ -88,23 +98,28 @@
             <el-date-picker :disabled="exchangeFlag2" v-model.trim="msgFormDialog.boundBeginTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
           </el-form-item>
         </el-col>
-        <el-col :span="8" v-if="!endFlag2">
+        <el-col :span="8" v-if="!endFlag2" style="width: 500px">
           <el-form-item label="结束日期" prop="boundEndTime" >
-            <el-date-picker :disabled="exchangeFlag2" v-model.trim="msgFormDialog.boundEndTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
+            <el-date-picker style="width: 214px" :disabled="exchangeFlag2" v-model.trim="msgFormDialog.boundEndTime" type="date" placeholder="yy-MM-dd"></el-date-picker>
           </el-form-item>
         </el-col>
         <el-col :span="8" v-if="endFlag2" style="width: 500px">
-          <el-form-item label="结束日期（当天）" prop="sectionId" >
+          <el-form-item label="基于当天" prop="sectionId" >
             <el-input
+              :disabled="exchangeFlag2"
               size="small"
               v-model.trim="msgFormDialog.thresholdDate"
               style="width: 100px"><i slot="suffix" style="font-style:normal;margin-right: 10px;">天</i></el-input>
-            <el-button style="height:35px;margin-left: 1px;border-radius: 20px;" icon="el-icon-back" @click="cutDate2"></el-button>
-            <el-button style="height:35px;margin-left: 1px;border-radius: 20px;" icon="el-icon-right" @click="addDate2"></el-button>
+            <el-button :disabled="exchangeFlag2" style="height:35px;margin-left: 1px;border-radius: 20px;" icon="el-icon-back" @click="cutDate2"></el-button>
+            <el-button :disabled="exchangeFlag2" style="height:35px;margin-left: 1px;border-radius: 20px;" icon="el-icon-right" @click="addDate2"></el-button>
           </el-form-item>
 
         </el-col>
-        <el-button round type="primary" :disabled="exchangeFlag2" @click="changeTimeType2" style="height: 35px;margin-left: 20px" icon="el-icon-sort" circle></el-button>
+        <!--<el-col :span="2" v-if="endFlag2" style="width: 500px">-->
+        <el-tooltip  class="item" effect="dark" content="切换结束时间设置方式" placement="top-start">
+           <el-button type="primary" :disabled="exchangeFlag2" @click="changeTimeType2" style="height: 33px;margin-left: 20px" icon="el-icon-s-tools" circle></el-button>
+        </el-tooltip>
+        <!--</el-col>-->
       </el-row>
     </el-card>
     </el-form>
@@ -112,6 +127,19 @@
       <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
       <el-button @click="cancelDialog('ruleForm')">取 消</el-button>
     </div>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible1"
+      width="30%"
+      v-dialogDrag
+      append-to-body>
+      <span>是否立即执行</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible1 = false">取 消</el-button>
+    <el-button type="primary" @click="executeNewStart1">确 定</el-button>
+  </span>
+    </el-dialog>
   </section>
 </template>
 
@@ -119,7 +147,9 @@
 import { update,
          getByClassId,
          execute,
-         executeNew} from "@/api/structureManagement/timeOnline";
+         executeNew,
+         updateTime
+} from "@/api/structureManagement/timeOnline";
 import {parseTime} from "@/utils/ruoyi"
 export default {
   name: "timeOnlineDialog",
@@ -130,6 +160,8 @@ export default {
   },
   data() {
     return {
+      immediately:"",
+      dialogVisible1:false,
       a:false,
       b:false,
       handStyle:false,
@@ -184,20 +216,22 @@ export default {
     // }
     getByClassId({ data_class_id: this.handleObj.DATA_CLASS_ID }).then((res) => {
       // console.log(res.data);
+      if(res.data.dataOnlineTime!=null){
+        if(res.data.dataOnlineTime.boundEndTime == null && res.data.dataOnlineTime.boundEndTimeFlag != null){
+          this.endFlag2 = true;
+        }
+        // if(res.data.dataOnlineTime.boundEndTimeFlag == null && res.data.dataOnlineTime.boundEndTime != null){
+        //   this.endFlag2 = false;
+        // }
+        if(res.data.dataOnlineTime.executeTime!=null){
+          this.immediately = parseTime(res.data.dataOnlineTime.executeTime);
+        }
+
+      }
+
       this.distinctDataBaseInfo = res.data.distinctDataBaseInfo;
       this.dataOnlineTime =  res.data.dataOnlineTime
-      // if(this.dataOnlineTime){
-      //   this.handData.BEGIN_TIME = this.dataOnlineTime.beginTime;
-      //   if(this.dataOnlineTime.endTimeFlag != ''){
-      //   this.handData.END_TIME = new Date().getTime() + this.dataOnlineTime.endTimeFlag* 24 * 60 * 60 * 1000;
-      //   }else {
-      //     this.handData.END_TIME = this.dataOnlineTime.endTime;
-      //   }
-      //   if(this.handData.BEGIN_TIME){this.handStyle = true;}
-      //   if(this.handData.END_TIME){this.handStyle1 = true;}
-      // }
-      // this.distinctDataBaseInfo.push(this.handData)
-      console.log(this.distinctDataBaseInfo)
+
 
       for(var i=0;i<this.distinctDataBaseInfo.length;i++){
           var j = i+1;
@@ -238,12 +272,7 @@ export default {
       if(maxNum > 1){
         this.b = true;
       }
-      // this.dataOnlineTime =  res.data.dataOnlineTime
-      // if(this.dataOnlineTime != null){
-      // this.handData.BEGIN_TIME = this.dataOnlineTime.beginTime;
-      // this.handData.END_TIME = this.dataOnlineTime.endTime;
-      // }
-      // this.distinctDataBaseInfo.push(this.handData)
+
       if(this.dataOnlineTime){
         this.msgFormDialog.beginTime = this.dataOnlineTime.beginTime;
 
@@ -251,21 +280,7 @@ export default {
 
         this.msgFormDialog.boundBeginTime = this.dataOnlineTime.boundBeginTime;
         this.msgFormDialog.boundEndTime = this.dataOnlineTime.boundEndTime;
-        // debugger
-        // if(this.dataOnlineTime.endTimeFlag != '' && this.dataOnlineTime.endTimeFlag != null){
-        //   this.msgFormDialog.endTimeFlag = parseInt(this.dataOnlineTime.endTimeFlag);
-        //   // this.num1 = Math.round(((this.dataOnlineTime.endTimeFlag) - (new Date().getTime()))/86400000);
-        //   if(this.dataOnlineTime.endTimeFlag > 0){
-        //     this.msgFormDialog.handDate = '';
-        //     this.msgFormDialog.handDate = '后'+this.dataOnlineTime.endTimeFlag
-        //   }else if(this.dataOnlineTime.endTimeFlag == 0){
-        //     this.msgFormDialog.handDate = '今'
-        //   }else{
-        //     // this.num1 = -this.num1;
-        //     this.msgFormDialog.handDate = '';
-        //     this.msgFormDialog.handDate = '前'+(-this.dataOnlineTime.endTimeFlag)
-        //   }
-        // }
+
         if(this.dataOnlineTime.boundEndTimeFlag != '' && this.dataOnlineTime.boundEndTimeFlag != null){
           this.msgFormDialog.boundEndTimeFlag = parseInt(this.dataOnlineTime.boundEndTimeFlag);
           // this.num1 = Math.round(((this.dataOnlineTime.endTimeFlag) - (new Date().getTime()))/86400000);
@@ -280,27 +295,89 @@ export default {
             this.msgFormDialog.thresholdDate = '前'+(-this.dataOnlineTime.boundEndTimeFlag)
           }
         }
-        // if(this.dataOnlineTime.boundEndTimeFlag != ''&&this.dataOnlineTime.endTimeFlag != null) {
-        //   this.num2 = Math.round(((this.dataOnlineTime.boundEndTimeFlag) - (new Date().getTime())) / 86400000);
-        //   if (this.num2 > 0) {
-        //     this.msgFormDialog.thresholdDate = '';
-        //     this.msgFormDialog.thresholdDate = '后' + this.num2
-        //   } else if (this.num2 == 0) {
-        //     this.msgFormDialog.thresholdDate = '今'
-        //   } else {
-        //     // this.num2 = -this.num2;
-        //     this.msgFormDialog.thresholdDate = '';
-        //     this.msgFormDialog.thresholdDate = '前' + (-this.num2)
-        //   }
-        // }
-
       }
-
     });
+
   },
   methods: {
     // 获取详情
     initDetail() {},
+    findFirst(){
+    getByClassId({ data_class_id: this.msgFormDialog.dataClassId }).then((res) => {
+      // console.log(res.data);
+      if(res.data.dataOnlineTime!=null && res.data.dataOnlineTime.executeTime!=null){
+        this.immediately = parseTime(res.data.dataOnlineTime.executeTime);
+      }
+
+      this.distinctDataBaseInfo = res.data.distinctDataBaseInfo;
+      this.dataOnlineTime =  res.data.dataOnlineTime
+
+
+      for(var i=0;i<this.distinctDataBaseInfo.length;i++){
+        var j = i+1;
+        var a = [];
+        for(var key in this.distinctDataBaseInfo[i]){
+          a.push(key);
+        }
+        if(a.length > 4 ){
+          if(this.minTimeData == ''){
+            this.minTimeData = this.distinctDataBaseInfo[i].BEGIN_TIME
+          }
+          if(this.minTimeData > this.distinctDataBaseInfo[i].BEGIN_TIME){
+            this.minTimeData = this.distinctDataBaseInfo[i].BEGIN_TIME
+          }
+        }
+        if(a.length > 4 ){
+          if(this.maxTimeData == ''){
+            this.maxTimeData = this.distinctDataBaseInfo[i].END_TIME
+          }
+          if(this.maxTimeData < this.distinctDataBaseInfo[i].END_TIME){
+            this.maxTimeData = this.distinctDataBaseInfo[i].END_TIME
+          }
+        }
+      }
+      var minNum = 0;
+      var maxNum = 0;
+      for(var i=0;i<this.distinctDataBaseInfo.length;i++){
+        if(this.minTimeData == this.distinctDataBaseInfo[i].BEGIN_TIME){
+          minNum = minNum+1;
+        }
+        if(this.maxTimeData == this.distinctDataBaseInfo[i].END_TIME){
+          maxNum = maxNum+1;
+        }
+      }
+      if(minNum > 1){
+        this.a = true;
+      }
+      if(maxNum > 1){
+        this.b = true;
+      }
+
+      if(this.dataOnlineTime){
+        this.msgFormDialog.beginTime = this.dataOnlineTime.beginTime;
+
+        this.msgFormDialog.endTime = this.dataOnlineTime.endTime;
+
+        this.msgFormDialog.boundBeginTime = this.dataOnlineTime.boundBeginTime;
+        this.msgFormDialog.boundEndTime = this.dataOnlineTime.boundEndTime;
+
+        if(this.dataOnlineTime.boundEndTimeFlag != '' && this.dataOnlineTime.boundEndTimeFlag != null){
+          this.msgFormDialog.boundEndTimeFlag = parseInt(this.dataOnlineTime.boundEndTimeFlag);
+          // this.num1 = Math.round(((this.dataOnlineTime.endTimeFlag) - (new Date().getTime()))/86400000);
+          if(this.dataOnlineTime.boundEndTimeFlag > 0){
+            this.msgFormDialog.thresholdDate = '';
+            this.msgFormDialog.thresholdDate = '后'+this.dataOnlineTime.boundEndTimeFlag
+          }else if(this.dataOnlineTime.boundEndTimeFlag == 0){
+            this.msgFormDialog.thresholdDate = '今'
+          }else{
+            // this.num1 = -this.num1;
+            this.msgFormDialog.thresholdDate = '';
+            this.msgFormDialog.thresholdDate = '前'+(-this.dataOnlineTime.boundEndTimeFlag)
+          }
+        }
+      }
+    });
+    },
 
     changeTimeType1(){
       this.endFlag1 = !this.endFlag1;
@@ -308,13 +385,16 @@ export default {
     changeTimeType2(){
       this.endFlag2 = !this.endFlag2;
     },
-    changeTime1(){
-      this.exchangeFlag1 = !this.exchangeFlag1;
-      this.endFlag1 = false
-    },
+    // changeTime1(){
+    //   this.exchangeFlag1 = !this.exchangeFlag1;
+    //   this.endFlag1 = false
+    // },
     changeTime2(){
+      //未修改保存直接关闭
+      this.exchangeFlag1 = !this.exchangeFlag1;
+      //可修改
       this.exchangeFlag2 = !this.exchangeFlag2;
-      this.endFlag2 = false
+      // this.endFlag2 = false;
     },
     addDate1(){
       debugger
@@ -329,8 +409,6 @@ export default {
         this.msgFormDialog.handDate = '';
         this.msgFormDialog.handDate = '前'+(-this.msgFormDialog.endTimeFlag)
       }
-      // var today = new Date().getTime();
-      // this.msgFormDialog.endTimeFlag = today + this.num1* 24 * 60 * 60 * 1000;
 
     },
     addDate2(){
@@ -404,91 +482,113 @@ export default {
       }
     },
     trueDialog(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-
-          if(this.endFlag2){
-            if(this.msgFormDialog.thresholdDate == '今'){
-              this.msgFormDialog.boundEndTimeFlag = 0;
-            }
-            this.msgFormDialog.boundEndTime = ''
-          }else{
-            this.msgFormDialog.boundEndTimeFlag = null;
-          }
-
-          console.log(this.msgFormDialog);
-          update(this.msgFormDialog).then(res => {
-            if (res.code == 200) {
-              executeNew(this.msgFormDialog).then(res => {
-                // if (res.code == 200) {
-                //   this.$message({
-                //     message: "操作成功",
-                //     type: "success"
-                //   });
-                //   this.$emit("cancelHandle");
-                // } else {
-                //   this.$message({
-                //     message: res.msg,
-                //     type: "error"
-                //   });
-                // }
-              });
-              this.$message({
-                message: "操作成功",
-                type: "success"
-              });
-              this.$emit("cancelHandle");
+      if(this.exchangeFlag1){
+        this.$emit("cancelHandle");
+      }else {
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            if (this.endFlag2) {
+              if (this.msgFormDialog.thresholdDate == '今') {
+                this.msgFormDialog.boundEndTimeFlag = 0;
+              }
+              this.msgFormDialog.boundEndTime = null
             } else {
-              this.$message({
-                message: res.msg,
-                type: "error"
-              });
+              this.msgFormDialog.boundEndTimeFlag = null;
             }
-          });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
+            update(this.msgFormDialog).then(res => {
+              if (res.code == 200) {
+                this.$message({
+                      message: "操作成功",
+                      type: "success"
+                    });
+                this.exchangeFlag2 = !this.exchangeFlag2;
+                this.exchangeFlag1 = !this.exchangeFlag1;
+                this.dialogVisible1 = true;
+              } else {
+                this.$message({
+                  message: res.msg,
+                  type: "error"
+                });
+              }
+            });
+          } else {
+            console.log("error submit!!");
+            return false;
+          }
+        });
+      }
     },
     cancelDialog(formName) {
       this.$emit("cancelHandle");
     },
-    handleExecute() {
-      if(this.endFlag2){
-        if(this.msgFormDialog.thresholdDate == '今'){
+
+    executeNewStart() {
+      if (this.endFlag2) {
+        if (this.msgFormDialog.thresholdDate == '今') {
           this.msgFormDialog.boundEndTimeFlag = 0;
         }
-        this.msgFormDialog.boundEndTime = ''
-      }else{
-        this.msgFormDialog.boundEndTimeFlag = ''
+        this.msgFormDialog.boundEndTime = null
+      } else {
+        this.msgFormDialog.boundEndTimeFlag = null;
       }
-      executeNew(this.msgFormDialog).then(res => {
-        if (res.code == 200) {
-          this.$message({
-            message: "操作成功",
-            type: "success"
-          });
-          this.$emit("cancelHandle");
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error"
+      const loading = this.$loading({
+        lock: true,
+        text: "请稍候",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+      executeNew(this.msgFormDialog).then((res)=>{
+        if(res.code == 200){
+          updateTime({dataClassId:this.msgFormDialog.dataClassId}).then((res)=>{
+            if(res.code == 200){
+              getByClassId({ data_class_id: this.msgFormDialog.dataClassId }).then((res) => {
+                if(res.data.dataOnlineTime.executeTime!=null){
+                  this.immediately = parseTime(res.data.dataOnlineTime.executeTime);
+                }
+                this.findFirst();
+                loading.close();
+              });
+            }
           });
         }
+
       });
-      // const id = "e10a1bbed9caea3540b4c3d2d7bf1331";
-      // this.$confirm(
-      //   '是否立即执行?',
-      //   "警告",
-      //   {
-      //     confirmButtonText: "确定",
-      //     cancelButtonText: "取消",
-      //     type: "warning"
-      //   }
-      // ).then(function() {
-      //   execute(id)
-      // })
+
+
+    },
+    executeNewStart1() {
+      this.dialogVisible1 = false
+      if (this.endFlag2) {
+        if (this.msgFormDialog.thresholdDate == '今') {
+          this.msgFormDialog.boundEndTimeFlag = 0;
+        }
+        this.msgFormDialog.boundEndTime = null
+      } else {
+        this.msgFormDialog.boundEndTimeFlag = null;
+      }
+      const loading = this.$loading({
+        lock: true,
+        text: "请稍候",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+      executeNew(this.msgFormDialog).then((res)=>{
+        if(res.code == 200){
+          updateTime({dataClassId:this.msgFormDialog.dataClassId}).then((res)=>{
+            if(res.code == 200){
+              getByClassId({ data_class_id: this.msgFormDialog.dataClassId }).then((res) => {
+                if(res.data.dataOnlineTime.executeTime!=null){
+                  this.immediately = parseTime(res.data.dataOnlineTime.executeTime);
+                }
+                this.findFirst();
+                loading.close();
+              });
+            }
+          });
+        }
+
+      });
+
 
     },
   }

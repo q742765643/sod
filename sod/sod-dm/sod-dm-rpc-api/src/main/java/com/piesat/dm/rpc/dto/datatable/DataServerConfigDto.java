@@ -20,7 +20,7 @@ public class DataServerConfigDto {
     private String areaId;
     private String dbEleName;
     private String eleServiceId;
-    private Integer levelType;
+    private String levelType;
     private Integer gribVersion;
     private String eleNameCn;
     private String eleHours;

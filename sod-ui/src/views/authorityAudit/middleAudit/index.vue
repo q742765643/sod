@@ -106,9 +106,9 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="examineTime" label="审核时间" width="160px">
+      <el-table-column prop="updateTime" label="更新时间" width="160px">
         <template slot-scope="scope">
-          <span v-if="scope.row.examineTime">{{ parseTime(scope.row.examineTime) }}</span>
+          <span v-if="scope.row.updateTime">{{ parseTime(scope.row.updateTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="310">
@@ -225,7 +225,7 @@
           <table style="border-color: black;font-size: 20px;"
                  border="2px">
             <tr v-if="linkInfo.url != null">
-              <td style="padding: 3px">url：</td>
+              <td style="padding: 3px;">url：</td>
               <td style="padding: 3px"><span>{{linkInfo.url}}</span></td>
             </tr>
             <tr v-if="linkInfo.user != null&&linkInfo.user != ''">

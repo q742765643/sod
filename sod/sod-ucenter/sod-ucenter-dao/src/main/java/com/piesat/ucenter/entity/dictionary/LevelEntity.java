@@ -26,7 +26,7 @@ public class LevelEntity extends BaseEntity {
      * 层次类型
      */
     @Column(name="level_type")
-    private Integer levelType;
+    private String levelType;
 
     /**
      * 层次代码
