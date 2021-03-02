@@ -51,7 +51,7 @@ public class HtAuthenticationFilter extends FormAuthenticationFilter {
         if (null != tokenId && tokenId.equals("88888888")) {
             boolean isLogin = subject.isAuthenticated();
             if (!isLogin) {
-                UsernamePasswordToken token = new UsernamePasswordToken("admin", "111111");
+                UsernamePasswordToken token = new UsernamePasswordToken("admin", "qwe@S0d*147");
 //                UsernamePasswordToken token = new UsernamePasswordToken("admin", "2020Sod123");
                 token.setLoginType("0");
                 token.setRequest(ServletUtils.getRequest());

@@ -73,9 +73,7 @@ public class TableCollectHandler  implements BaseHandler {
 
     @Override
     public void execute(JobInfoEntity jobInfoEntity, ResultT<String> resultT) {
-        String newBoundEndTimeFlag = null;
-        Date newBoundEndTime = null;
-        Date newBoundBeginTime = null;
+
         getTimeRange();
         StringBuffer msg = new StringBuffer();
         List<SchemaEntity> databaseEntities = schemaDao.findAll();
@@ -128,6 +126,9 @@ public class TableCollectHandler  implements BaseHandler {
                     //List<String> arr = databaseDcl.queryTableName(schemaName);
                     Map<String, String> tableCollectInfo = new HashMap<String, String>();
                     for (int i = 0; i < dataTableList.size(); i++) {
+                        String newBoundEndTimeFlag = null;
+                        Date newBoundEndTime = null;
+                        Date newBoundBeginTime = null;
                         String begin_time = "";
                         String end_time = "";
                         String record_count = "";

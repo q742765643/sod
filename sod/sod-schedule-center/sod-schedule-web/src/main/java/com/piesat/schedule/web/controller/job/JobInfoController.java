@@ -326,5 +326,21 @@ public class JobInfoController {
         }
         return resultT;
     }
+
+
+    @GetMapping(value = "/executeTest")
+    @ApiOperation(value = "立即执行资料统计", notes = "立即执行资料统计")
+    public ResultT<String> executeTest(String time){
+        ResultT resultT=new ResultT();
+        try {
+            jobInfoService.executeTest();
+        } catch (Exception e) {
+
+            log.error(OwnException.get(e));
+            resultT.setErrorMessage("立即执行失败");
+        }
+        return resultT;
+    }
+
 }
 

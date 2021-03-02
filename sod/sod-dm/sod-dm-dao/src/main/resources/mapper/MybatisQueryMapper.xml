@@ -48,7 +48,7 @@
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = ee.id) CLEAR_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = ee.id) BACKUP_ST,
         h.STORAGE_DEFINE_IDENTIFIER,h.SYNC_IDENTIFIER,h.CLEAN_IDENTIFIER,h.MOVE_IDENTIFIER,
-        h.BACKUP_IDENTIFIER,h.ARCHIVING_IDENTIFIER,h.SYNC_ID,h.CLEAR_ID,h.MOVE_ID,h.BACKUP_ID,h.ID,a.ID
+        h.BACKUP_IDENTIFIER,h.ARCHIVING_IDENTIFIER,h.SYNC_ID,h.CLEAR_ID,h.MOVE_ID,h.BACKUP_ID,b.ID,a.ID
         LOGIC_ID,GG.DICT_LABEL
         FROM t_sod_data_class f
         INNER JOIN T_SOD_DATACLASS_TABLE a ON a.DATA_CLASS_ID = f.DATA_CLASS_ID
