@@ -1,12 +1,5 @@
 <template>
   <div class="scrollMain">
-    <!-- <el-alert
-      title="物理库还未创建此表"
-      type="error"
-      :closable="false"
-      v-show="!tipsFlag"
-    >
-    </el-alert> -->
     <div class="el-alert el-alert--error is-light" v-show="!tipsFlag">
       <div class="el-alert__content">物理库还未创建此表</div>
       <el-button
@@ -315,6 +308,7 @@ export default {
           id = val;
         }
         await dataTableGet({ id: id }).then((res) => {
+          debugger;
           if (
             this.rowData.STORAGE_TYPE == "F_table" ||
             this.rowData.STORAGE_TYPE == "G_table" ||
