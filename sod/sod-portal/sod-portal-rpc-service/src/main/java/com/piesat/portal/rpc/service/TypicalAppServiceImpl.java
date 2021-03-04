@@ -4,6 +4,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.FileUtil;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.dao.TypicalAppDao;
 import com.piesat.portal.entity.TypicalAppEntity;
@@ -13,8 +14,11 @@ import com.piesat.portal.rpc.mapstruct.TypicalAppMapstruct;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.util.Base64;
 import java.util.List;
 
 @Service("typicalAppService")
@@ -49,7 +53,8 @@ public class TypicalAppServiceImpl extends BaseService<TypicalAppEntity> impleme
         if(StringUtils.isNotEmpty(typicalAppDto.getOrgName())){
             specificationBuilder.add("orgName", SpecificationOperator.Operator.likeAll.name(),typicalAppDto.getOrgName());
         }
-        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
+        Sort sort=Sort.by(Sort.Direction.ASC,"serialNumber");
+        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(),pageForm,sort);
         List<TypicalAppEntity> typicalAppEntities = (List<TypicalAppEntity>) pageBean.getPageData();
         List<TypicalAppDto> typicalAppDtos = typicalAppMapstruct.toDto(typicalAppEntities);
         pageBean.setPageData(typicalAppDtos);
@@ -65,6 +70,14 @@ public class TypicalAppServiceImpl extends BaseService<TypicalAppEntity> impleme
     @Override
     public TypicalAppDto saveDto(TypicalAppDto typicalAppDto) {
         TypicalAppEntity typicalAppEntity = typicalAppMapstruct.toEntity(typicalAppDto);
+        if(StringUtils.isNotEmpty(typicalAppEntity.getIcon())){
+            File file = new File(typicalAppEntity.getIcon());
+            if(file != null && file.exists()){
+                byte[] bytes = FileUtil.File2byte(file);
+                typicalAppEntity.setIcon(Base64.getEncoder().encodeToString(bytes));
+            }
+            file.delete();
+        }
         typicalAppEntity = this.saveNotNull(typicalAppEntity);
         return typicalAppMapstruct.toDto(typicalAppEntity);
     }
@@ -72,6 +85,14 @@ public class TypicalAppServiceImpl extends BaseService<TypicalAppEntity> impleme
     @Override
     public TypicalAppDto updateDto(TypicalAppDto typicalAppDto) {
         TypicalAppEntity typicalAppEntity = typicalAppMapstruct.toEntity(typicalAppDto);
+        if(StringUtils.isNotEmpty(typicalAppEntity.getIcon())){
+            File file = new File(typicalAppEntity.getIcon());
+            if(file != null && file.exists()){
+                byte[] bytes = FileUtil.File2byte(file);
+                typicalAppEntity.setIcon(Base64.getEncoder().encodeToString(bytes));
+            }
+            file.delete();
+        }
         typicalAppEntity = this.saveNotNull(typicalAppEntity);
         return typicalAppMapstruct.toDto(typicalAppEntity);
     }

@@ -2272,9 +2272,9 @@ public class ImportData {
             if (StringUtils.isNotEmpty(level_properity)) {
                 levelEntity.setLevelProperity(level_properity);
             }
-            if (StringUtils.isNotEmpty(level_type)) {
-                levelEntity.setLevelType(Integer.valueOf(level_type));
-            }
+//            if (StringUtils.isNotEmpty(level_type)) {
+//                levelEntity.setLevelType(Integer.valueOf(level_type));
+//            }
             if (StringUtils.isNotEmpty(scale_divisor)) {
                 levelEntity.setScaleDivisor(scale_divisor);
             }
@@ -2569,7 +2569,7 @@ public class ImportData {
             }
             d.setGridPixel(grid_pixel);
             d.setLevelList(level_list);
-            d.setLevelType(Integer.valueOf(level_type));
+//            d.setLevelType(Integer.valueOf(level_type));
             d.setLevelUnit(level_unit);
             if(StringUtils.isNotEmpty(s_number)){
                 d.setNum(Integer.valueOf(s_number));

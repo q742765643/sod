@@ -138,8 +138,8 @@ serverfile:
   cloud: /space/cmadaas/sod/src/sod/file/upload/cloud
   user: /space/cmadaas/sod/src/sod/file/upload/user
   yun: D:/yun
-  sdkfile: /CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile
-  portalfile: /CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/portalfile
+  sdkfile: /CMADAAS/EXCHANGE/SOD/SOD_FILES/sdkfile
+  portalfile: /CMADAAS/EXCHANGE/SOD/SOD_FILES/portalfile
   #  dbfile: D:/file
   #  filePath: D:/file
   #  dfcheck: D:/file
@@ -187,5 +187,5 @@ database:
   sys-users: usr_sod,usr_music,usr_manager,information_schema,sysdba,root,gbase
 
 #部署级别 , 国家级 : C , 省级 : P
-sysLevel:
-  value: C
+#sysLevel:
+#  value: C

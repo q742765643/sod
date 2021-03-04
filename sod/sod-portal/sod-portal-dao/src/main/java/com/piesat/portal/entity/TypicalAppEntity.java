@@ -24,7 +24,7 @@ public class TypicalAppEntity extends BaseEntity {
     /**
      * 图标路径
      */
-    @Column(name="ICON")
+    @Column(name="ICON", columnDefinition="TEXT",nullable=true)
     private String icon;
 
     /**
@@ -32,6 +32,13 @@ public class TypicalAppEntity extends BaseEntity {
      */
     @Column(name="APP_NAME")
     private String appName;
+
+    /**
+     * 省级
+     */
+    @Column(name="PROVINCE")
+    private String province;
+
 
     /**
      * 所属机构
@@ -56,7 +63,7 @@ public class TypicalAppEntity extends BaseEntity {
      * 序号
      */
     @Column(name="SERIAL_NUMBER")
-    private String serialNumber;
+    private Integer serialNumber;
 
     /**
      * 是否显示

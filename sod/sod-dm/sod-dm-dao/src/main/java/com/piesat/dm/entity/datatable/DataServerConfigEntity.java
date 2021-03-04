@@ -37,7 +37,7 @@ public class DataServerConfigEntity extends BaseEntity {
 
     //层次类型
     @Column(name = "level_type", length = 255)
-    private Integer levelType;
+    private String levelType;
 
     //GRIB版本
     @Column(name = "grib_version", length = 255)
