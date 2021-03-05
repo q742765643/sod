@@ -119,12 +119,14 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             columnMap.put("type", column.get("TYPE")+"" + "("+accuracy+")");
                         }
                         String constraint = "";
-                        if(Boolean.parseBoolean(column.get("IS_NULL").toString())){
+                        if(column.get("IS_NULL")==null){
+                            constraint = "不为空";
+                        }else if(Boolean.parseBoolean(column.get("IS_NULL").toString())){
                             constraint = "可为空";
                         }else{
                             constraint = "不为空";
                         }
-                        if(Boolean.parseBoolean(column.get("IS_PRIMARY_KEY").toString())){
+                        if(column.get("IS_PRIMARY_KEY")!=null && Boolean.parseBoolean(column.get("IS_PRIMARY_KEY").toString())){
                             constraint = constraint+",主键";
                         }
                         columnMap.put("constraint", constraint);
