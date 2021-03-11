@@ -13,13 +13,34 @@
           <el-option label="公有云" value="CC"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item prop="appName" label="应用名称:">
-        <el-input clearable size="small" v-model="msgFormDialog.appName" />
+      <el-form-item prop="province" label="省份:" v-if="this.msgFormDialog.classCode == 'P'">
+        <el-input clearable size="small" v-model="msgFormDialog.province" />
       </el-form-item>
-      <el-form-item prop="orgName" label="机构名称:">
+      <el-form-item prop="appName" label="应用名称:">
+        <el-input clearable size="small" v-model="msgFormDialog.appName" placeholder="多个应用名称以逗号分隔"/>
+      </el-form-item>
+      <el-form-item prop="orgName" label="机构名称:" v-if="this.msgFormDialog.classCode != 'P'">
         <el-input clearable size="small" v-model="msgFormDialog.orgName" />
       </el-form-item>
-      <el-form-item prop="url" label="应用链接:">
+      <el-form-item label="图标" prop="icon" v-if="this.msgFormDialog.classCode == 'C'">
+        <img  v-show="handleDis" style="width:20px;height:20px;" :src=baseCode+baseIcon />
+        <el-upload
+          class="avatar-uploader"
+          :action="upLoadUrl"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+          :headers="myHeaders"
+          name="fileName"
+        >
+          <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+      </el-form-item>
+      <!--<el-form-item prop="num" label="应用个数:" v-if="this.msgFormDialog.classCode == 'P'">
+        <el-input-number clearable size="small" v-model="msgFormDialog.num" />
+      </el-form-item>-->
+      <el-form-item prop="url" label="应用链接:" v-if="this.msgFormDialog.classCode == 'C'">
         <el-input clearable size="small" v-model="msgFormDialog.url" />
       </el-form-item>
       <el-form-item prop="serialNumber" label="排序:">
@@ -44,11 +65,14 @@
 </template>
 
 <script>
+var baseUrl = process.env.VUE_APP_PORTAL;
+import { getToken, createSign } from "@/utils/auth";
 import {
   getById,
   editById,
-  // typicalAppSave,
+  typicalAppSave,
 } from "@/api/portalMangement/typicalManagement";
+var token = getToken();
 export default {
   name: "dataDialog",
   components: {},
@@ -61,6 +85,10 @@ export default {
     return {
       imageUrl: "",
       handleDis: false,
+      upLoadUrl: baseUrl + "/portal/fileManage/upload",
+      myHeaders: { Authorization: token },
+      baseCode: "data:image/png;base64,",
+      baseIcon : "",
       //编辑页面列
       msgFormDialog: {
         classCode: "",
@@ -69,10 +97,16 @@ export default {
         url: "",
         isshow: "Y",
         serialNumber: "1",
+        province:"",
+        num:"0",
+        icon: "",
       },
       baseFormRules: {
         classCode: [
           { required: true, message: "请选择应用级别", trigger: "blur" },
+        ],
+        province: [
+          { required: true, message: "请输入省份 ", trigger: "blur" },
         ],
         appName: [
           { required: true, message: "请输入应用名称 ", trigger: "blur" },
@@ -80,6 +114,12 @@ export default {
         orgName: [
           { required: true, message: "请输入机构名称 ", trigger: "blur" },
         ],
+        icon: [
+          { required: true, message: "请选择图标 ", trigger: "blur" },
+        ],
+       /* num: [
+          { required: true, message: "请输入应用个数 ", trigger: "blur" },
+        ],*/
         url: [{ required: true, message: "请输入应用连接 ", trigger: "blur" }],
         serialNumber: [
           { required: true, message: "请输入排序编号 ", trigger: "blur" },
@@ -93,10 +133,22 @@ export default {
       this.handleDis = true;
       getById({ id: this.handleObj.id }).then((res) => {
         this.msgFormDialog = res.data;
+        this.baseIcon = this.msgFormDialog.icon;
       });
     }
   },
   methods: {
+    handleAvatarSuccess(response, file, fileList) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+      this.msgFormDialog.icon = response.data.filePath;
+    },
+    beforeAvatarUpload(file){
+      const isPNG = file.type === 'image/png';
+      if (!isPNG) {
+        this.$message.error('上传图片只能是 PNG 格式!');
+      }
+      return isPNG;
+    },
     trueDialog(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
