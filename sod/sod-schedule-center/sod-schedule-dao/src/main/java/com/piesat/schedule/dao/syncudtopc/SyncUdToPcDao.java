@@ -22,7 +22,7 @@ public interface SyncUdToPcDao extends BaseDao<SyncUdToPcEntity> {
      * @param id
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Modifying(clearAutomatically = true)
     @Query(value = "update SyncUdToPcEntity p set p.lastTime =?1 where p.id = ?2")
     int updateLastTime(Date lastTime, String id);

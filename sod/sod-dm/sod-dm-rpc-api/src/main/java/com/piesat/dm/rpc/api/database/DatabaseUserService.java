@@ -116,5 +116,35 @@ public interface DatabaseUserService {
 
     ResultT updateBizPwd(String bizUserId, String ids, String newPwd);
 
+    /**
+     * 新增数据库用户
+     *
+     * @param principal
+     * @param resultT
+     */
+    void addDbUser(DatabaseUserDto principal, ResultT resultT);
+
+    /**
+     * 删除数据库用户
+     * @param principal
+     * @param resultT
+     */
+    void dropDbUser(DatabaseUserDto principal, ResultT resultT);
+
+    /**
+     * 修改数据库用户密码
+     * @param principal
+     * @param resultT
+     */
+    void alterPwd(DatabaseUserDto principal, ResultT resultT);
+
+    /**
+     * 修改白名单
+     * @param principal
+     * @param resultT
+     */
+    void alterWhitelist(DatabaseUserDto principal, ResultT resultT);
+
+
     List<DatabaseUserDto> getByUserId(String userId);
 }

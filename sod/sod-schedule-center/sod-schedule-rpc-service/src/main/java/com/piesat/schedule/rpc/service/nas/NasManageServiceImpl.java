@@ -114,7 +114,7 @@ public class NasManageServiceImpl extends BaseService<NasManageEntity> implement
     * @throws
     */
     @SneakyThrows
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void add(NasManageFileDto nasManageFileDto, ResultT<String> resultT){
         MultipartFile blFile =nasManageFileDto.getBlFile();
         NasManageDto nasManageDto=new NasManageDto();
@@ -165,7 +165,7 @@ public class NasManageServiceImpl extends BaseService<NasManageEntity> implement
     * @return void
     * @throws
     */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void  audit(NasManageDto nasManageDto, ResultT<String> resultT){
         NasManageEntity nasManageEntity=nasManageMapstruct.toEntity(nasManageDto);
         if("1".equals(nasManageDto.getAuditStatus())){

@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * @author cuiwenhui
+ */
 @Repository
 public interface DatabaseUserDao extends BaseDao<DatabaseUserEntity> {
     DatabaseUserEntity findByDatabaseUpId(String databaseUPId);

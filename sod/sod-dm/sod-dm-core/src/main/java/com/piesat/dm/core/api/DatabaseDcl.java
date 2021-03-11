@@ -1,6 +1,6 @@
 package com.piesat.dm.core.api;
 
-import com.piesat.dm.core.model.Column;
+import com.piesat.dm.core.model.ColumnVo;
 import com.piesat.util.ResultT;
 
 import java.util.Date;
@@ -83,8 +83,13 @@ public interface DatabaseDcl {
 
     /**
      * 删除权限
-     *
-     * @param select 读权限
+     * @param permissions
+     * @param resource
+     * @param tableName
+     * @param identifier
+     * @param password
+     * @param ips
+     * @throws Exception
      */
     void deletePermissions(String[] permissions, String resource, String tableName, String identifier, String password, List<String> ips) throws Exception;
 
@@ -159,7 +164,7 @@ public interface DatabaseDcl {
      */
     ResultT queryAllIndexAndShardingInfo(String schema, String tableName) throws Exception;
 
-    ResultT updateColumn(String schema, String tableName, Column oldColumn, Column newColumn);
+    ResultT updateColumn(String schema, String tableName, ColumnVo oldColumn, ColumnVo newColumn);
 
     void bindIp(String identifier,String[] ips) throws Exception;
 
@@ -195,9 +200,7 @@ public interface DatabaseDcl {
 
     /**
      * 获取
-     * @param schema
-     * @param tableName
-     * @param timeColumnName
+     * @param schemaName
      * @return
      * @throws Exception
      */

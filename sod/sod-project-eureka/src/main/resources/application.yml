@@ -1,5 +1,5 @@
 server:
-  port: 28328
+  port: 58328
 
 spring:
   application:
@@ -7,7 +7,7 @@ spring:
 
 eureka:
   instance:
-    #hostname: desktop-2vav0fh
+    hostname: 10.1.7.82
     prefer-ip-address: true
     status-page-url-path: /actuator/info
     health-check-url-path: /actuator/health
@@ -17,10 +17,10 @@ eureka:
     registerWithEureka: false
     fetchRegistry: false
     serviceUrl:
-      defaultZone: http://10.40.17.44:28328/eureka/
+      defaultZone: http://localhost:58328/eureka/
   server:
     enable-self-preservation: false
-
-endpoints:
-  shutdown:
-    enabled: true
+management:
+  endpoint:
+    shutdown:
+      enabled: true

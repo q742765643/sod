@@ -7,20 +7,18 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.dao.database.DatabaseDefineDao;
+import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.entity.dataclass.LogicDatabaseEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.entity.dataclass.LogicStorageTypesEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.database.DatabaseDefineService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
-import com.piesat.schedule.entity.backup.BackupLogEntity;
-import com.piesat.schedule.rpc.dto.backup.BackupLogDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.page.PageBean;
@@ -44,9 +42,9 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
     @Autowired
     private LogicDefineMapper logicDefineMapper;
     @Autowired
-    private DatabaseDefineDao databaseDefineDao;
+    private DatabaseDao databaseDao;
     @Autowired
-    private DatabaseDefineService databaseDefineService;
+    private DatabaseService databaseService;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @GrpcHthtClient
@@ -84,14 +82,14 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
             specificationBuilder.add("logicName", SpecificationOperator.Operator.likeAll.name(),logicDefineDto.getLogicName());
         }
         List<LogicDefineEntity> logicDefineEntities = this.getAll(specificationBuilder.generateSpecification());
-        List<DatabaseDefineDto> all = this.databaseDefineService.all();
+        List<DatabaseDto> all = this.databaseService.all();
         List<LogicDefineDto> logicDefineDtos = this.logicDefineMapper.toDto(logicDefineEntities);
         for (LogicDefineDto logicDefineDto1 : logicDefineDtos) {
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto1.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (com.piesat.dm.rpc.dto.database.DatabaseDefineDto DatabaseDefineDto : all) {
-                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
+                for (DatabaseDto DatabaseDto : all) {
+                    if (DatabaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(DatabaseDto.getDatabaseName());
                     }
                 }
             }
@@ -152,7 +150,7 @@ public class LogicDefineServiceImpl extends BaseService<LogicDefineEntity> imple
         Map<String,String> dataMap=new HashMap<>();
         Map<String,String> tableMap=new HashMap<>();
 
-        List<DatabaseDefineDto> all = this.databaseDefineService.all();
+        List<DatabaseDto> all = this.databaseService.all();
         for(int i=0;i<all.size();i++){
             dataMap.put(all.get(i).getId(),all.get(i).getDatabaseName());
         }

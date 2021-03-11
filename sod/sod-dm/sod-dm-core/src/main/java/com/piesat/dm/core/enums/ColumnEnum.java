@@ -2,6 +2,7 @@ package com.piesat.dm.core.enums;
 
 /**
  * 数据库字段长度
+ * @author cuiwenhui
  */
 public enum ColumnEnum {
     DATETIME("DATETIME", -1),
@@ -21,7 +22,7 @@ public enum ColumnEnum {
     private String name;
     private int length;
 
-    private ColumnEnum(String name, int length) {
+    ColumnEnum(String name, int length) {
         this.name = name;
         this.length = length;
     }
@@ -59,7 +60,7 @@ public enum ColumnEnum {
         System.out.println(s);
         int timestamp = ColumnEnum.getLength(s);
         System.out.println(timestamp);
-String accuracy = "ss.1ss";
+        String accuracy = "ss.1ss";
         boolean contains = accuracy.contains(".");
         System.out.println(contains);
         accuracy = accuracy.split("\\.")[0];

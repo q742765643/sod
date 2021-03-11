@@ -2,26 +2,23 @@ package com.piesat.dm.web.controller.datatable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.dm.common.util.FreeMarkerUtil;
-import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
 import com.piesat.dm.rpc.api.datatable.TableExportService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.datatable.ExportTableVO;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.Data;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -40,9 +37,9 @@ public class TableExportController {
     @Autowired
     private LogicDefineService logicDefineService;
     @Autowired
-    private DatabaseDefineService databaseDefineService;
-    @Autowired
     private DatabaseService databaseService;
+    @Autowired
+    private SchemaService schemaService;
     @Autowired
     private TableExportService tableExportService;
     @Autowired
@@ -74,14 +71,14 @@ public class TableExportController {
     @GetMapping(value = "/databaseList")
     public ResultT databaseList() {
         try {
-            List<DatabaseDefineDto> databaseDefineDtoList = this.databaseDefineService.getDatabaseDefineList();
-            List<DatabaseDto> databaseDtoList = databaseService.all();
-            List<DatabaseDto> resultList = new ArrayList<>();
-            if(databaseDefineDtoList!=null&&databaseDtoList!=null){
-                for(DatabaseDefineDto databaseDefine : databaseDefineDtoList){
-                    for(DatabaseDto databaseDto : databaseDtoList){
-                        if(databaseDto.getDatabaseDefine().getId().equals(databaseDefine.getId())){
-                            resultList.add(databaseDto);
+            List<DatabaseDto> databaseDtoList = this.databaseService.getDatabaseDefineList();
+            List<SchemaDto> schemaDtoList = schemaService.all();
+            List<SchemaDto> resultList = new ArrayList<>();
+            if(databaseDtoList !=null&& schemaDtoList !=null){
+                for(DatabaseDto databaseDefine : databaseDtoList){
+                    for(SchemaDto schemaDto : schemaDtoList){
+                        if(schemaDto.getDatabase().getId().equals(databaseDefine.getId())){
+                            resultList.add(schemaDto);
                         }
                     }
                 }

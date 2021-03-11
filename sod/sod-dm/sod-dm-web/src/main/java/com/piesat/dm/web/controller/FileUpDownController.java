@@ -133,16 +133,19 @@ public class FileUpDownController {
         try {
             int count = 0;
             byte[] buffer = new byte[1024 * 1024];
-            while ((count = fis.read(buffer)) != -1)
+            while ((count = fis.read(buffer)) != -1) {
                 os.write(buffer, 0, count);
+            }
             os.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (os != null)
+            if (os != null) {
                 os.close();
-            if (fis != null)
+            }
+            if (fis != null) {
                 fis.close();
+            }
         }
     }
 

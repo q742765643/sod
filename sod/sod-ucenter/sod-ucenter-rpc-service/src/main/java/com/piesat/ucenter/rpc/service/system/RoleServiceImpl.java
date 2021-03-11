@@ -84,7 +84,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
      * @return 结果
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void insertRole(RoleDto role)
     {
         // 新增角色信息
@@ -121,7 +121,7 @@ public class RoleServiceImpl extends BaseService<RoleEntity> implements RoleServ
      * @return 结果
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void authDataScope(RoleDto role)
     {
         // 修改角色信息

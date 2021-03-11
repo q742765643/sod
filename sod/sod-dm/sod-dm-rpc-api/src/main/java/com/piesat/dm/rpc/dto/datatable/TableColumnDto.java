@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto.datatable;
 
+import com.piesat.common.utils.StringUtils;
 import lombok.Data;
 
 import java.util.Date;
@@ -125,4 +126,16 @@ public class TableColumnDto {
     private String delFlag;
 
     private Integer version;
+
+    public void setDbEleCode(String dbEleCode) {
+        this.dbEleCode = dbEleCode.trim();
+    }
+
+    public void setCElementCode(String cElementCode) {
+        this.cElementCode = cElementCode.trim();
+    }
+
+    public void setUserEleCode(String userEleCode) {
+        this.userEleCode = StringUtils.isNotEmpty(userEleCode) ? userEleCode.trim() : userEleCode;
+    }
 }

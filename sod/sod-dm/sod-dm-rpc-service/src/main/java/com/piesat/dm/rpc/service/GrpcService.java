@@ -6,36 +6,38 @@ import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.core.action.build.DataBuild;
+import com.piesat.dm.core.model.ColumnVo;
+import com.piesat.dm.core.model.IndexVo;
+import com.piesat.dm.core.model.TableVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.*;
+import com.piesat.dm.dao.AdvancedConfigDao;
 import com.piesat.dm.dao.database.DatabaseDao;
-import com.piesat.dm.dao.database.DatabaseDefineDao;
-import com.piesat.dm.dao.datatable.DataTableDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.ShardingDao;
 import com.piesat.dm.dao.datatable.TableColumnDao;
-import com.piesat.dm.entity.*;
-import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.AdvancedConfigEntity;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.entity.datatable.CmccElementEntity;
-import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.entity.datatable.DatumTableEntity;
-import com.piesat.dm.entity.datatable.ShardingEntity;
+import com.piesat.dm.entity.datatable.TablePartEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.database.DatabaseDefineService;
 import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.dataclass.LogicDefineService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
+import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicStorageTypesDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
-import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
-import com.piesat.dm.rpc.mapper.*;
+import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
+import com.piesat.dm.rpc.mapper.AdvancedConfigMapper;
 import com.piesat.dm.rpc.mapper.dataclass.LogicDefineMapper;
 import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.mapper.datatable.ShardingMapper;
@@ -47,9 +49,6 @@ import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.api.move.MoveService;
 import com.piesat.schedule.rpc.api.recover.MetaRecoverLogService;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
-import com.piesat.schedule.rpc.dto.backup.BackUpDto;
-import com.piesat.schedule.rpc.dto.clear.ClearDto;
-import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
 import com.piesat.sod.system.rpc.api.SqlTemplateService;
 import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
@@ -64,8 +63,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -75,9 +76,9 @@ import java.util.stream.Collectors;
 @Service
 public class GrpcService {
     @Autowired
-    private StorageConfigurationDao storageConfigurationDao;
+    private AdvancedConfigDao advancedConfigDao;
     @Autowired
-    private StorageConfigurationMapper storageConfigurationMapper;
+    private AdvancedConfigMapper advancedConfigMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
@@ -85,11 +86,11 @@ public class GrpcService {
     @Autowired
     private LogicDefineService logicDefineService;
     @Autowired
-    private DatabaseDefineDao databaseDefineDao;
-    @Autowired
-    private DatabaseDefineService databaseDefineService;
-    @Autowired
     private DatabaseDao databaseDao;
+    @Autowired
+    private DatabaseService databaseService;
+    @Autowired
+    private SchemaDao schemaDao;
     @Autowired
     private DataLogicService dataLogicService;
     @Autowired
@@ -97,7 +98,7 @@ public class GrpcService {
     @Autowired
     private LogicDefineMapper logicDefineMapper;
     @Autowired
-    private DataTableDao dataTableDao;
+    private DataTableService dataTableService;
     @Autowired
     private DataTableMapper dataTableMapper;
     @Autowired
@@ -113,7 +114,7 @@ public class GrpcService {
     @Autowired
     private TableColumnMapper tableColumnMapper;
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
 
     @GrpcHthtClient
     private DictDataService dictDataService;
@@ -132,48 +133,36 @@ public class GrpcService {
     @GrpcHthtClient
     private ServiceCodeService serviceCodeService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT updateColumnValue(String id, String column, String value) {
         //删除配置
         if ("3".equals(value)) {
             //获取策略配置
-            StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).get();
-            if (column.equals("storage_define_identifier")) {
-                //删除存储结构
-                dataLogicService.deleteById(storage.getClassLogicId());
-            } else if (column.equals("sync_identifier")) {
+            AdvancedConfigEntity storage = this.advancedConfigDao.findById(id).get();
+            if (column.equals("sync_identifier")) {
                 //删除同步配置
                 String task_id = storage.getSyncId();
-                if (StringUtils.isNotNullString(task_id)) {
-                    SyncTaskDto syncTaskDto = syncTaskService.getDtoById(task_id);
-                    if (syncTaskDto != null) {
-                        syncTaskService.deleteSync(task_id);
-                    }
+                if (StringUtils.isNotEmpty(task_id) && syncTaskService.getDtoById(task_id) != null) {
+                    syncTaskService.deleteSync(task_id);
                 }
             } else if (column.equals("move_identifier")) {
                 //删除迁移清楚
                 String taskId = storage.getMoveId();
-                if (StringUtils.isNotNullString(taskId)) {
+                if (StringUtils.isNotEmpty(taskId)) {
                     moveService.deleteMoveByIds(new String[]{taskId});
                 }
             } else if (column.equals("clean_identifier")) {
                 //删除迁移清楚
                 String taskId = storage.getClearId();
-                if (StringUtils.isNotNullString(taskId)) {
+                if (StringUtils.isNotEmpty(taskId)) {
                     clearService.deleteClearByIds(new String[]{taskId});
                 }
             } else if (column.equals("backup_identifier")) {
                 //删除备份
                 String taskId = storage.getBackupId();
-                if (StringUtils.isNotNullString(taskId)) {
+                if (StringUtils.isNotEmpty(taskId)) {
                     backupService.deleteBackupByIds(new String[]{taskId});
                 }
-            } else if (column.equals("archiving_identifier")) {
-                //恢复
-//                String taskId = storage.getClearId();
-//                if (StringUtils.isNotNullString(taskId)) {
-//                    metaRecoverLogService.deleteMetaRecoverLogByIds(new String[]{taskId});
-//                }
             }
         }
         //更新状态
@@ -182,42 +171,31 @@ public class GrpcService {
         return ResultT.success();
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT deleteById(String id) {
-        StorageConfigurationEntity storage = this.storageConfigurationDao.findById(id).orElse(null);
-        if (storage == null) {
-            return ResultT.failed("概览信息未配置");
-        }
-        //删除同步配置
-        if (StringUtils.isNotNullString(storage.getSyncId())) {
-            SyncTaskDto syncTaskDto = syncTaskService.getDtoById(storage.getSyncId());
-            if (syncTaskDto != null) {
-                syncTaskService.deleteSync(storage.getSyncId());
+        try {
+            List<AdvancedConfigEntity> acs = this.advancedConfigDao.findByTableId(id);
+            if (acs.size() > 0) {
+                AdvancedConfigEntity ac = acs.get(0);
+                //删除同步配置
+                if (StringUtils.isNotEmpty(ac.getSyncId()) && syncTaskService.getDtoById(ac.getSyncId()) != null) {
+                    syncTaskService.deleteSync(ac.getSyncId());
+                }
+                //删除迁移清楚
+                if (StringUtils.isNotEmpty(ac.getClearId()) && clearService.findClearById(ac.getClearId()) != null) {
+                    clearService.deleteClearByIds(new String[]{ac.getClearId()});
+                }
+                //删除备份
+                if (StringUtils.isNotEmpty(ac.getBackupId()) && backupService.findBackupById(ac.getBackupId()) != null) {
+                    backupService.deleteBackupByIds(new String[]{ac.getBackupId()});
+                }
+                //删除配置信息
+                advancedConfigDao.deleteById(id);
             }
+            this.dataTableService.deleteById(id);
+        } catch (Exception e) {
+            return ResultT.failed(e.getMessage());
         }
-        //删除存储结构
-        if (StringUtils.isNotEmpty(storage.getClassLogicId())) {
-            DataLogicDto dotById = dataLogicService.getDotById(storage.getClassLogicId());
-            if (dotById != null) {
-                dataLogicService.deleteById(storage.getClassLogicId());
-            }
-        }
-        //删除迁移清楚
-        if (StringUtils.isNotNullString(storage.getClearId())) {
-            ClearDto clearById = clearService.findClearById(storage.getClearId());
-            if (clearById != null) {
-                clearService.deleteClearByIds(new String[]{storage.getClearId()});
-            }
-        }
-        //删除备份
-        if (StringUtils.isNotNullString(storage.getBackupId())) {
-            BackUpDto backupById = backupService.findBackupById(storage.getBackupId());
-            if (backupById != null) {
-                backupService.deleteBackupByIds(new String[]{storage.getBackupId()});
-            }
-        }
-        //删除配置信息
-        storageConfigurationDao.deleteById(id);
         return ResultT.success();
     }
 
@@ -276,7 +254,7 @@ public class GrpcService {
     public List<LogicDefineDto> getAllLogicDefine() {
         List<LogicDefineDto> logicDefineDtos = this.logicDefineService.all();
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
-        List<DatabaseDefineDto> all = this.databaseDefineService.all();
+        List<DatabaseDto> all = this.databaseService.all();
         for (LogicDefineDto logicDefineDto : logicDefineDtos) {
             List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
             for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
@@ -288,9 +266,9 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseDefineDto DatabaseDefineDto : all) {
-                    if (DatabaseDefineDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(DatabaseDefineDto.getDatabaseName());
+                for (DatabaseDto DatabaseDto : all) {
+                    if (DatabaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
+                        logicDatabaseDto.setDatabaseName(DatabaseDto.getDatabaseName());
                     }
                 }
             }
@@ -313,8 +291,8 @@ public class GrpcService {
         List<LogicDefineEntity> logicDefineEntities = (List<LogicDefineEntity>) pageBean.getPageData();
         List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
         List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
-        List<DatabaseDefineDto> all = this.databaseDefineService.all();
-        List<DatabaseDto> databaseList = this.databaseService.all();
+        List<DatabaseDto> all = this.databaseService.all();
+        List<SchemaDto> databaseList = this.schemaService.all();
         for (LogicDefineDto logicDefineDto : logicDefineDtos) {
             List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
             for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
@@ -326,7 +304,7 @@ public class GrpcService {
             }
             List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
             for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseDefineDto databaseDto : all) {
+                for (DatabaseDto databaseDto : all) {
                     if (databaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
                         logicDatabaseDto.setDatabaseName(databaseDto.getDatabaseName());
                     }
@@ -336,50 +314,6 @@ public class GrpcService {
 
         pageBean.setPageData(logicDefineDtos);
         return pageBean;
-    }
-
-    public ResultT getSql(String tableId, String databaseId) {
-        List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(tableId);
-        DataTableEntity dataTableEntity = this.dataTableDao.findById(tableId).get();
-        DataTableDto dataTableDto = this.dataTableMapper.toDto(dataTableEntity);
-        List<TableColumnDto> TableColumnDtos = new ArrayList<TableColumnDto>(dataTableDto.getColumns());
-        List<TableIndexDto> TableIndexDtos = new ArrayList<TableIndexDto>(dataTableDto.getTableIndexList());
-        Optional<DatabaseEntity> databaseEntity = this.databaseDao.findById(databaseId);
-        DatabaseEntity database = databaseEntity.get();
-        String databaseType = database.getDatabaseDefine().getDatabaseType();
-        Map<String, String> map = new HashMap<>();
-        try {
-            List<SqlTemplateDto> sqlTemplateDtos = this.sqlTemplateService.checkSqlTemplate(databaseType);
-            if (sqlTemplateDtos == null || sqlTemplateDtos.size() == 0) {
-                return ResultT.failed("模板不存在！");
-            } else {
-                String createSql = "", insertSql = "", querySql = "";
-                if (this.databaseInfo.getXugu().equals(databaseType.toLowerCase())) {
-                    createSql = this.databaseSqlService.getXuGuCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
-                    insertSql = this.databaseSqlService.getXuGuInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                    querySql = this.databaseSqlService.getXuGuQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                } else if (this.databaseInfo.getGbase8a().equals(databaseType.toLowerCase())) {
-                    createSql = this.databaseSqlService.getGbaseCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
-                    insertSql = this.databaseSqlService.getGbaseInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                    querySql = this.databaseSqlService.getGbaseQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                } else if (this.databaseInfo.getCassandra().equals(databaseType.toLowerCase())) {
-                    createSql = this.databaseSqlService.getCassandraCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
-                    insertSql = this.databaseSqlService.getCassandraInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                    querySql = this.databaseSqlService.getCassandraQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                } else if (this.databaseInfo.getPostgresql().equals(databaseType.toLowerCase())) {
-                    createSql = this.databaseSqlService.getPostgreSqlCreateSql(sqlTemplateDtos.get(0), dataTableDto, TableColumnDtos, TableIndexDtos, this.shardingMapper.toDto(shardingEntities), database.getSchemaName());
-                    insertSql = this.databaseSqlService.getPostgreSqlInsertSql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                    querySql = this.databaseSqlService.getPostgreSqlQuerySql(dataTableDto, TableColumnDtos, database.getSchemaName());
-                }
-                map.put("createSql", createSql);
-                map.put("insertSql", insertSql);
-                map.put("selectSql", querySql);
-                return ResultT.success(map);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
     }
 
     public int syncServiceName(List<TableColumnDto> tableColumnDtoList) {
@@ -408,6 +342,49 @@ public class GrpcService {
         c_datum_code = c_datum_code.substring(0, 11);
         datumTableEntity.setC_datum_code(c_datum_code);
         return this.mybatisQueryMapper.queryCmccElements(datumTableEntity);
+    }
+
+    public ResultT getSql(String tableId) {
+        DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
+        SchemaDto schemaDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        if (schemaDto == null) {
+            return ResultT.failed(String.format(ConstantsMsg.MSG9, dataTableInfoDto.getTableName()));
+        }
+
+        List<ColumnVo> columnVo = dataTableInfoDto.getColumnVo();
+        List<IndexVo> indexVo = dataTableInfoDto.getIndexVo();
+
+        TableVo t = new TableVo();
+        try {
+            List<SqlTemplateDto> sqlTemplate = this.sqlTemplateService.checkSqlTemplate(schemaDto.getDatabase().getDatabaseType());
+            if (sqlTemplate != null && sqlTemplate.size() > 0) {
+                t.setTemplate(sqlTemplate.get(0).getTemplate());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        t.setSchema(schemaDto.getSchemaName());
+        t.setTableName(dataTableInfoDto.getTableName());
+        t.setTableDesc(dataTableInfoDto.getNameCn());
+        t.setColumnVos(columnVo);
+        t.setIndexVos(indexVo);
+        TablePartEntity tablePartEntity = this.shardingDao.findById(tableId).orElse(null);
+        if (tablePartEntity != null) {
+            t.setPartColumn(tablePartEntity.getPartitions());
+            t.setPartDimension(tablePartEntity.getPartDimension());
+            t.setPartUnit(tablePartEntity.getPartUnit());
+        }
+        TableSqlDto ts = new TableSqlDto();
+        ResultT r = new ResultT();
+        DataBuild.createTableSql(t, r);
+        ts.setCreateSql(String.valueOf(r.getData()));
+        DataBuild.queryTableSql(t, r);
+        ts.setQuerySql(String.valueOf(r.getData()));
+        DataBuild.insertTableSql(t, r);
+        ts.setInsertSql(String.valueOf(r.getData()));
+        r.setData(ts);
+        return r;
     }
 }
 

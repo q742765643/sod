@@ -2,13 +2,11 @@ package com.piesat.dm.rpc.service.database;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
-import com.piesat.dm.core.parser.ColumnSet;
 import com.piesat.dm.dao.database.DatabaseAdministratorDao;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import com.piesat.dm.rpc.api.database.DatabaseAdministratorService;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseAdministratorMapper;
-import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -27,10 +25,7 @@ public class DatabaseAdministratorServiceImpl extends BaseService<DatabaseAdmini
     private DatabaseAdministratorDao databaseAdministratorDao;
     @Autowired
     private DatabaseAdministratorMapper databaseAdministratorMapper;
-    @Autowired
-    private DatabaseDefineMapper databaseDefineMapper;
-    @Autowired
-    private ColumnSet columnSet;
+
 
     @Override
     public BaseDao<DatabaseAdministratorEntity> getBaseDao() {

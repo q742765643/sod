@@ -3,14 +3,12 @@ package com.piesat.dm.rpc.service.datatable;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
-import com.piesat.dm.dao.database.DatabaseDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.dataclass.LogicDefineDao;
 import com.piesat.dm.dao.datatable.*;
-import com.piesat.dm.entity.datatable.DataTableEntity;
-import com.piesat.dm.entity.datatable.ShardingEntity;
-import com.piesat.dm.entity.datatable.TableColumnEntity;
-import com.piesat.dm.entity.datatable.TableIndexEntity;
+import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableExportService;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.util.ResultT;
@@ -18,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -38,6 +35,8 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
     @Autowired
     private TableExportDao tableExportDao;
     @Autowired
+    private DataTableService dataTableService;
+    @Autowired
     private DataTableDao dataTableDao;
     @Autowired
     private TableColumnDao tableColumnDao;
@@ -50,7 +49,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
     @Autowired
     private LogicDefineDao logicDefineDao;
     @Autowired
-    private DatabaseDao databaseDao;
+    private SchemaDao schemaDao;
     @Autowired
     private GrpcService grpcService;
 
@@ -276,7 +275,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             sqlContent = ClobToString(sqlClob);
                         }else {
                             String tableId = sqlMap.get("ID").toString();
-                            ResultT sql = this.grpcService.getSql(tableId, databaseId);
+                            ResultT sql = this.grpcService.getSql(tableId);
                             if (sql.getCode() == 200){
                                 Object data = sql.getData();
                                 if (data instanceof HashMap){
@@ -316,7 +315,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             sqlContent = ClobToString(sqlClob);
                         }else {
                             String tableId = sqlMap.get("ID").toString();
-                            ResultT sql = this.grpcService.getSql(tableId, databaseId);
+                            ResultT sql = this.grpcService.getSql(tableId);
                             if (sql.getCode() == 200){
                                 Object data = sql.getData();
                                 if (data instanceof HashMap){
@@ -392,20 +391,19 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
             for (String data_class_id : data_class_id_Array) {
                 Map<String, Object> dataMaps = new HashMap<String, Object>();
 
-                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(data_class_id, database_id);
+                List<DataTableInfoEntity> dataTableList = dataTableDao.getByClassIdAndDatabaseId(data_class_id, database_id);
 
                 List<Map<String, Object>> KV = new ArrayList<Map<String, Object>>();
 
-                for (DataTableEntity dataTable : dataTableList) {
+                for (DataTableInfoEntity dataTable : dataTableList) {
                     Map<String, Object> dataMap = new HashMap<String, Object>();
 
                     String table_id = dataTable.getId();
                     String table_name = dataTable.getTableName();
-                    String data_service_name = dataTable.getDataServiceName();
                     List<TableColumnEntity> tableColumnList = tableColumnDao.findByTableId(table_id);
 
                     dataMap.put("titles", titles++);
-                    dataMap.put("cnName", data_service_name);
+                    dataMap.put("cnName", dataTable.getNameCn());
                     if(table_name==null){
                         dataMap.put("tableName", " ");
                     }else{
@@ -625,36 +623,36 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                     }
                     // 分库分表部分
                     List<Map<String, Object>> listSharding = new ArrayList<Map<String, Object>>();
-                    List<ShardingEntity> shardingList = shardingDao.findByTableId(table_id);
-                    int shardNum = 1;
-                    if (StringUtils.isBlank(shard)) {
-                        for (ShardingEntity sharding : shardingList) {
-                            Map<String, Object> mapSharding = new HashMap<String, Object>();
-
-                            mapSharding.put("shardId", " ");
-                            Integer sharding_type = sharding.getShardingType();
-                            if (sharding_type==1) {
-                                mapSharding.put("shardingType", "分表键");
-                            } else {
-                                mapSharding.put("shardingType", "分库键");
-                            }
-                            mapSharding.put("field", " ");
-                            listSharding.add(mapSharding);
-                        }
-                    } else if (columns.equals("0")) {
-                        for (ShardingEntity sharding : shardingList) {
-                            Map<String, Object> mapSharding = new HashMap<String, Object>();
-                            mapSharding.put("shardId", shardNum++);
-                            Integer sharding_type = sharding.getShardingType();
-                            if (sharding_type==1) {
-                                mapSharding.put("shardingType", "分表键");
-                            } else {
-                                mapSharding.put("shardingType", "分库键");
-                            }
-                            mapSharding.put("field", sharding.getColumnName());
-                            listSharding.add(mapSharding);
-                        }
-                    }
+//                    List<TablePartEntity> shardingList = shardingDao.findByTableId(table_id);
+//                    int shardNum = 1;
+//                    if (StringUtils.isBlank(shard)) {
+//                        for (TablePartEntity sharding : shardingList) {
+//                            Map<String, Object> mapSharding = new HashMap<String, Object>();
+//
+//                            mapSharding.put("shardId", " ");
+//                            Integer sharding_type = sharding.getShardingType();
+//                            if (sharding_type==1) {
+//                                mapSharding.put("shardingType", "分表键");
+//                            } else {
+//                                mapSharding.put("shardingType", "分库键");
+//                            }
+//                            mapSharding.put("field", " ");
+//                            listSharding.add(mapSharding);
+//                        }
+//                    } else if (columns.equals("0")) {
+//                        for (TablePartEntity sharding : shardingList) {
+//                            Map<String, Object> mapSharding = new HashMap<String, Object>();
+//                            mapSharding.put("shardId", shardNum++);
+//                            Integer sharding_type = sharding.getShardingType();
+//                            if (sharding_type==1) {
+//                                mapSharding.put("shardingType", "分表键");
+//                            } else {
+//                                mapSharding.put("shardingType", "分库键");
+//                            }
+//                            mapSharding.put("field", sharding.getColumnName());
+//                            listSharding.add(mapSharding);
+//                        }
+//                    }
                     dataMap.put("listInfo", listInfo);
                     dataMap.put("listIndex", listIndex);
                     dataMap.put("listSharding", listSharding);

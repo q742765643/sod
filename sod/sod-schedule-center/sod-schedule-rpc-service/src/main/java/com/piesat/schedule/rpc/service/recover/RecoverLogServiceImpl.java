@@ -6,18 +6,13 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.client.api.vo.TreeVo;
-import com.piesat.schedule.dao.recover.MetaRecoverLogDao;
 import com.piesat.schedule.dao.recover.RecoverLogDao;
-import com.piesat.schedule.entity.recover.MetaRecoverLogEntity;
 import com.piesat.schedule.entity.recover.RecoverLogEntity;
-import com.piesat.schedule.rpc.api.recover.MetaRecoverLogService;
 import com.piesat.schedule.rpc.api.recover.RecoverLogService;
-import com.piesat.schedule.rpc.dto.recover.MetaRecoverLogDto;
 import com.piesat.schedule.rpc.dto.recover.RecoverLogDto;
-import com.piesat.schedule.rpc.mapstruct.recover.MetaRecoverLogMapstruct;
 import com.piesat.schedule.rpc.mapstruct.recover.RecoverLogMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.vo.DataRetrieval;
@@ -48,7 +43,7 @@ public class RecoverLogServiceImpl extends BaseService<RecoverLogEntity> impleme
     @GrpcHthtClient
     private ExecutorBiz executorBiz;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
 
     @Override
     public BaseDao<RecoverLogEntity> getBaseDao() {

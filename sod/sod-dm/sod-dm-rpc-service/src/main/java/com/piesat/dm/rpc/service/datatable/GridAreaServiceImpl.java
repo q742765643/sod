@@ -59,7 +59,7 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteGridAreaByIds(String ids) {
         String[] split = ids.split(",");
         this.deleteByIds(Arrays.asList(split));

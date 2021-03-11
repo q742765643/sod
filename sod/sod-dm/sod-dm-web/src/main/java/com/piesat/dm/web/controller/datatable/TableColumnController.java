@@ -5,8 +5,7 @@ import com.piesat.dm.entity.datatable.DatumTableEntity;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnList;
 import com.piesat.dm.rpc.service.GrpcService;
@@ -53,12 +52,6 @@ public class TableColumnController {
     public ResultT save(@RequestBody TableColumnDto tableColumnDto) {
         try {
             TableColumnDto save = this.tableColumnService.saveDto(tableColumnDto);
-            DataTableDto dataTable = dataTableService.getDotById(save.getTableId());
-            DataLogicDto dataLogic = dataTable.getClassLogic();
-            if (dataLogic.getIsComplete() == null || !dataLogic.getIsComplete()) {
-                dataLogic.setIsComplete(true);
-                dataLogicService.saveDto(dataLogic);
-            }
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,9 +61,9 @@ public class TableColumnController {
 
     @ApiOperation(value = "批量添加")
     @PostMapping(value = "/saveColumns")
-    public ResultT saveColumns(@RequestBody DataTableDto dataTableDto) {
+    public ResultT saveColumns(@RequestBody DataTableInfoDto dataTableInfoDto) {
         try {
-            LinkedHashSet<TableColumnDto> columns = dataTableDto.getColumns();
+            LinkedHashSet<TableColumnDto> columns = dataTableInfoDto.getColumns();
             if (columns != null) {
                 for (TableColumnDto tableColumnDto : columns) {
                     this.tableColumnService.saveDto(tableColumnDto);
@@ -154,12 +147,6 @@ public class TableColumnController {
     public ResultT saveDtoList(@RequestBody TableColumnList tableColumnList) {
         try {
             List<TableColumnDto> save = this.tableColumnService.saveDtoList(tableColumnList.getTableColumnList());
-            DataTableDto dataTable = dataTableService.getDotById(save.get(0).getTableId());
-            DataLogicDto dataLogic = dataTable.getClassLogic();
-            if (dataLogic.getIsComplete() == null || !dataLogic.getIsComplete()) {
-                dataLogic.setIsComplete(true);
-                dataLogicService.saveDto(dataLogic);
-            }
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();

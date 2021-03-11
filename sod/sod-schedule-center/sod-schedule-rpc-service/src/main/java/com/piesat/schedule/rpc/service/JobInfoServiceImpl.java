@@ -201,5 +201,10 @@ public class JobInfoServiceImpl extends BaseService<JobInfoEntity> implements Jo
         this.stop(id);
     }
 
+    @Override
+    public void executeTest() {
+        this.tableCollectHandler.execute(null,null);
+    }
+
 }
 

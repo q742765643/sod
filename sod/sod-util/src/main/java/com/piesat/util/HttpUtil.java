@@ -20,25 +20,25 @@ import org.apache.http.util.EntityUtils;
 *
 */
 public class HttpUtil {
-	
+
 //	private static Logger logger = Logger.getLogger(HttpUtil.class);
-	
+
 	/**
 	 *  发送get请求
-	 * @description 
+	 * @description
 	 * @author weiliguo
 	 * @date 2018-11-15 09:10
 	 * @param url
 	 * @return
 	 */
 	public static String doGet(String url) {
-		
+
 		String resultStr = null;
 		CloseableHttpClient client = null;
 		CloseableHttpResponse response = null;
 		try {
 			client = HttpClients.createDefault();
-			
+
 //			logger.info("开始发送get请求 , 请求地址 : "+url);
 			HttpGet request = new HttpGet(url);
 			response = client.execute(request);
@@ -49,7 +49,7 @@ public class HttpUtil {
 			}else {
 //				logger.config("get请求发送失败 :"+response.getStatusLine().getStatusCode()+",请求地址 :"+url);
 			}
-			
+
 		} catch (Exception e) {
 //			logger.config("get请求异常 ,请求地址 :"+url +"异常信息 :"+e.getMessage());
 		} finally {
@@ -63,11 +63,11 @@ public class HttpUtil {
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
-			
-			
+
+
 		}
 		return resultStr;
 	}
-	
+
 
 }

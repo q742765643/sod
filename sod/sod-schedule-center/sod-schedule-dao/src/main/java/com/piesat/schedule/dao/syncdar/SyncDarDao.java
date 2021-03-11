@@ -21,7 +21,7 @@ public interface SyncDarDao extends BaseDao<SyncDarEntity> {
      * @param id
      * @return
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Modifying(clearAutomatically = true)
     @Query(value = "update SyncDarEntity p set p.lastTime =?1 where p.id = ?2")
     int updateLastTime(Date lastTime, String id);

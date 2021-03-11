@@ -2,7 +2,8 @@ package com.piesat.dm.rpc.api.dataclass;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
@@ -16,11 +17,11 @@ import java.util.Map;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DataLogicService {
-    DataLogicDto saveDto(DataLogicDto dataLogicDto);
+    DataClassLogicDto saveDto(DataClassLogicDto dataLogicDto);
 
-    List<DataLogicDto> saveList(List<DataLogicDto> dataLogicList);
+    List<DataClassLogicDto> saveList(List<DataClassLogicDto> dataLogicList);
 
-    DataLogicDto getDotById(String id);
+    DataClassLogicDto getDotById(String id);
 
     void delete(String id);
 
@@ -28,7 +29,7 @@ public interface DataLogicService {
 
     void onlyDeleteById(String id);
 
-    List<DataLogicDto> all();
+    List<DataClassLogicDto> all();
 
     List<Map<String, Object>> getByDataClassIds(List<String> ids);
 
@@ -38,14 +39,13 @@ public interface DataLogicService {
 
     void deleteByDataClassId(String dataClassId);
 
-    List<DataLogicDto> findByDataClassIdAndLogicFlagAndStorageType(DataLogicDto dataLogicDto);
+    List<DataClassLogicDto> findByDataClassId(String dataClassId);
 
+    List<DataTableInfoDto> getDataLogic(String dataclassId, String databaseId, String tableName);
 
-    List<DataLogicDto> findByDataClassId(String dataClassId);
-
-    List<DataLogicDto> getDataLogic(String dataclassId,String databaseId,String tableName);
+    List<DataClassLogicDto> findByTableId(String tableId);
 
     Map<String, Object> getTableByDBLogics(String tdbId, String logics);
 
-    public Map<String,List<String>> getDatabaseTables(String logics);
+    Map<String,List<String>> getDatabaseTables(String logics);
 }

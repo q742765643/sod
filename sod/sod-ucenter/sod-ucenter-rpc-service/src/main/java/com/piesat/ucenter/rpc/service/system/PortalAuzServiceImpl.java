@@ -28,16 +28,16 @@ import com.piesat.util.page.PageForm;
 */
 @Service
 public class PortalAuzServiceImpl extends BaseService<PortalAuzEntity> implements PortalAuzService{
-	
+
 	@Autowired
 	private PortalAuzDao portalAuzDao;
-	
+
 	@Autowired
 	private PortalAuzMapper portalAuzMapper;
-	
+
 	@Autowired
-	private PortalAuzMapstruct portalAuzMapstruct; 
-	
+	private PortalAuzMapstruct portalAuzMapstruct;
+
 
 	@Override
 	public BaseDao<PortalAuzEntity> getBaseDao() {
@@ -46,7 +46,7 @@ public class PortalAuzServiceImpl extends BaseService<PortalAuzEntity> implement
 
 	/**
 	 *  获取分页数据
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-19 13:14
 	 * @param pageForm
@@ -57,12 +57,12 @@ public class PortalAuzServiceImpl extends BaseService<PortalAuzEntity> implement
 	public PageBean findPageData(PageForm<PortalAuzDto> pageForm) throws Exception {
 		PortalAuzEntity pe = portalAuzMapstruct.toEntity(pageForm.getT());
 		PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
-		
+
 		if(!StringUtil.isEmpty(pe.getUsername())) pe.setUsername("%"+pe.getUsername()+"%");
-		
+
 		List<PortalAuzEntity> data = portalAuzMapper.selectList(pe);
 		PageInfo<PortalAuzEntity> pageInfo = new PageInfo<>(data);
-		
+
 		List<PortalAuzDto> dtoData = portalAuzMapstruct.toDto(pageInfo.getList());
 		PageBean page = new PageBean(pageInfo.getTotal(),pageInfo.getPages(),dtoData);
 		return page;
@@ -70,53 +70,53 @@ public class PortalAuzServiceImpl extends BaseService<PortalAuzEntity> implement
 
 	/**
 	 *  根据id删除
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-19 13:32
 	 * @param ids
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delByIds(String ids) throws Exception {
 		String[] idArr = ids.split(",");
 		for(String id:idArr) {
 			portalAuzDao.deleteById(ids);
 		}
-		
+
 	}
 
 	/**
 	 *  通过/不通过 状态更改
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-19 13:40
 	 * @param dto
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void update(PortalAuzDto dto) throws Exception {
 		PortalAuzEntity pe = portalAuzMapstruct.toEntity(dto);
 		this.saveNotNull(pe);
-		
+
 	}
 
-	
+
 	/**
 	 *  新增
-	 * @description 
+	 * @description
 	 * @author wlg
 	 * @date 2020-02-19 13:42
 	 * @param dto
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void add(PortalAuzDto dto) throws Exception {
 		PortalAuzEntity pe = portalAuzMapstruct.toEntity(dto);
 		portalAuzDao.save(pe);
-		
+
 	}
 
 }

@@ -61,5 +61,11 @@ public class MD5Util {
 
     private static final String hexDigits[] = { "0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
+
+    public static void main(String[] args) {
+        String sss = "data={\"dataId\":\"B.0025.0001.S001\"}&interfaceId=datumtypeinfo&nonce=3fa64952-0813-4f81-916c-b86467b425bd&pwd=123qweasdzxc&timestamp=1597986413056&userId=api_manager";
+        String sign = MD5Encode(sss).toUpperCase();
+        System.out.println(sign);
+    }
 }
 

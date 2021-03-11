@@ -8,6 +8,7 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.schedule.dao.synctofile.SyncToFileDao;
 import com.piesat.schedule.entity.synctofile.SyncToFileEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
@@ -171,15 +172,15 @@ public class SyncToFileServiceImpl extends BaseService<SyncToFileEntity> impleme
         }
 
         List<Map<String, Object>> databaseDtos = new ArrayList<>();
-        List<DatabaseDto> databaseListAll = dataBaseService.findAllDataBase();
-        for (DatabaseDto databaseDto : databaseListAll) {
-            String databaseName = databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName();
-            String parentId = databaseDto.getDatabaseDefine().getId();
+        List<SchemaDto> databaseListAll = dataBaseService.findAllDataBase();
+        for (SchemaDto databaseDto : databaseListAll) {
+            String databaseName = databaseDto.getDatabase().getDatabaseName() + "_" + databaseDto.getDatabaseName();
+            String parentId = databaseDto.getDatabase().getId();
             if (dicts.contains(parentId.toUpperCase())) {
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
                 map.put("KEY", databaseDto.getId());
                 map.put("VALUE", databaseName);
-                map.put("parentId", databaseDto.getDatabaseDefine().getId());
+                map.put("parentId", databaseDto.getDatabase().getId());
                 databaseDtos.add(map);
             }
 

@@ -1,8 +1,8 @@
 package com.piesat.dm.rpc.mapper.dataclass;
 
 import com.piesat.common.jpa.BaseMapper;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Service;
@@ -15,5 +15,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface DataLogicMapper extends BaseMapper<DataLogicDto, DataLogicEntity> {
+public interface DataLogicMapper extends BaseMapper<DataClassLogicDto, DataClassAndTableEntity> {
 }

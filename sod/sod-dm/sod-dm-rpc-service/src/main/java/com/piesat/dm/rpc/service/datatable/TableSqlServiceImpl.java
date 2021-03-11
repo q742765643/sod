@@ -33,7 +33,7 @@ public class TableSqlServiceImpl extends BaseService<TableSqlEntity> implements 
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public TableSqlDto saveDto(TableSqlDto tableSqlDto) {
         this.tableSqlDao.deleteByDatabaseIdAndTableName(tableSqlDto.getDatabaseId(),tableSqlDto.getTableName());
         TableSqlEntity tableSqlEntity = this.tableSqlMapper.toEntity(tableSqlDto);

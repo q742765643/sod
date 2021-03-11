@@ -13,6 +13,10 @@ public class Test {
         BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
         //加密所需的salt(盐)
         textEncryptor.setPassword("HT95279527");
+
+
+
+
         //要加密的数据（数据库的用户名或密码）
         String username = textEncryptor.encrypt("USR_SOD");
         String password = textEncryptor.encrypt("sod_2020");
@@ -24,14 +28,17 @@ public class Test {
         System.out.println("s2:"+s2);
         String s3 = textEncryptor.encrypt("sod2019");
         System.out.println("s3:"+s3);
-        String mmd = textEncryptor.encrypt("nmic@100200");
+        String mmd = textEncryptor.encrypt("Nmic@100200_");
         System.out.println("mmd:"+mmd);
         String are = textEncryptor.encrypt("music#2020");
         System.out.println("are:"+are);
-        String are1 = textEncryptor.decrypt("c6ac59a147fa349f1032c521b7e521a3");
-        System.out.println("are1:"+are1);
+
         String pp = textEncryptor.encrypt("Pnmicxg2019");
         System.out.println("pp:"+pp);
+
+
+        String are1 = textEncryptor.decrypt("dScYmr3jeCq8R+D9qpdhzUgnVYBXONSm");
+        System.out.println("are1:"+are1);
 
     }
 }

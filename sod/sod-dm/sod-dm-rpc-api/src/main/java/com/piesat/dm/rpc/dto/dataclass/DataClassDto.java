@@ -90,7 +90,7 @@ public class DataClassDto {
 
     private String createBy;
 
-    private List<DataLogicDto> dataLogicList;
+    private List<DataClassLogicDto> dataLogicList;
 
     private List<DataClassLabelDto> dataClassLabelList;
 
@@ -98,5 +98,9 @@ public class DataClassDto {
 
     //portal申请id
     private String applyId;
+
+    private String userId;
+
+    private String remark;
 
 }

@@ -4,13 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.constant.FileTypesConstant;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.dao.special.DatabaseSpecialAccessDao;
-import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.special.*;
 import com.piesat.dm.rpc.service.special.DatabaseSpecialTreeServiceImpl;
 import com.piesat.sso.client.annotation.Log;
@@ -235,16 +233,16 @@ public class DatabaseSpecialController {
     public ResultT empowerDatabaseSpecial(@RequestBody SpecialParamVO specialParamVO) {
         try {
             //授权
+            SchemaDto schemaDto = new SchemaDto();
+            schemaDto.setUserId(specialParamVO.getUserId());
             DatabaseDto databaseDto = new DatabaseDto();
-            databaseDto.setUserId(specialParamVO.getUserId());
-            DatabaseDefineDto databaseDefineDto = new DatabaseDefineDto();
-            databaseDefineDto.setDatabaseInstance(specialParamVO.getSimpleName());
-            databaseDto.setDatabaseDefine(databaseDefineDto);
-            databaseDto.setTdbId(specialParamVO.getSdbId());
-            databaseDto.setDatabaseSpecialAuthorityList(specialParamVO.getDatabaseSpecialAuthorityList());
-            databaseDto.setSchemaName(specialParamVO.getSimpleName());
-            databaseDto.setDatabaseName(specialParamVO.getSdbName());
-            this.databaseSpecialService.empowerDatabaseSpecial(databaseDto);
+            databaseDto.setDatabaseInstance(specialParamVO.getSimpleName());
+            schemaDto.setDatabase(databaseDto);
+            schemaDto.setTdbId(specialParamVO.getSdbId());
+            schemaDto.setDatabaseSpecialAuthorityList(specialParamVO.getDatabaseSpecialAuthorityList());
+            schemaDto.setSchemaName(specialParamVO.getSimpleName());
+            schemaDto.setDatabaseName(specialParamVO.getSdbName());
+            this.databaseSpecialService.empowerDatabaseSpecial(schemaDto);
             //修改授权状态
             DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(specialParamVO.getSdbId());
             databaseSpecialDto.setExamineStatus("2");

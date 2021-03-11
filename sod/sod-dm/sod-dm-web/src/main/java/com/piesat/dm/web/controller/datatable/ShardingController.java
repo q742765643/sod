@@ -1,7 +1,7 @@
 package com.piesat.dm.web.controller.datatable;
 
 import com.piesat.dm.rpc.api.datatable.ShardingService;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.dto.datatable.ShardingList;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
@@ -31,9 +31,9 @@ public class ShardingController {
     @RequiresPermissions("dm:sharding:add")
     @Log(title = "表分库分表键（新增）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
-    public ResultT save(@RequestBody ShardingDto shardingDto) {
+    public ResultT save(@RequestBody TablePartDto tablePartDto) {
         try {
-            ShardingDto save = this.shardingService.saveDto(shardingDto);
+            TablePartDto save = this.shardingService.saveDto(tablePartDto);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,7 +47,7 @@ public class ShardingController {
     @PostMapping(value = "/saves")
     public ResultT saves(@RequestBody ShardingList shardingList) {
         try {
-            List<ShardingDto> save = this.shardingService.saveDto(shardingList.getShardingList());
+            List<TablePartDto> save = this.shardingService.saveDto(shardingList.getShardingList());
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,8 +60,8 @@ public class ShardingController {
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
-            ShardingDto shardingDto = this.shardingService.getDotById(id);
-            return ResultT.success(shardingDto);
+            TablePartDto tablePartDto = this.shardingService.getDotById(id);
+            return ResultT.success(tablePartDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -87,7 +87,7 @@ public class ShardingController {
     @GetMapping(value = "/all")
     public ResultT all() {
         try {
-            List<ShardingDto> all = this.shardingService.all();
+            List<TablePartDto> all = this.shardingService.all();
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,8 +100,8 @@ public class ShardingController {
     @GetMapping(value = "/getByTableId")
     public ResultT getDotByTableId(String id) {
         try {
-            List<ShardingDto> shardingDtos = this.shardingService.getDotByTableId(id);
-            return ResultT.success(shardingDtos);
+            TablePartDto tablePartDtos = this.shardingService.getDotByTableId(id);
+            return ResultT.success(tablePartDtos);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

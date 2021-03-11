@@ -14,7 +14,7 @@ import javax.persistence.Table;
  * @date 2020年 02月12日 16:45:56
  */
 @Data
-@Table(name = "T_SOD_DATACLASS_NORM")
+@Table(name = "T_SOD_DATA_TABLE_NORM")
 @Entity
 public class DataClassNormEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;

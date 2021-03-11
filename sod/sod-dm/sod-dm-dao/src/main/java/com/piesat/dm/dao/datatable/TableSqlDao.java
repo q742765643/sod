@@ -3,8 +3,7 @@ package com.piesat.dm.dao.datatable;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.datatable.TableSqlEntity;
 import org.springframework.stereotype.Repository;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 表sql
@@ -15,6 +14,6 @@ import javax.transaction.Transactional;
 @Repository
 public interface TableSqlDao extends BaseDao<TableSqlEntity> {
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     void deleteByDatabaseIdAndTableName(String databaseId,String tableName);
 }

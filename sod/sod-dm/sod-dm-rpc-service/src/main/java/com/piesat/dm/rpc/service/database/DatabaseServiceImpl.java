@@ -2,39 +2,58 @@ package com.piesat.dm.rpc.service.database;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
+import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.poi.ExcelUtil;
+import com.piesat.dm.core.model.ConnectVo;
+import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
-import com.piesat.dm.dao.dataclass.DataLogicDao;
+import com.piesat.dm.dao.database.SchemaDao;
+import com.piesat.dm.dao.dataclass.LogicDatabaseDao;
+import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.database.DatabaseEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.entity.database.SchemaEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
+import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.util.ResultT;
-import net.sf.saxon.expr.Component;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
- * 数据库基础库专题库
+ * 数据库类型定义
  *
  * @author cwh
- * @date 2019年 11月22日 16:27:41
+ * @date 2019年 11月22日 15:59:29
  */
 @Service
 public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements DatabaseService {
     @Autowired
     private DatabaseDao databaseDao;
     @Autowired
+    private SchemaDao schemaDao;
+    @Autowired
     private DatabaseMapper databaseMapper;
     @Autowired
-    private MybatisQueryMapper mybatisQueryMapper;
+    private DatabaseInfo databaseInfo;
     @Autowired
-    private DataLogicDao dataLogicDao;
+    private DatabaseDefineMapper databaseDefineMapper;
+    @Autowired
+    private LogicDatabaseDao logicDatabaseDao;
+    @Autowired
+    private DataTableDao dataTableDao;
 
     @Override
     public BaseDao<DatabaseEntity> getBaseDao() {
@@ -42,122 +61,146 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DatabaseDto saveDto(DatabaseDto databaseDto) {
-        if ("基础库".equals(databaseDto.getDatabaseName())) {
-            databaseDto.setLevel(1);
+        SchemaDto schemaDto = databaseDto.getSchemaDto();
+        if (StringUtils.isEmpty(schemaDto.getId())) {
+            schemaDto.setCreateTime(new Date());
+            schemaDto.setStopUse(false);
         }
-        DatabaseEntity databaseEntity = this.databaseMapper.toEntity(databaseDto);
-        databaseEntity = this.saveNotNull(databaseEntity);
-        return this.databaseMapper.toDto(databaseEntity);
+        if (StringUtils.isEmpty(databaseDto.getId())) {
+            databaseDto.setCreateTime(new Date());
+        }
+        DatabaseEntity databaseEntity = this.databaseDefineMapper.toEntity(databaseDto);
+        DatabaseEntity save = this.saveNotNull(databaseEntity);
+        SchemaEntity schemaEntity = this.databaseMapper.toEntity(schemaDto);
+        schemaEntity.setDatabase(save);
+        schemaEntity = this.schemaDao.saveNotNull(schemaEntity);
+        DatabaseDto databaseDto1 = this.databaseDefineMapper.toDto(save);
+        databaseDto1.setSchemaDto(this.databaseMapper.toDto(schemaEntity));
+        return databaseDto1;
     }
 
     @Override
     public List<DatabaseDto> all() {
         List<DatabaseEntity> all = this.getAll();
-        return this.databaseMapper.toDto(all);
+        return this.databaseDefineMapper.toDto(all);
     }
 
     @Override
-    public List<Map<String, Object>> getDatabaseName() {
-        // String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME,d.database_type DATABASE_TYPE  from T_SOD_DATABASE t inner join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id and d.user_display_control != '2'";
-        List<Map<String, Object>> list = mybatisQueryMapper.getDatabaseName();
-        return list;
-    }
-
-    @Override
-    public List<Map<String, Object>> getByDatabaseDefineId(String id) {
-        //String sql = "select *  from T_SOD_DATABASE t where t.DATABASE_DEFINE_ID = '"+id+"'";
-        List<Map<String, Object>> list = mybatisQueryMapper.getByDatabaseDefineId(id);
-        return list;
-    }
-
-    @Override
-    public List<DatabaseDto> findByLevel(int level) {
-        List<DatabaseEntity> all = this.databaseDao.findByLevel(level);
-        return this.databaseMapper.toDto(all);
-    }
-
-    @Override
-    public List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify, List<String> ids) {
-        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseClassifyAndIdIn(databaseClassify, ids);
-        return this.databaseMapper.toDto(databaseEntityList);
-    }
-
-    @Override
-    public List<DatabaseDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify, List<String> databaseDefineIds) {
-        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseClassifyAndDatabaseDefineIdIn(databaseClassify, databaseDefineIds);
-        return this.databaseMapper.toDto(databaseEntityList);
-    }
-
-    @Override
-    public List<DatabaseDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds) {
-        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseDefineIdIn(databaseDefineIds);
-        return this.databaseMapper.toDto(databaseEntityList);
-    }
-
-    @Override
-    public List<DatabaseDto> findByDatabaseDefineId(String id) {
-        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseDefine_Id(id);
-        return this.databaseMapper.toDto(databaseEntityList);
-    }
-
-    @Override
-    public List<DatabaseDto> findByDatabaseClassify(String databaseClassify) {
-        List<DatabaseEntity> databaseEntities = this.databaseDao.findByDatabaseClassify(databaseClassify);
-        //闲时优化
-        if (databaseEntities != null && databaseEntities.size() > 0) {
-            for (int i = databaseEntities.size() - 1; i > -1; i--) {
-                if (databaseEntities.get(i).getDatabaseDefine().getUserDisplayControl().intValue() != 1) {
-                    databaseEntities.remove(databaseEntities.get(i));
-                }
-            }
+    public List<DatabaseDto> export(String id, String databaseName) {
+        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(id)) {
+            ssb.add("id", SpecificationOperator.Operator.likeAll.name(), id);
         }
-        return this.databaseMapper.toDto(databaseEntities);
-    }
-
-    @Override
-    public List<Map<String, Object>> findByUserIdAndDatabaseDefineId(String userId, String databaseDefineId) {
-        //由于框架bug导致带union的sql报错，暂时分开写
-        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-        List<Map<String, Object>> byUserIdAndDatabaseDefineId1 = this.mybatisQueryMapper.findByUserIdAndDatabaseDefineId1(userId, databaseDefineId);
-        if (byUserIdAndDatabaseDefineId1 != null) {
-            resultList.addAll(byUserIdAndDatabaseDefineId1);
+        if (StringUtils.isNotBlank(databaseName)) {
+            ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseName);
         }
-        List<Map<String, Object>> byUserIdAndDatabaseDefineId2 = this.mybatisQueryMapper.findByUserIdAndDatabaseDefineId2(userId, databaseDefineId);
-        if (byUserIdAndDatabaseDefineId2 != null) {
-            resultList.addAll(byUserIdAndDatabaseDefineId2);
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        List<DatabaseEntity> all = this.getAll(ssb.generateSpecification(), sort);
+        return this.databaseDefineMapper.toDto(all);
+    }
+
+    @Override
+    public List<DatabaseDto> findByType(String databaseType) {
+        return this.databaseDefineMapper.toDto(this.databaseDao.findByDatabaseType(databaseType));
+    }
+
+    @Override
+    public PageBean getPage(DatabaseDto databaseDto, int pageNum, int pageSize) {
+        SimpleSpecificationBuilder ssb = new SimpleSpecificationBuilder();
+        if (StringUtils.isNotBlank(databaseDto.getId())) {
+            ssb.add("id", SpecificationOperator.Operator.likeAll.name(), databaseDto.getId());
         }
-        return resultList;
+        if (StringUtils.isNotBlank(databaseDto.getDatabaseName())) {
+            ssb.add("databaseName", SpecificationOperator.Operator.likeAll.name(), databaseDto.getDatabaseName());
+        }
+        Sort sort = Sort.by(Sort.Direction.ASC, "serialNumber");
+        PageBean page = this.getPage(ssb.generateSpecification(), new PageForm(pageNum, pageSize), sort);
+        List<DatabaseEntity> pageData = (List<DatabaseEntity>) page.getPageData();
+        page.setPageData(this.databaseDefineMapper.toDto(pageData));
+        return page;
     }
 
     @Override
-    public List<Map<String, Object>> getDatabaseList(String ifDisplay) {
-        String sql = "select t.id ID,concat(concat(d.database_name,'_'),t.database_name) DATABASE_NAME  from T_SOD_DATABASE t, T_SOD_DATABASE_DEFINE d WHERE t.DATABASE_DEFINE_ID = d.id AND d.user_display_control in(" + ifDisplay + ")";
-        List<Map<String, Object>> list = this.queryByNativeSQL(sql);
-        return list;
+    public DatabaseDto conStatus(String id) {
+        DatabaseDto database = this.getDotById(id);
+        ConnectVo coreInfo = database.getCoreInfo();
+        ResultT r = new ResultT();
+        coreInfo.build(r)
+                .close();
+        if (r.isSuccess()) {
+            database.setCheckConn(1);
+        } else {
+            database.setCheckConn(2);
+            database.setConnMsg(r.getProcessMsg().toString());
+        }
+        this.saveDto(database);
+        return database;
     }
 
     @Override
-    public List<DatabaseDto> findByDatabaseName(String databaseName) {
+    public ResultT connStatus(DatabaseDto database) {
+        ConnectVo coreInfo = database.getCoreInfo();
+        ResultT r = new ResultT();
+        coreInfo.build(r)
+                .close();
+        return r;
+    }
 
-        List<DatabaseEntity> databaseEntityList = this.databaseDao.findByDatabaseName(databaseName);
-        return this.databaseMapper.toDto(databaseEntityList);
+    @Override
+    public List<DatabaseDto> findByIdIn(List<String> ids) {
+        List<DatabaseEntity> databaseDefineEntities = this.databaseDao.findByIdIn(ids);
+        return this.databaseDefineMapper.toDto(databaseDefineEntities);
+    }
+
+    @Override
+    public void exportExcel(String id, String databaseName) {
+        List<DatabaseDto> dtoList = this.export(id, databaseName);
+        List<DatabaseEntity> entities = databaseDefineMapper.toEntity(dtoList);
+        ExcelUtil<DatabaseEntity> util = new ExcelUtil(DatabaseEntity.class);
+        util.exportExcel(entities, "数据库");
+    }
+
+    @Override
+    public List<DatabaseDto> getDatabaseDefineList() {
+        List<DatabaseEntity> list = databaseDao.findByUserDisplayControlNot(2);
+        return databaseDefineMapper.toDto(list);
     }
 
     @Override
     public DatabaseDto getDotById(String id) {
         DatabaseEntity databaseEntity = this.getById(id);
-        return this.databaseMapper.toDto(databaseEntity);
+        DatabaseDto databaseDto = this.databaseDefineMapper.toDto(databaseEntity);
+        List<SchemaEntity> databaseEntities = this.schemaDao.findByDatabase_IdAndDatabaseName(id, "基础库");
+        if (databaseEntities != null && !databaseEntities.isEmpty()) {
+            SchemaDto schemaDto = this.databaseMapper.toDto(databaseEntities).get(0);
+            databaseDto.setSchemaDto(schemaDto);
+        }
+        return databaseDto;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResultT deleteById(String id) {
-        List<DataLogicEntity> logicList = this.dataLogicDao.findByDatabaseId(id);
-        if (logicList.size() > 0) {
-            return ResultT.failed("数据库存在资料，请先删除相关资料，如存储编码为：" + logicList.get(0).getDataClassId());
+    public ResultT delByIds(String ids) {
+        String[] split = ids.split(",");
+        for (int i = 0; i < split.length; i++) {
+            String id = split[i];
+            List<SchemaEntity> databases = this.schemaDao.findByDatabase_Id(id);
+            for (int j = 0; j < databases.size(); j++) {
+                SchemaEntity database = databases.get(j);
+                List<DataTableInfoEntity> logicList = this.dataTableDao.findByDatabaseId(database.getId());
+                if (logicList!=null && !logicList.isEmpty()) {
+                    return ResultT.failed("数据库存在资料，请先删除相关资料，如表名为：" + logicList.get(0).getTableName());
+                }
+            }
         }
-        this.delete(id);
+
+        for (String id : split) {
+            this.schemaDao.deleteByDatabase_Id(id);
+            this.logicDatabaseDao.deleteByDatabaseId(id);
+        }
+        this.deleteByIds(Arrays.asList(split));
         return ResultT.success();
     }
-
 }

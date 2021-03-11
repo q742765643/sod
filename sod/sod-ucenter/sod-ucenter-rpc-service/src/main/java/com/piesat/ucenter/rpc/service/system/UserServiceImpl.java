@@ -144,7 +144,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
      * @return 结果
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void insertUser(UserDto user) {
         UserEntity userEntity = userMapstruct.toEntity(user);
         String password = new Md5Hash(userEntity.getPassword(), user.getUserName(), 2).toString();
@@ -185,7 +185,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
      * @return 结果
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateUser(UserDto user) {
         UserEntity userEntity = userMapstruct.toEntity(user);
         userEntity = this.saveNotNull(userEntity);
@@ -227,7 +227,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
      * @param userIds 需要删除的用户ID
      * @return 结果
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteUserByIds(List<String> userIds) {
         for (String userId : userIds) {

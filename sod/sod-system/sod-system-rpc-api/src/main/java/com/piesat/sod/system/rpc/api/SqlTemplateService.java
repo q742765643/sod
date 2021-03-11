@@ -23,7 +23,7 @@ public interface SqlTemplateService {
 	void add(SqlTemplateDto sqlTemplateDto) throws Exception;
 	/**
 	 *  删除sql模板
-	 * @param id
+	 * @param ids
 	 * @throws Exception
 	 */
 	void delByIds(String ids) throws Exception;
@@ -40,7 +40,7 @@ public interface SqlTemplateService {
 	 * @throws Exception
 	 */
 	void edit(SqlTemplateDto sqlTemplateDto) throws Exception;
-	
+
 	/**
 	 *  查询全部
 	 * @return

@@ -3,16 +3,14 @@ package com.piesat.schedule.web.controller.sync;
 import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.*;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.TableColumnService;
 import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.rpc.api.sync.SyncTaskService;
-import com.piesat.schedule.rpc.dto.move.MoveDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskDto;
 import com.piesat.schedule.rpc.dto.sync.SyncTaskLogDto;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
@@ -27,8 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +40,7 @@ public class SyncTaskController {
     @Autowired
     private SyncTaskService syncTaskService;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @GrpcHthtClient
     private DataTableService dataTableService;
     @GrpcHthtClient
@@ -168,7 +164,7 @@ public class SyncTaskController {
     @ApiOperation(value = "获取全部物理库和专题库", notes = "获取全部物理库和专题库")
     public ResultT<List<Map<String, Object>>> syncDatabaseDetail() {
         ResultT<List<Map<String, Object>>> resultT = new ResultT<>();
-        List<Map<String, Object>> databaseNames = databaseService.getDatabaseName();
+        List<Map<String, Object>> databaseNames = schemaService.getDatabaseName();
         resultT.setData(databaseNames);
         return resultT;
     }
@@ -221,12 +217,12 @@ public class SyncTaskController {
         String sourceVTableId = syncTaskDto.getSourceVTableId();
         if(StringUtils.isNotNullString(targetVTableId)){
             //获取目标表值表信息
-            DataTableDto targetVTable = dataTableService.getDotById(targetVTableId);
+            DataTableInfoDto targetVTable = dataTableService.getDotById(targetVTableId);
 
             //键值表外键
             String linkKeys = "";
-            if(targetVTable.getClassLogic() != null){
-                List<TableForeignKeyDto> tableForeignKeyDtos = tableForeignKeyService.findByClassLogicId(targetVTable.getClassLogic().getId());
+
+                List<TableForeignKeyDto> tableForeignKeyDtos = tableForeignKeyService.findBySubOrTableId(targetVTable.getId());
                 if(tableForeignKeyDtos != null && tableForeignKeyDtos.size()>0){
                     linkKeys = "<" + targetVTable.getTableName() + ">";
                     for(int i = 0;i < tableForeignKeyDtos.size();i++){
@@ -235,7 +231,7 @@ public class SyncTaskController {
                     }
                     linkKeys += "</" + targetVTable.getTableName() + ">";
                 }
-            }
+
             syncTaskDto.getSlaveRelation().put("sourceVTableId", sourceVTableId);
             syncTaskDto.getSlaveRelation().put("targetVTableId", targetVTableId);
             syncTaskDto.getSlaveRelation().put("linkKey", linkKeys);

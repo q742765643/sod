@@ -9,16 +9,16 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.api.datatable.ShardingService;
 import com.piesat.dm.rpc.api.datatable.TableIndexService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.schedule.dao.sync.*;
 import com.piesat.schedule.entity.sync.*;
@@ -81,9 +81,9 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     @GrpcHthtClient
     private DataLogicService dataLogicService;
     @GrpcHthtClient
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
 
 
     @Override
@@ -179,8 +179,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         List<SyncTaskDto> syncTaskDtos = syncTaskMapstruct.toDto(syncTaskEntities);
         //查询物理库名称
        /* for(SyncTaskDto syncTaskDto : syncTaskDtos){
-            DatabaseDto databaseDto = databaseService.getDotById(syncTaskDto.getSourceDatabaseId());
-            syncTaskDto.setSourceDatabaseName(databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName());
+            SchemaDto databaseDto = schemaService.getDotById(syncTaskDto.getSourceDatabaseId());
+            syncTaskDto.setSourceDatabaseName(databaseDto.getDatabase().getDatabaseName()+"_"+databaseDto.getDatabaseName());
         }*/
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), syncTaskDtos);
         return pageBean;
@@ -205,7 +205,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public SyncTaskDto saveDto(SyncTaskDto syncTaskDto) {
         List<String> targetTableIds = new ArrayList<String>();
 
@@ -279,17 +279,17 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             this.syncEleWarningDao.saveNotNull(see);
         }
 
-        DataTableDto sourceTableDto = dataTableService.getDotById(syncTaskDto.getSourceTableId());
+        DataTableInfoDto sourceTableDto = dataTableService.getDotById(syncTaskDto.getSourceTableId());
 
         //数据触发同步
-        if(syncTaskDto.getSyncType() != null && syncTaskDto.getSyncType().intValue() == 2){
-            SyncDiMessageEntity sde = new SyncDiMessageEntity();
-            sde.setId(syncTaskEntity.getId());
-            sde.setMessageQueueName(syncTaskDto.getQueueName());
-            sde.setPrimaryComposition(syncTaskDto.getPrimaryCom());
-            sde.setDDataId(sourceTableDto.getClassLogic().getDataClassId());
-            this.syncDiMessageDao.saveNotNull(sde);
-        }
+//        if(syncTaskDto.getSyncType() != null && syncTaskDto.getSyncType().intValue() == 2){
+//            SyncDiMessageEntity sde = new SyncDiMessageEntity();
+//            sde.setId(syncTaskEntity.getId());
+//            sde.setMessageQueueName(syncTaskDto.getQueueName());
+//            sde.setPrimaryComposition(syncTaskDto.getPrimaryCom());
+//            sde.setDDataId(sourceTableDto.getClassLogic().getDataClassId());
+//            this.syncDiMessageDao.saveNotNull(sde);
+//        }
 
 
         return this.syncTaskMapstruct.toDto(syncTaskEntity);
@@ -299,15 +299,14 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     public void updateStorageConfiguration(List<String> targetTableIds, String targetDatabaseId, Integer syncIdentifier, String taskId) {
         if (targetTableIds != null && targetTableIds.size() > 0) {
             for (String targetTableId : targetTableIds) {
-                DataTableDto targetTableDto = dataTableService.getDotById(targetTableId);
-                List<DataLogicDto> dataLogicDtos = dataLogicService.getDataLogic(targetTableDto.getDataServiceId(), targetDatabaseId, targetTableDto.getTableName());
-                if (dataLogicDtos != null && dataLogicDtos.size() > 0) {
-                    for (DataLogicDto dataLogicDto : dataLogicDtos) {
-                        StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
-                        storageConfigurationDto.setClassLogicId(dataLogicDto.getId());
-                        storageConfigurationDto.setSyncIdentifier(syncIdentifier);
-                        storageConfigurationDto.setSyncId(taskId);
-                        storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
+                List<DataClassLogicDto> dataClassLogics = dataLogicService.findByTableId(targetTableId);
+                if (dataClassLogics != null && dataClassLogics.size() > 0) {
+                    for (DataClassLogicDto dataLogicDto : dataClassLogics) {
+                        AdvancedConfigDto advancedConfigDto = new AdvancedConfigDto();
+                        advancedConfigDto.setTableId(dataLogicDto.getTableId());
+                        advancedConfigDto.setSyncIdentifier(syncIdentifier);
+                        advancedConfigDto.setSyncId(taskId);
+                        advancedConfigService.updateDataAuthorityConfig(advancedConfigDto);
                     }
                 }
             }
@@ -316,7 +315,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public SyncTaskDto updateDto(SyncTaskDto syncTaskDto) {
         this.deleteConfigFilter(syncTaskDto.getId());
         this.saveDto(syncTaskDto);
@@ -372,9 +371,11 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
 
     public String syncConfigAndMappingSaveDto(String sourceTableId, String targetTableId, String mapping, String filterRecordIds, boolean isKV) {
         //获取源表信息
-        DataTableDto sourceTableDto = dataTableService.getDotById(sourceTableId);
+        DataTableInfoDto sourceTableDto = dataTableService.getDotById(sourceTableId);
         //获取目标表信息
-        DataTableDto targetTableDto = dataTableService.getDotById(targetTableId);
+        DataTableInfoDto targetTableDto = dataTableService.getDotById(targetTableId);
+
+        List<DataClassLogicDto> dataClassLogics = this.dataLogicService.findByTableId(sourceTableId);
 
         SyncConfigEntity tti = new SyncConfigEntity();
         tti.setTargetTableId(targetTableId);
@@ -389,8 +390,8 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
         tti.setUniqueKeys(unique_index);
 
         //目标表分库分表键
-        List<ShardingDto> shardingDtos = shardingService.getDotByTableId(targetTableId);
-        String ttkeys = getPartitionKey(shardingDtos);
+        TablePartDto tablePartDtos = shardingService.getDotByTableId(targetTableId);
+        String ttkeys = getPartitionKey(tablePartDtos);
         if (StringUtils.isNotNullString(ttkeys)) {
             tti.setIfpatitions("1");
             tti.setPartitionKeys(ttkeys);
@@ -405,8 +406,11 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
             tti.setIsKv("0");
         }
 
-        //目标表的存储编码
-        tti.setDDataId(targetTableDto.getDataServiceId());
+        if (dataClassLogics!=null&&dataClassLogics.size()>0){
+            String dataClassId = dataClassLogics.get(0).getDataClassId();
+            //目标表的存储编码
+            tti.setDDataId(dataClassId);
+        }
         //存储
         tti = syncConfigDao.saveNotNull(tti);
 
@@ -472,19 +476,14 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     /**
      * 分库分表键
      *
-     * @param shardingDtos
+     * @param tablePartDto
      * @return
      */
-    public String getPartitionKey(List<ShardingDto> shardingDtos) {
+    public String getPartitionKey(TablePartDto tablePartDto) {
         try {
             String partitionKey = "";//分库分表键，用逗号分隔
-            if (shardingDtos != null && shardingDtos.size() > 0) {
-                for (ShardingDto shard : shardingDtos) {
-                    partitionKey += shard.getColumnName() + ",";
-                }
-                if (partitionKey.length() > 0) {
-                    partitionKey = partitionKey.substring(0, partitionKey.length() - 1);
-                }
+            if (tablePartDto != null) {
+                    partitionKey += tablePartDto.getPartitions();
             }
             return partitionKey;
         } catch (Exception e) {
@@ -539,7 +538,7 @@ public class SyncTaskServiceImpl extends BaseService<SyncTaskEntity> implements 
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     public void deleteSync(String taskId) {
         List<String> targetTableIds = deleteConfigFilter(taskId);
 

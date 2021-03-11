@@ -2,7 +2,7 @@ package com.piesat.dm.rpc.api.datatable;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.util.constant.GrpcConstant;
 
 import java.util.List;
@@ -15,17 +15,17 @@ import java.util.List;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface ShardingService {
-    ShardingDto saveDto(ShardingDto shardingDto);
+    TablePartDto saveDto(TablePartDto tablePartDto);
 
-    List<ShardingDto> saveDto(List<ShardingDto> shardingDto);
+    List<TablePartDto> saveDto(List<TablePartDto> tablePartDto);
 
-    ShardingDto getDotById(String id);
+    TablePartDto getDotById(String id);
 
-    List<ShardingDto> getDotByTableId(String id);
+    TablePartDto getDotByTableId(String id);
 
     void delete(String id);
 
-    List<ShardingDto> all();
+    List<TablePartDto> all();
 
 
 }

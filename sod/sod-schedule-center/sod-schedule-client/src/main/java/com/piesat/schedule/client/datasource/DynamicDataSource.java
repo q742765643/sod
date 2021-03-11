@@ -2,18 +2,14 @@ package com.piesat.schedule.client.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.piesat.common.grpc.config.SpringUtil;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.schedule.client.vo.ConnectVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -158,15 +154,15 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
     }
     private synchronized DataSource getDataSource(String dataSourceName) {
         DataSource dataSource=null;
-        DatabaseService databaseService= SpringUtil.getBean(DatabaseService.class);
-        List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
+        SchemaService schemaService = SpringUtil.getBean(SchemaService.class);
+        List<SchemaDto> schemaDtos = schemaService.findByLevel(1);
         boolean flag=false;
-        for(DatabaseDto databaseDto:databaseDtos){
-               String parentId=databaseDto.getDatabaseDefine().getId();
+        for(SchemaDto schemaDto : schemaDtos){
+               String parentId= schemaDto.getDatabase().getId();
                if(parentId.toUpperCase().equals(dataSourceName.toUpperCase())){
                    flag=true;
                    ConnectVo connectVo =new ConnectVo();
-                   Set<DatabaseAdministratorDto> databaseAdministratorDtos=databaseDto.getDatabaseDefine().getDatabaseAdministratorList();
+                   Set<DatabaseAdministratorDto> databaseAdministratorDtos= schemaDto.getDatabase().getDatabaseAdministratorList();
                    String userName="";
                    String password="";
                    try {
@@ -180,11 +176,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                    } catch (Exception e) {
                        e.printStackTrace();
                    }
-                   connectVo.setIp(databaseDto.getDatabaseDefine().getDatabaseIp());
-                   connectVo.setPort(Integer.parseInt(databaseDto.getDatabaseDefine().getDatabasePort()));
+                   connectVo.setIp(schemaDto.getDatabase().getDatabaseIp());
+                   connectVo.setPort(Integer.parseInt(schemaDto.getDatabase().getDatabasePort()));
                    connectVo.setUserName(userName);
                    connectVo.setPassWord(password);
-                   connectVo.setUrl(databaseDto.getDatabaseDefine().getDatabaseUrl());
+                   connectVo.setUrl(schemaDto.getDatabase().getDatabaseUrl());
                    if(null!=connectVoMap.get(parentId)&&null!=_targetDataSources.get(parentId)){
                      ConnectVo yConnectVo=connectVoMap.get(parentId);
                      if(connectVo.getUrl().equals(yConnectVo.getUrl())
@@ -194,13 +190,13 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
                          return null;
                      }
                    }
-                   type.put(parentId,databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase());
+                   type.put(parentId, schemaDto.getDatabase().getDatabaseType().toUpperCase());
                    connectVoMap.put(parentId, connectVo);
-                   if(!"CASSANDRA".equals(databaseDto.getDatabaseDefine().getDatabaseType().toUpperCase())){
+                   if(!"CASSANDRA".equals(schemaDto.getDatabase().getDatabaseType().toUpperCase())){
                        if(!"".equals(userName)&&!"".equals(password)){
                            log.info("========={}创建连接池===========",parentId);
-                           String url=databaseDto.getDatabaseDefine().getDatabaseUrl();
-                           String driverClassName=databaseDto.getDatabaseDefine().getDriverClassName();
+                           String url= schemaDto.getDatabase().getDatabaseUrl();
+                           String driverClassName= schemaDto.getDatabase().getDriverClassName();
                            dataSource = this.createDataSource(
                                    driverClassName, url, userName, password);
                        }

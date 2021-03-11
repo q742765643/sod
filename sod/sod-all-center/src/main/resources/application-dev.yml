@@ -12,7 +12,8 @@ server:
     #key-store: classpath:keystore.https
     #key-store-password: qwe123
     #keyStoreType: PKCS12
-    #keyAlias: htht
+    #keyAlias: hthta
+  max-http-header-size: 102400
 jasypt:
   encryptor:
     password: HT95279527
@@ -68,6 +69,13 @@ spring:
       breakAfterAcquireFailure: true
       failFast: true
       connectionErrorRetryAttempts: 2
+      #druid recycle Druid的连接回收机制
+      #超过时间限制是否回收
+      removeAbandoned: true
+      #超时时间；单位为秒。180秒=3分钟
+      removeAbandonedTimeout: 180
+      #关闭abanded连接时输出错误日志
+      logAbandoned: true
 
   main:
     allow-bean-definition-overriding: true
@@ -89,9 +97,9 @@ spring:
 mybatis:
   type-aliases-package: com.piesat.*.entity
   mapper-locations: classpath*:mapper/*.xml
-  callSettersOnNulls: true
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true
 #分页插件
 pagehelper:
   helper-dialect: mysql
@@ -129,12 +137,14 @@ are:
   userName: usr_music
   password: ENC(odKCJcYCq5dm43Fm2r6ikLKBI7ILGegx)
 
- #博云中间件接口
+
+#博云中间件接口
 cloudDeploy:
   loginUrl: http://10.20.64.167:8081/api/cloud/iams/login
   url: http://10.20.64.167:8087/api/cloud/usms/v1/middlewares/
   cloudName: multifort
   cloudPassword: Admin#11
+
 
 serverfile:
   dbfile: /space/cmadaas/sod/src/sod/file/upload/dbfile
@@ -179,6 +189,7 @@ fidbDownloadUrl: http://10.40.17.34:8028/fileApi
 
 product:
   enable: true
+  mmdneed: true
 
 #单位为秒
 session:

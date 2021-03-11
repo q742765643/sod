@@ -12,6 +12,6 @@ public interface ApiParamDao extends BaseDao<ApiParamEntity> {
 
     List<ApiParamEntity> findByApiId(String apiId);
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     void deleteByApiId(String apiId);
 }

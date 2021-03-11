@@ -7,18 +7,17 @@ import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
-import com.piesat.dm.rpc.dto.datatable.SampleData;
-import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
-import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
+import com.piesat.dm.rpc.dto.dataclass.DataClassLogicDto;
+import com.piesat.dm.rpc.dto.datatable.*;
+import com.piesat.dm.rpc.vo.TableInfoVo;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sod.system.rpc.api.ServiceCodeService;
-import com.piesat.sod.system.rpc.dto.ServiceCodeDto;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.ucenter.rpc.dto.system.DictDataDto;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -55,17 +54,15 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:add")
     @Log(title = "表信息管理(新增表信息)", businessType = BusinessType.INSERT)
     @PostMapping(value = "/save")
-    public ResultT save(@RequestBody DataTableDto dataTableDto) {
+    public ResultT save(@RequestBody DataTableInfoDto dataTableDto) {
         try {
             String id = dataTableDto.getId();
             if (StringUtils.isNotBlank(id)) {
-                DataTableDto dot = this.dataTableService.getDotById(id);
+                DataTableInfoDto dot = this.dataTableService.getDotById(id);
                 dataTableDto.setColumns(dot.getColumns());
                 dataTableDto.setTableIndexList(dot.getTableIndexList());
             }
-            DataLogicDto dataLogicDto = dataLogicService.getDotById(dataTableDto.getClassLogic().getId());
-            dataTableDto.setClassLogic(dataLogicDto);
-            DataTableDto save = this.dataTableService.saveDto(dataTableDto);
+            DataTableInfoDto save = this.dataTableService.saveDto(dataTableDto);
             return ResultT.success(save);
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,26 +74,24 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:addApply")
     @Log(title = "表信息管理（新增申请表信息）", businessType = BusinessType.INSERT)
     @PostMapping(value = "/addApply")
-    public ResultT addApply(String classLogicIds, String applyId) {
+    public ResultT addApply(String classLogicIds, String applyId, String storageType, String databaseId) {
         try {
             NewdataApplyDto newdataApplyDto = this.newdataApplyService.getDotById(applyId);
-
             String[] ids = classLogicIds.split(",");
-            List<DataTableDto> list = new ArrayList<>();
+            List<DataTableInfoDto> list = new ArrayList<>();
             for (String id : ids) {
-                DataLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
+                DataClassLogicDto dataLogicDto = this.dataLogicService.getDotById(id);
                 DataClassDto dataClassDto = this.dataClassService.findByDataClassId(dataLogicDto.getDataClassId());
-                DataTableDto dataTableDto = new DataTableDto();
-                dataTableDto.setClassLogic(dataLogicDto);
+                DataTableInfoDto dataTableDto = new DataTableInfoDto();
+                dataTableDto.setDatabaseId(databaseId);
+                dataTableDto.setStorageType(storageType);
                 dataTableDto.setColumns(newdataApplyDto.toTableColumn());
                 dataTableDto.setCreateTime(new Date());
-                dataTableDto.setDataServiceId(dataClassDto.getDataClassId());
-                dataTableDto.setDbTableType("E");
+                dataTableDto.setTableType("E");
                 dataTableDto.setUserId(newdataApplyDto.getUserId());
                 dataTableDto.setNameCn(dataClassDto.getClassName());
-                dataTableDto.setDataServiceName(dataClassDto.getClassName());
                 dataTableDto.setTableName(newdataApplyDto.getTableName());
-                DataTableDto save = this.dataTableService.saveDto(dataTableDto);
+                DataTableInfoDto save = this.dataTableService.saveDto(dataTableDto);
                 list.add(save);
             }
             return ResultT.success(list);
@@ -112,8 +107,12 @@ public class DataTableController {
     @GetMapping(value = "/get")
     public ResultT get(String id) {
         try {
-            DataTableDto dataTableDto = this.dataTableService.getDotById(id);
-            return ResultT.success(dataTableDto);
+            DataTableInfoDto dataTableDto = this.dataTableService.getDotById(id);
+            ResultT r = new ResultT();
+            if (dataTableDto != null) {
+                this.dataTableService.contrastColumns(dataTableDto, r);
+            }
+            return r;
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -152,7 +151,7 @@ public class DataTableController {
     @GetMapping(value = "/dc")
     public ResultT getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
         try {
-            List<DataTableDto> r = this.dataTableService.getByDatabaseIdAndClassId(databaseId, dataClassId);
+            List<DataTableInfoDto> r = this.dataTableService.getByDatabaseIdAndClassId(databaseId, dataClassId);
             return ResultT.success(r);
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +164,7 @@ public class DataTableController {
     @GetMapping(value = "/gcl")
     public ResultT getByClassLogicId(String classLogic) {
         try {
-            List<DataTableDto> r = this.dataTableService.getByClassLogicId(classLogic);
+            List<DataTableInfoDto> r = this.dataTableService.getByClassLogicId(classLogic);
             return ResultT.success(r);
         } catch (Exception e) {
             e.printStackTrace();
@@ -202,7 +201,7 @@ public class DataTableController {
     @ApiOperation(value = "查询样例数据")
     @RequiresPermissions("dm:dataTable:sample")
     @PostMapping(value = "/sample")
-    public ResultT getSampleData(@RequestBody SampleData sampleData) {
+    public ResultT getSampleData(SampleData sampleData) {
         try {
             return this.dataTableService.getSampleData(sampleData);
         } catch (Exception e) {
@@ -230,18 +229,6 @@ public class DataTableController {
     public ResultT getOverview(String databaseId, String dataClassId) {
         try {
             return this.dataTableService.getOverview(databaseId, dataClassId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        }
-    }
-
-    @ApiOperation(value = "查询sql信息")
-    @RequiresPermissions("dm:dataTable:getSql")
-    @GetMapping(value = "/getSql")
-    public ResultT getSql(String tableId, String databaseId) {
-        try {
-            return this.grpcService.getSql(tableId, databaseId);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -290,7 +277,7 @@ public class DataTableController {
     public ResultT createTable(@RequestBody TableSqlDto tableSqlDto) {
         try {
             ResultT resultT = this.dataTableService.existTable(tableSqlDto);
-            if (resultT.getCode()==1||resultT.getData().equals(true)){
+            if (resultT.getCode() == 1 || resultT.getData().equals(true)) {
                 return ResultT.failed("数据库已经存在表结构!");
             }
             return this.dataTableService.createTable(tableSqlDto);
@@ -307,6 +294,119 @@ public class DataTableController {
     public ResultT existTable(TableSqlDto tableSqlDto) {
         try {
             return this.dataTableService.existTable(tableSqlDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据tableId查询相关的键表要素表")
+    @RequiresPermissions("dm:dataTable:findTables")
+    @GetMapping(value = "/findTables")
+    public ResultT findTables(String tableId) {
+        try {
+            List<Map<String, Object>> tables = this.dataTableService.findTables(tableId);
+            return ResultT.success(tables);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据tableId查询相关的表")
+    @RequiresPermissions("dm:dataTable:getRelatedTables")
+    @GetMapping(value = "/getRelatedTables")
+    public ResultT getRelatedTables(String tableId) {
+        try {
+            List<Map<String, Object>> tables = this.dataTableService.getRelatedTables(tableId);
+            return ResultT.success(tables);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据物理库id查询所有要素表")
+    @RequiresPermissions("dm:dataTable:findETable")
+    @GetMapping(value = "/findETable")
+    public ResultT findETable(String databaseId) {
+        try {
+            List<Map<String, Object>> eTable = this.dataTableService.findETable(databaseId);
+            return ResultT.success(eTable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @GetMapping("/getPageTableInfo")
+    @ApiOperation(value = "条件分页查询")
+    @RequiresPermissions("dm:dataTable:getPageTableInfo")
+    public ResultT<PageBean> getPageTableInfo(TableInfoVo tableInfoVo,
+                                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                              @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Map<String, String> map = tableInfoVo.getMap();
+        PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = this.dataTableService.getPageTableInfo(pageForm);
+        return ResultT.success(pageBean);
+    }
+
+    @ApiOperation(value = "查询表数据量")
+    @RequiresPermissions("dm:dataTable:countTable")
+    @GetMapping(value = "/countTable")
+    public ResultT countTable(TableSqlDto tableSqlDto) {
+        try {
+            long l = this.dataTableService.countTable(tableSqlDto);
+            return ResultT.success(l);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询表sql")
+    @RequiresPermissions("dm:dataTable:getSql")
+    @GetMapping(value = "/getSql")
+    public ResultT getSql(String tableId) {
+        try {
+            return this.grpcService.getSql(tableId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据子表类型查询")
+    @RequiresPermissions("dm:dataTable:findBySubType")
+    @GetMapping(value = "/findBySubType")
+    public ResultT findBySubType(String tableType, String storageType) {
+        try {
+            return ResultT.success(this.dataTableService.findBySubType(tableType, storageType));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "根据表名查询相关表信息")
+    @RequiresPermissions("dm:dataTable:findTablesByTableName")
+    @GetMapping(value = "/findTablesByTableName")
+    public ResultT findTablesByTableName(String tableName) {
+        try {
+            return ResultT.success(this.dataTableService.findTablesByTableName(tableName));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value = "查询所有要素表")
+    @RequiresPermissions("dm:dataTable:findAllETables")
+    @GetMapping(value = "/findAllETables")
+    public ResultT findAllETables() {
+        try {
+            return ResultT.success(this.dataTableService.findAllETables());
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

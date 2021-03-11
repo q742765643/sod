@@ -2,11 +2,13 @@ package com.piesat.dm.rpc.api.datatable;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
 import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 
 import java.util.List;
 import java.util.Map;
@@ -19,17 +21,21 @@ import java.util.Map;
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DataTableService {
-    DataTableDto saveDto(DataTableDto dataTableDto);
+    DataTableInfoDto saveDto(DataTableInfoDto dataTableDto);
 
-    DataTableDto getDotById(String id);
+    DataTableInfoDto getDotById(String id);
 
     void delete(String id);
 
-    void deleteByClassLogicId(String classLogicId);
+    /**
+     * 根据id删除
+     * @param id
+     */
+    void deleteById(String id);
 
-    List<DataTableDto> all();
+    List<DataTableInfoDto> all();
 
-    List<DataTableDto> getByDatabaseIdAndClassId(String databaseId,String dataClassId);
+    List<DataTableInfoDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId);
 
     List<Map<String, Object>> getByDatabaseId(String databaseId);
 
@@ -39,22 +45,83 @@ public interface DataTableService {
 
     List<Map<String, Object>> getMultiDataInfoByClassId(String dataClassId);
 
-    List<DataTableDto> getByClassLogicId(String classLogic);
+    List<DataTableInfoDto> getByClassLogicId(String classLogic);
 
-
-    int updateById(DataTableDto dataTableDto);
-
-    ResultT getOverview(String databaseId,String dataClassId);
+    ResultT getOverview(String databaseId, String dataClassId);
 
     ResultT getSampleData(SampleData sampleData) throws Exception;
 
-    List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId,String tableName);
+    List<Map<String, Object>> getByDatabaseIdAndTableName(String databaseId, String tableName);
 
-    ResultT paste(String copyId,String pasteId);
+    ResultT paste(String copyId, String pasteId);
 
     ResultT createTable(TableSqlDto tableSqlDto);
 
     ResultT existTable(TableSqlDto tableSqlDto);
 
-    List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName,String databaseId,String dataclassId);
+    /**
+     * 按物理库查询要素表
+     *
+     * @param databaseId
+     * @return
+     */
+    List<Map<String, Object>> findETable(String databaseId);
+
+    /**
+     * 根据tableId查询相关的键表要素表
+     *
+     * @param tableId
+     * @return
+     */
+    List<Map<String, Object>> findTables(String tableId);
+
+    /**
+     * 获取关联表信息
+     * @param tableId
+     * @return
+     */
+    List<Map<String, Object>> getRelatedTables(String tableId);
+
+    /**
+     * 对比字段信息
+     *
+     * @param dataTableInfoDto
+     * @param resultT
+     */
+    void contrastColumns(DataTableInfoDto dataTableInfoDto, ResultT resultT);
+
+    /**
+     * 分页查询
+     * @param pageForm
+     * @return
+     */
+    PageBean getPageTableInfo(PageForm<Map<String, String>> pageForm);
+
+    /**
+     * 单表数据量
+     * @param tableSqlDto
+     * @return
+     */
+    long countTable(TableSqlDto tableSqlDto);
+
+    /**
+     * 根据子表类型查询
+     * @param tableType
+     * @param storageType
+     * @return
+     */
+    List<Map<String, Object>> findBySubType(String tableType,String storageType);
+
+    /**
+     * 根据表名查询相关表信息
+     * @param tableName
+     * @return
+     */
+    List<Map<String, Object>> findTablesByTableName(String tableName);
+
+    /**
+     * 查询所有要素表
+     * @return
+     */
+    List<Map<String, Object>> findAllETables();
 }

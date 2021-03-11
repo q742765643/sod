@@ -1,38 +1,46 @@
 package com.piesat.dm.rpc.service.datatable;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.MapUtil;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.common.constants.Constants;
+import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.core.action.build.DataBuild;
+import com.piesat.dm.core.action.exc.abs.ExcAbs;
+import com.piesat.dm.core.enums.CountEnum;
+import com.piesat.dm.core.model.AuthorityVo;
+import com.piesat.dm.core.model.ConnectVo;
+import com.piesat.dm.core.model.SelectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
-import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.dataclass.DataLogicDao;
 import com.piesat.dm.dao.datatable.*;
-import com.piesat.dm.entity.database.DatabaseEntity;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.SampleData;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.dm.rpc.dto.datatable.TableSqlDto;
-import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
+import com.piesat.dm.rpc.mapper.datatable.DataTableMapper;
 import com.piesat.dm.rpc.mapper.datatable.TableForeignKeyMapper;
-import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
+import com.piesat.util.ReturnCodeEnum;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,15 +56,13 @@ import java.util.*;
  * @date 2019年 11月22日 16:34:17
  */
 @Service
-public class DataTableServiceImpl extends BaseService<DataTableEntity> implements DataTableService {
+public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> implements DataTableService {
     @Autowired
     private DataTableDao dataTableDao;
     @Autowired
     private DataTableMapper dataTableMapper;
     @Autowired
     private ShardingDao shardingDao;
-    @Autowired
-    private DatabaseDao databaseDao;
     @Autowired
     private DatabaseMapper databaseMapper;
     @Autowired
@@ -78,80 +84,77 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     @Autowired
     private NewdataApplyService newdataApplyService;
     @Autowired
-    private StorageConfigurationService storageConfigurationService;
+    private SchemaService schemaService;
     @Autowired
     private TableForeignKeyMapper tableForeignKeyMapper;
 
     @Override
-    public BaseDao<DataTableEntity> getBaseDao() {
+    public BaseDao<DataTableInfoEntity> getBaseDao() {
         return dataTableDao;
     }
 
     @Override
-    @Transactional
-    public DataTableDto saveDto(DataTableDto dataTableDto) {
+    @Transactional(rollbackFor = Exception.class)
+    public DataTableInfoDto saveDto(DataTableInfoDto dataTableDto) {
         if (dataTableDto.getId() != null) {
-            DataTableDto dotById = this.getDotById(dataTableDto.getId());
-            String dataClassId = dataTableDto.getClassLogic().getDataClassId();
-            List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
-                    .findByDataClassIdAndUserId(dataClassId, dotById.getUserId());
-            if (NewdataApplyDtos.size() > 0) {
-                NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
-                newdataApplyDto.setTableName(dataTableDto.getTableName());
-                this.newdataApplyService.saveDto(newdataApplyDto);
+            DataTableInfoDto dotById = this.getDotById(dataTableDto.getId());
+            List<DataClassAndTableEntity> dataClassLogic = this.dataLogicDao.findByTableId(dataTableDto.getId());
+            if (dataClassLogic != null && !dataClassLogic.isEmpty()) {
+                String dataClassId = dataClassLogic.get(0).getDataClassId();
+                List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
+                        .findByDataClassIdAndUserId(dataClassId, dotById.getUserId());
+                if (NewdataApplyDtos != null && !NewdataApplyDtos.isEmpty()) {
+                    NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
+                    newdataApplyDto.setTableName(dataTableDto.getTableName());
+                    this.newdataApplyService.saveDto(newdataApplyDto);
+                }
             }
         }
 
-        DataTableEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
+        DataTableInfoEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
         UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         dataTableEntity.setCreator(loginUser.getUserName());
         dataTableEntity = this.saveNotNull(dataTableEntity);
-        List<StorageConfigurationDto> sc = this.storageConfigurationService.findByClassLogicId(dataTableEntity.getClassLogic().getId());
-        if (sc != null && sc.size() > 0) {
-            StorageConfigurationDto storageConfigurationDto = sc.get(0);
-            storageConfigurationDto.setStorageDefineIdentifier(1);
-            this.storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
-        } else {
-            StorageConfigurationDto storageConfigurationDto = new StorageConfigurationDto();
-            storageConfigurationDto.setClassLogicId(dataTableEntity.getClassLogic().getId());
-            storageConfigurationDto.setStorageDefineIdentifier(1);
-            storageConfigurationDto.setSyncIdentifier(2);
-            storageConfigurationDto.setCleanIdentifier(2);
-            storageConfigurationDto.setMoveIdentifier(2);
-            storageConfigurationDto.setBackupIdentifier(2);
-            storageConfigurationDto.setArchivingIdentifier(2);
-            this.storageConfigurationService.saveDto(storageConfigurationDto);
-        }
         return this.dataTableMapper.toDto(dataTableEntity);
     }
 
     @Override
-    public List<DataTableDto> all() {
-        List<DataTableEntity> all = this.getAll();
+    public List<DataTableInfoDto> all() {
+        List<DataTableInfoEntity> all = this.getAll();
         return this.dataTableMapper.toDto(all);
     }
 
     @Override
-    public DataTableDto getDotById(String id) {
-        DataTableEntity dataTableEntity = this.getById(id);
-        return this.dataTableMapper.toDto(dataTableEntity);
+    public DataTableInfoDto getDotById(String id) {
+        DataTableInfoDto dataTableInfoDto = this.dataTableMapper.toDto(this.getById(id));
+        if (dataTableInfoDto == null) {
+            return null;
+        }
+        SchemaDto schemaDto = this.schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        if (schemaDto != null) {
+            dataTableInfoDto.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
+            dataTableInfoDto.setDatabaseName(schemaDto.getDatabase().getDatabaseName());
+        }
+        return dataTableInfoDto;
     }
 
     @Override
-    public void deleteByClassLogicId(String classLogicId) {
-        this.dataTableDao.deleteByClassLogic_Id(classLogicId);
+    public void deleteById(String id) {
+        this.shardingDao.deleteById(id);
+        this.tableColumnDao.deleteByTableId(id);
+        this.tableIndexDao.deleteByTableId(id);
+        this.delete(id);
     }
 
     @Override
-    public List<DataTableDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
-        List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
+    public List<DataTableInfoDto> getByDatabaseIdAndClassId(String databaseId, String dataClassId) {
+        List<DataTableInfoEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
         return this.dataTableMapper.toDto(tableEntities);
     }
 
     @Override
     public List<Map<String, Object>> getByDatabaseId(String databaseId) {
-        //List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(this.dataTableDao.getByDatabaseId(databaseId));
-        String sql = "select A.* ,B.data_class_id,B.storage_type from T_SOD_DATA_TABLE A,T_SOD_DATA_LOGIC B where A.class_logic_id=B.id and B.database_id ='" + databaseId + "'";
+        String sql = "select A.* from T_SOD_DATA_TABLE_INFO A,T_SOD_DATACLASS_TABLE B where ( A.id=B.table_id or A.id = B.SUB_TABLE_ID ) and A.database_id ='" + databaseId + "'";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         List<Map<String, Object>> maps = MapUtil.transformMapList(list);
         return maps;
@@ -159,7 +162,7 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
     @Override
     public List<Map<String, Object>> findByUserId(String userId) {
-        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> resultList;
         if ("mysql".equals(DatabseType.type.toLowerCase())) {
             resultList = mybatisQueryMapper.getInfoByUserIdMysql(userId);
         } else {
@@ -182,18 +185,18 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     public List<Map<String, Object>> getMultiDataInfoByClassId(String dataClassId) {
         //根据存储编码查询表信息
         List<Map<String, Object>> tableInfoLists = mybatisQueryMapper.getTableInfoByClassId(dataClassId);
-        if (tableInfoLists != null && tableInfoLists.size() > 0) {
+        if (tableInfoLists != null && !tableInfoLists.isEmpty()) {
             for (int i = 0; i < tableInfoLists.size(); i++) {
                 Map<String, Object> tableInfo = tableInfoLists.get(i);
 
                 //根据表ID查询表实体
-                DataTableDto dataTableDto = this.getDotById(String.valueOf(tableInfo.get("ID")));
+                DataTableInfoDto dataTableDto = this.getDotById(String.valueOf(tableInfo.get("ID")));
 
                 //索引涉及到的字段
                 List<String> indexField = new ArrayList<String>();
                 JSONObject indexFieldJson = new JSONObject();
                 LinkedHashSet<TableIndexDto> tableIndexList = dataTableDto.getTableIndexList();
-                if (tableIndexList != null && tableIndexList.size() > 0) {
+                if (tableIndexList != null && !tableIndexList.isEmpty()) {
                     for (TableIndexDto tableIndexDto : tableIndexList) {
                         String indexColumn = tableIndexDto.getIndexColumn();
                         for (String column : indexColumn.split(",")) {
@@ -215,31 +218,26 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
-    public List<DataTableDto> getByClassLogicId(String classLogic) {
-        List<DataTableEntity> tableEntities = this.dataTableDao.findByClassLogicId(classLogic);
+    public List<DataTableInfoDto> getByClassLogicId(String classLogic) {
+        List<DataTableInfoEntity> tableEntities = this.dataTableDao.getByClassLogicId(classLogic);
         return this.dataTableMapper.toDto(tableEntities);
-    }
-
-    @Override
-    public int updateById(DataTableDto dataTableDto) {
-        return dataTableDao.updateById(dataTableDto.getTableName(), dataTableDto.getId());
     }
 
 
     @Override
     public ResultT getOverview(String databaseId, String dataClassId) {
-        List<DataTableEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
+        List<DataTableInfoEntity> tableEntities = this.dataTableDao.getByDatabaseIdAndClassId(databaseId, dataClassId);
         if (tableEntities == null || tableEntities.size() == 0) {
             return ResultT.failed("没有适应表");
         } else {
             Map<String, Object> map = new HashMap<>();
-            DatabaseEntity databaseEntity = this.databaseDao.findById(databaseId).get();
-            DataTableEntity keyTable = null;
-            DataTableEntity eleTable = null;
+            SchemaDto schemaDto = this.schemaService.getDotById(databaseId);
+            DataTableInfoEntity keyTable = null;
+            DataTableInfoEntity eleTable = null;
             if (tableEntities.size() == 1) {
                 keyTable = tableEntities.get(0);
             } else {
-                if ("K".equals(tableEntities.get(0).getDbTableType().toUpperCase())) {
+                if ("K".equals(tableEntities.get(0).getTableType().toUpperCase())) {
                     keyTable = tableEntities.get(0);
                     eleTable = tableEntities.get(1);
                 } else {
@@ -249,16 +247,20 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
             }
             map.put("K", keyTable == null ? "" : keyTable.getTableName());
             map.put("E", eleTable == null ? "" : eleTable.getTableName());
-            List<TableForeignKeyEntity> foreignKeyEntities = this.tableForeignKeyDao.findByClassLogicId(keyTable.getClassLogic().getId());
-            if (foreignKeyEntities.size() > 0) {
+            List<TableForeignKeyEntity> foreignKeyEntities = this.tableForeignKeyDao.findByTableId(keyTable.getId());
+            if (foreignKeyEntities != null && !foreignKeyEntities.isEmpty()) {
                 map.put("foreignKey", this.tableForeignKeyMapper.toDto(foreignKeyEntities));
             }
             List<TableColumnEntity> primaryKey = this.tableColumnDao.findByTableIdAndIsPrimaryKeyTrue(keyTable.getId());
-            if (primaryKey.size() > 0) {
+            if (primaryKey != null && !primaryKey.isEmpty()) {
                 map.put("primaryKey", primaryKey.get(0).getDbEleCode());
             }
-            map.put("database", this.databaseMapper.toDto(databaseEntity));
-            DataClassEntity dataClass = this.dataClassDao.findByDataClassId(keyTable.getClassLogic().getDataClassId());
+            map.put("database", schemaDto);
+            List<DataClassAndTableEntity> dataClassTable = this.dataLogicDao.findByTableId(keyTable.getId());
+            if (dataClassTable.size() < 1) {
+                return ResultT.failed("没有对应资料");
+            }
+            DataClassEntity dataClass = this.dataClassDao.findByDataClassId(dataClassTable.get(0).getDataClassId());
             map.put("D_DATA_ID", dataClass.getDDataId());
             map.put("CLASSNAME", dataClass.getClassName());
             return ResultT.success(map);
@@ -266,21 +268,26 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
-    public ResultT getSampleData(SampleData sampleData) throws Exception {
-        DatabaseEntity databaseEntity = this.databaseDao.findById(sampleData.getDatabaseId()).get();
-        DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
-        DatabaseDcl database = null;
+    public ResultT getSampleData(SampleData sampleData) {
+        SchemaDto schemaDto = this.schemaService.getDotById(sampleData.getDatabaseId());
         ResultT r = new ResultT();
-        try {
-            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-            r = database.queryData(databaseDto.getSchemaName(), sampleData.getTableName(), sampleData.getColumn(), 10);
-            database.closeConnect();
-        } catch (Exception e) {
-        } finally {
-            if (database != null) {
-                database.closeConnect();
-            }
+        r.setTitle(ConstantsMsg.TITLE1);
+        if (schemaDto == null) {
+            r.setErrorMessage(ConstantsMsg.MSG10, sampleData.getTableName());
+            return r;
         }
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+
+        SelectVo s = new SelectVo();
+        s.setSchema(schemaDto.getSchemaName());
+        s.setTableName(sampleData.getTableName());
+
+        new DataBuild()
+                .init(coreInfo,r)
+                .sampleData(s,r)
+                .close();
+
+        r.setMessage(String.valueOf(r.getProcessMsg()));
         return r;
     }
 
@@ -290,26 +297,23 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResultT paste(String copyId, String pasteId) {
-        List<DataTableEntity> copys = this.dataTableDao.findByClassLogicId(copyId);
-        DataLogicEntity paste = this.dataLogicDao.getOne(pasteId);
-        List<DataTableEntity> pDataTableEntitys = this.dataTableDao.findByClassLogicId(pasteId);
-        for (DataTableEntity pd : pDataTableEntitys) {
-            this.shardingDao.deleteByTableId(pd.getId());
+        List<DataTableInfoEntity> copys = this.dataTableDao.getByClassLogicId(copyId);
+        DataClassAndTableEntity paste = this.dataLogicDao.getOne(pasteId);
+        List<DataTableInfoEntity> pDataTableEntitys = this.dataTableDao.getByClassLogicId(pasteId);
+        for (DataTableInfoEntity pd : pDataTableEntitys) {
+            this.shardingDao.deleteById(pd.getId());
             this.tableColumnDao.deleteByTableId(pd.getId());
             this.tableIndexDao.deleteByTableId(pd.getId());
             this.delete(pd.getId());
         }
 
         DataClassEntity dataClassEntity = this.dataClassDao.findByDataClassId(paste.getDataClassId());
-        for (DataTableEntity copy : copys) {
-            DataTableEntity dte = new DataTableEntity();
+        for (DataTableInfoEntity copy : copys) {
+            DataTableInfoEntity dte = new DataTableInfoEntity();
             BeanUtils.copyProperties(copy, dte);
-            List<ShardingEntity> shardingEntities = this.shardingDao.findByTableId(dte.getId());
-            dte.setClassLogic(paste);
-            dte.setDataServiceId(dataClassEntity.getDataClassId());
-            dte.setDataServiceName(dataClassEntity.getClassName());
+            TablePartEntity parting = this.shardingDao.findById(dte.getId()).orElse(null);
             dte.setNameCn(dataClassEntity.getClassName());
             dte.setCreateTime(new Date());
             dte.setId(null);
@@ -340,40 +344,18 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
                 til.add(te);
             }
             dte.setTableIndexList(til);
-            DataTableEntity save = this.dataTableDao.saveNotNull(dte);
+            DataTableInfoEntity save = this.dataTableDao.saveNotNull(dte);
 
-            List<StorageConfigurationDto> sc = this.storageConfigurationService.findByClassLogicId(save.getClassLogic().getId());
-            if (sc != null && sc.size() > 0) {
-                StorageConfigurationDto storageConfigurationDto = sc.get(0);
-                storageConfigurationDto.setStorageDefineIdentifier(1);
-                this.storageConfigurationService.updateDataAuthorityConfig(storageConfigurationDto);
-            } else {
-                StorageConfigurationDto scd = new StorageConfigurationDto();
-                scd.setClassLogicId(save.getClassLogic().getId());
-                scd.setStorageDefineIdentifier(1);
-                scd.setSyncIdentifier(2);
-                scd.setCleanIdentifier(2);
-                scd.setMoveIdentifier(2);
-                scd.setBackupIdentifier(2);
-                scd.setArchivingIdentifier(2);
-                this.storageConfigurationService.saveDto(scd);
-            }
-
-            for (ShardingEntity se : shardingEntities) {
-                ShardingEntity sde = new ShardingEntity();
-                BeanUtils.copyProperties(se, sde);
-                sde.setTableId(save.getId());
-                String id = UUID.randomUUID().toString();
-                sde.setId(null);
-                sde.setCreateTime(new Date());
-                sde.setVersion(0);
-                this.shardingDao.saveNotNull(sde);
-            }
-
+            TablePartEntity sde = new TablePartEntity();
+            BeanUtils.copyProperties(parting, sde);
+            sde.setId(save.getId());
+            sde.setCreateTime(new Date());
+            sde.setVersion(0);
+            this.shardingDao.saveNotNull(sde);
         }
         List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
                 .findByDataClassIdAndUserId(dataClassEntity.getDataClassId(), dataClassEntity.getCreateBy());
-        if (NewdataApplyDtos.size() > 0 && copys.size() > 0) {
+        if (NewdataApplyDtos !=null && !NewdataApplyDtos.isEmpty() && copys!=null && !copys.isEmpty()) {
             NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
             newdataApplyDto.setTableName(copys.get(0).getTableName());
             this.newdataApplyService.saveDto(newdataApplyDto);
@@ -383,52 +365,129 @@ public class DataTableServiceImpl extends BaseService<DataTableEntity> implement
 
     @Override
     public ResultT createTable(TableSqlDto tableSqlDto) {
-        DatabaseEntity databaseEntity = this.databaseDao.findById(tableSqlDto.getDatabaseId()).get();
-        DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
-        DatabaseDcl database = null;
-        try {
-            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-            String tableName = databaseDto.getSchemaName() + "." + tableSqlDto.getTableName();
-            ResultT t = database.createTable(tableSqlDto.getTableSql(), tableName, tableSqlDto.getDelOld());
-            database.closeConnect();
-            if (t.getCode() != 200) {
-                return ResultT.failed(t.getMsg());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        } finally {
-            if (database != null) {
-                database.closeConnect();
-            }
-        }
-        return ResultT.success();
+        ResultT r = new ResultT();
+        SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+
+        coreInfo.build(r)
+                .exc(tableSqlDto.getCreateSql(), r)
+                .close();
+
+        return r;
     }
 
     @Override
     public ResultT existTable(TableSqlDto tableSqlDto) {
-        DatabaseEntity databaseEntity = this.databaseDao.findById(tableSqlDto.getDatabaseId()).get();
-        DatabaseDto databaseDto = databaseMapper.toDto(databaseEntity);
-        DatabaseDcl database = null;
-        try {
-            database = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
-            ResultT resultT = database.existTable(databaseDto.getSchemaName(), tableSqlDto.getTableName());
-            database.closeConnect();
-            return resultT;
-        } catch (Exception e) {
-            database.closeConnect();
-            e.printStackTrace();
-            return ResultT.failed(e.getMessage());
-        } finally {
-            if (database != null) {
-                database.closeConnect();
-            }
+        ResultT r = new ResultT();
+        r.setTitle(ConstantsMsg.TITLE2);
+        SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), tableSqlDto.getTableName());
+        ExcAbs exc = coreInfo.build(r);
+        if (!r.isSuccess()) {
+            return r;
         }
+        r.setData(exc.existTable(a, r));
+        exc.close();
+        r.setMessage(String.valueOf(r.getProcessMsg()));
+        return r;
     }
 
     @Override
-    public List<DataTableDto> findByTableNameAndDatabaseIdAndDataclassId(String tableName, String databaseId, String dataclassId) {
-        List<DataTableEntity> dataTables = this.dataTableDao.findByTableNameAndClassLogic_DatabaseIdAndClassLogic_DataClassId(tableName, databaseId, dataclassId);
-        return this.dataTableMapper.toDto(dataTables);
+    public List<Map<String, Object>> findETable(String databaseId) {
+        return this.dataTableDao.findETables(databaseId, Constants.TABLE_TYPE_E);
     }
+
+    @Override
+    public List<Map<String, Object>> findTables(String tableId) {
+        List<Map<String, Object>> tables = this.dataTableDao.getTables(tableId);
+        return tables;
+    }
+
+    @Override
+    public List<Map<String, Object>> getRelatedTables(String tableId) {
+        List<Map<String, Object>> tables = this.dataTableDao.getRelatedTables(tableId);
+        return tables;
+    }
+
+    @Override
+    public void contrastColumns(DataTableInfoDto dataTableInfoDto, ResultT resultT) {
+        resultT.setData(dataTableInfoDto);
+        if (StringUtils.isEmpty(dataTableInfoDto.getDatabaseId())) {
+            resultT.setErrorMessage(String.format(ConstantsMsg.MSG9, dataTableInfoDto.getTableName()));
+            return;
+        }
+        SchemaDto schemaDto = schemaService.getDotById(dataTableInfoDto.getDatabaseId());
+        if (schemaDto == null) {
+            resultT.setErrorMessage(String.format(ConstantsMsg.MSG10, dataTableInfoDto.getTableName()));
+            return;
+        }
+        dataTableInfoDto.setDatabasePid(schemaDto.getDatabase().getId());
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfoDto.getTableName());
+        ExcAbs exc = coreInfo.build(resultT);
+        if (!resultT.isSuccess()) {
+            resultT.setMessage(ReturnCodeEnum.SUCCESS, resultT.getMsg());
+            return;
+        }
+
+        List<Map<String, Object>> c = null;
+        List<Map<String, Object>> i = null;
+        ResultT<List<Map<String, Object>>> r = new ResultT<>();
+
+        exc.columnInfo(a, r);
+        if (r.isSuccess()) {
+            c = r.getData();
+        }
+        r = new ResultT<>();
+        exc.indexInfo(a, r);
+        exc.close();
+        if (r.isSuccess()) {
+            i = r.getData();
+        }
+        dataTableInfoDto.contrast(c, i, null);
+    }
+
+    @Override
+    public PageBean getPageTableInfo(PageForm<Map<String, String>> pageForm) {
+        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+        List<Map<String, Object>> lists = mybatisQueryMapper.getPageTableInfo(pageForm.getT());
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
+        return pageBean;
+    }
+
+    @Override
+    public long countTable(TableSqlDto tableSqlDto) {
+        ResultT<Map<CountEnum, String>> r = new ResultT();
+        SchemaDto schemaDto = this.schemaService.getDotById(tableSqlDto.getDatabaseId());
+        ConnectVo coreInfo = schemaDto.getConnectVo();
+
+        SelectVo s = new SelectVo();
+        s.setSchema(schemaDto.getSchemaName());
+        s.setTableName(tableSqlDto.getTableName());
+
+        new DataBuild()
+                .init(coreInfo,r)
+                .countData(s,true,r)
+                .close();
+
+        return Integer.valueOf(r.getData().get(CountEnum.ALL_COUNT));
+    }
+
+    @Override
+    public List<Map<String, Object>> findBySubType(String tableType, String storageType) {
+        return this.dataTableDao.findBySubType(tableType, storageType);
+    }
+
+    @Override
+    public List<Map<String, Object>> findTablesByTableName(String tableName) {
+        return this.dataTableDao.findTables(tableName);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllETables() {
+        return this.dataTableDao.findAllETables();
+    }
+
 }

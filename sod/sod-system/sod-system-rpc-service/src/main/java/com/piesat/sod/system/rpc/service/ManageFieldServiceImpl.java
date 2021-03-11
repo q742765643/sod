@@ -89,7 +89,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void addManageGroup(ManageGroupDto manageGroupDto) throws Exception {
 		manageGroupDao.save(manageGroupMapstruct.toEntity(manageGroupDto));
 
@@ -104,7 +104,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delManageGroup(String groupId) throws Exception {
 		manageGroupDao.deleteById(groupId);
 
@@ -146,7 +146,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void addManageField(ManageFieldDto manageFieldDto) throws Exception {
 		ManageFieldEntity mfe = manageFieldMapstruct.toEntity(manageFieldDto);
 		mfe = manageFieldDao.save(mfe);
@@ -203,7 +203,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @param manageFieldDto
 	 * @throws Exception
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void editManageField(ManageFieldDto manageFieldDto) throws Exception {
 		ManageFieldEntity mfe = manageFieldMapstruct.toEntity(manageFieldDto);
@@ -223,7 +223,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void editManageGroup(ManageGroupDto manageGroupDto) throws Exception {
 		ManageGroupEntity mge = manageGroupMapstruct.toEntity(manageGroupDto);
 		manageGroupDao.save(mge);
@@ -238,7 +238,7 @@ public class ManageFieldServiceImpl extends BaseService<ManageFieldEntity> imple
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delManageField(String ids) throws Exception {
 		String[] idArr = ids.split(",");
 

@@ -4,8 +4,8 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 
 /**
  * @author yaya
@@ -15,6 +15,6 @@ import javax.transaction.Transactional;
 @Repository
 public interface DatabaseSpecialAccessDao extends BaseDao<DatabaseSpecialAccessEntity> {
     DatabaseSpecialAccessEntity findBySdbIdAndUserId(String sdbId, String userId);
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     void deleteBySdbIdAndUserId(String sdbId,String userId);
 }

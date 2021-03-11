@@ -48,7 +48,7 @@ public class SqlTemplateServiceImpl extends BaseService<SqlTemplateEntity> imple
 	 *  删除sql模板
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delByIds(String ids) throws Exception{
 		String[] idArr = ids.split(",");
 		for(String id : idArr) {
@@ -69,7 +69,7 @@ public class SqlTemplateServiceImpl extends BaseService<SqlTemplateEntity> imple
 	 *  编辑
 	 */
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void edit(SqlTemplateDto sqlTemplateDto) throws Exception {
 		SqlTemplateEntity ste = sqlTemplateMapstruct.toEntity(sqlTemplateDto);
 		sqlTemplateDao.saveNotNull(ste);

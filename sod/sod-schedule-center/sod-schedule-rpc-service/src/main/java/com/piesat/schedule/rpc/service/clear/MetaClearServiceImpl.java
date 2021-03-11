@@ -7,18 +7,14 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.api.database.DatabaseService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
+import com.piesat.dm.rpc.api.database.SchemaService;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.schedule.client.api.ExecutorBiz;
 import com.piesat.schedule.client.api.vo.TreeVo;
 import com.piesat.schedule.dao.clear.MetaClearDao;
-import com.piesat.schedule.entity.backup.BackupEntity;
-import com.piesat.schedule.entity.backup.MetaBackupEntity;
 import com.piesat.schedule.entity.clear.MetaClearEntity;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.clear.MetaClearService;
-import com.piesat.schedule.rpc.dto.backup.BackUpDto;
-import com.piesat.schedule.rpc.dto.backup.MetaBackupDto;
 import com.piesat.schedule.rpc.dto.clear.MetaClearDto;
 import com.piesat.schedule.rpc.mapstruct.clear.MetaClearMapstruct;
 import com.piesat.ucenter.rpc.api.system.DictDataService;
@@ -48,7 +44,7 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
     @GrpcHthtClient
     private ExecutorBiz executorBiz;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @GrpcHthtClient
     private DictDataService dictDataService;
     @Override
@@ -120,17 +116,17 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
         List<Map<String,String>> maps=new ArrayList<>();
         List<String> vaules=new ArrayList<>();
         List<DictDataDto> dictDataDtos=dictDataService.selectDictDataByType("database_metaclear");
-        List<DatabaseDto> databaseDtos=databaseService.findByLevel(1);
+        List<SchemaDto> schemaDtos = schemaService.findByLevel(1);
         for(DictDataDto dictDataDto:dictDataDtos){
-            for(DatabaseDto databaseDto:databaseDtos){
-                if(databaseDto.getDatabaseDefine().getDatabaseIp().indexOf(dictDataDto.getDictValue())!=-1){
+            for(SchemaDto schemaDto : schemaDtos){
+                if(schemaDto.getDatabase().getDatabaseIp().indexOf(dictDataDto.getDictValue())!=-1){
                     Map<String,String> map=new HashMap<>();
-                    String adress=databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort()+":"+databaseDto.getDatabaseDefine().getDatabaseInstance();
+                    String adress= schemaDto.getDatabase().getDatabaseIp()+":"+ schemaDto.getDatabase().getDatabasePort()+":"+ schemaDto.getDatabase().getDatabaseInstance();
                     if(!vaules.contains(adress)){
                         vaules.add(adress);
-                        map.put("KEY",databaseDto.getId());
-                        map.put("VAULE",databaseDto.getDatabaseDefine().getDatabaseIp()+":"+databaseDto.getDatabaseDefine().getDatabasePort()+":"+databaseDto.getDatabaseDefine().getDatabaseInstance());
-                        map.put("parentId",databaseDto.getDatabaseDefine().getId());
+                        map.put("KEY", schemaDto.getId());
+                        map.put("VAULE", schemaDto.getDatabase().getDatabaseIp()+":"+ schemaDto.getDatabase().getDatabasePort()+":"+ schemaDto.getDatabase().getDatabaseInstance());
+                        map.put("parentId", schemaDto.getDatabase().getId());
                         maps.add(map);
                     }
                 }
@@ -140,12 +136,12 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
     }
 
     public void getDataBase(MetaClearEntity metaClearEntity){
-        DatabaseDto databaseDto= databaseService.getDotById(metaClearEntity.getDatabaseId());
-        String parentId=databaseDto.getDatabaseDefine().getId();
-        String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
+        SchemaDto schemaDto = schemaService.getDotById(metaClearEntity.getDatabaseId());
+        String parentId= schemaDto.getDatabase().getId();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
         metaClearEntity.setDatabaseName(databaseName);
         metaClearEntity.setParentId(parentId);
-        metaClearEntity.setDatabaseType(databaseDto.getDatabaseDefine().getDatabaseType());
+        metaClearEntity.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
     }
 
     public List<MetaClearEntity> selectMetaClearList(MetaClearDto metaClearDto){

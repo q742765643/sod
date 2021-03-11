@@ -144,7 +144,7 @@ public class DictTypeServiceImpl extends BaseService<DictTypeEntity> implements 
      * @return 结果
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DictTypeDto updateDictType(DictTypeDto dictType)
     {
         DictTypeEntity oldDict = this.getById(dictType.getId());

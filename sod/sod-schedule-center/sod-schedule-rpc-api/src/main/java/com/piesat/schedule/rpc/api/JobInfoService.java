@@ -31,4 +31,6 @@ public interface JobInfoService {
     public void startById(String id);
 
     public void stopById(String id);
+
+    void executeTest();
 }

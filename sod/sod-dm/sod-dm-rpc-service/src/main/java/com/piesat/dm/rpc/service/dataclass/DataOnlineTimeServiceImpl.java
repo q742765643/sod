@@ -8,7 +8,6 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataclass.DataOnlineTimeDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.dataclass.DataOnlineTimeEntity;
-import com.piesat.dm.entity.datatable.DataTableEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataOnlineTimeService;
 import com.piesat.dm.rpc.dto.dataclass.DataOnlineTimeDto;
@@ -110,7 +109,7 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         return  pageBean;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void update(DataOnlineTimeDto dataOnlineTimeDto) {
         this.deleteByDataClassId(dataOnlineTimeDto.getDataClassId());

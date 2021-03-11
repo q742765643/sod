@@ -1,14 +1,12 @@
 package com.piesat.dm.rpc.service.datatable;
 
 import com.piesat.dm.core.enums.ColumnEnum;
-import com.piesat.dm.core.parser.ColumnSet;
-import com.piesat.dm.rpc.dto.datatable.DataTableDto;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
 import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
 import com.piesat.sod.system.rpc.dto.SqlTemplateDto;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,12 +21,11 @@ import java.util.List;
  */
 @Service
 public class DatabaseSqlService {
-    @Autowired
-    private ColumnSet columnSet;
+
     private final String[] indexTypes = {"BTREE", "INDEX", "RTREE", "IDX", "TREE"};
     private final String[] uniqueType = {"UNIQUE", "UK", "PK", "唯一索引"};
 
-    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getXuGuCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -37,10 +34,7 @@ public class DatabaseSqlService {
             eleCodes.add(ds.getDbEleCode());
             StringBuffer column = new StringBuffer();
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getXugu().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("虚谷不支持字段：" + type);
-            }
+
             String accuracy = ds.getAccuracy();
 
             int length = ColumnEnum.getLength(type.toUpperCase());
@@ -56,7 +50,7 @@ public class DatabaseSqlService {
                 accuracy = "";
             }
             String isNull = (ds.getIsNull() == null || ds.getIsNull()) ? " " : " NOT NULL";
-            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
+//            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
@@ -67,11 +61,9 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        Integer d = 0;
-        for (ShardingDto s : sharding) {
-            if (d.equals(s.getShardingType())) {
-                dp_shard = s.getColumnName();
-            }
+
+        for (TablePartDto s : sharding) {
+                dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
         template = template.replace("${tableName}", schema + "." + dataTable.getTableName());
@@ -125,14 +117,14 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getXuGuQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getXuGuQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getXugu().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("虚谷不支持字段：" + type);
-            }
+//            String dataType = columnSet.getXugu().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("虚谷不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -141,15 +133,15 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getXuGuInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getXuGuInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getXugu().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("虚谷不支持字段：" + type);
-            }
+//            String dataType = columnSet.getXugu().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("虚谷不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }
@@ -161,7 +153,7 @@ public class DatabaseSqlService {
     }
 
 
-    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getGbaseCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
 
         StringBuffer columns = new StringBuffer();
         List<String> eleCodes = new ArrayList<>();
@@ -170,10 +162,10 @@ public class DatabaseSqlService {
             eleCodes.add(ds.getDbEleCode());
             StringBuffer column = new StringBuffer();
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getGbase8a().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("gbase8a不支持字段：" + type);
-            }
+//            String dataType = columnSet.getGbase8a().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("gbase8a不支持字段：" + type);
+//            }
             String accuracy = ds.getAccuracy();
 
             int length = ColumnEnum.getLength(type.toUpperCase());
@@ -189,7 +181,7 @@ public class DatabaseSqlService {
                 accuracy = "";
             }
             String isNull = (ds.getIsNull() == null || ds.getIsNull()) ? " " : " NOT NULL";
-            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
+//            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
@@ -200,10 +192,8 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        for (ShardingDto s : sharding) {
-            if ("T".equals(s.getShardingType())) {
-                dp_shard = s.getColumnName();
-            }
+        for (TablePartDto s : sharding) {
+                dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
         template = template.replace("${tableName}", schema + "." + dataTable.getTableName());
@@ -223,14 +213,14 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getGbaseQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getGbaseQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getGbase8a().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("gbase8a不支持字段：" + type);
-            }
+//            String dataType = columnSet.getGbase8a().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("gbase8a不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -239,15 +229,15 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getGbaseInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getGbaseInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getGbase8a().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("gbase8a不支持字段：" + type);
-            }
+//            String dataType = columnSet.getGbase8a().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("gbase8a不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }
@@ -258,18 +248,18 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getCassandraCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
         List<String> key_columns = new ArrayList<>();
         StringBuffer columns = new StringBuffer();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
             Boolean is_kv_k = ds.getIsKvK();
-            String dataType = columnSet.getCassandra().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Cassandra不支持字段：" + type);
-            }
-            String column = ds.getDbEleCode() + " " + dataType + ",\n";
-            columns.append(column);
+//            String dataType = columnSet.getCassandra().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Cassandra不支持字段：" + type);
+//            }
+//            String column = ds.getDbEleCode() + " " + dataType + ",\n";
+//            columns.append(column);
             if (is_kv_k != null && is_kv_k) {
                 key_columns.add(ds.getDbEleCode());
             }
@@ -282,14 +272,14 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getCassandraQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getCassandraQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getCassandra().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Cassandra不支持字段：" + type);
-            }
+//            String dataType = columnSet.getCassandra().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Cassandra不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -298,15 +288,15 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getCassandraInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getCassandraInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         List<String> columns = new ArrayList<>();
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getCassandra().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Cassandra不支持字段：" + type);
-            }
+//            String dataType = columnSet.getCassandra().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Cassandra不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }
@@ -317,7 +307,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<ShardingDto> sharding, String schema) throws Exception {
+    public String getPostgreSqlCreateSql(SqlTemplateDto sqlTemplate, DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, List<TableIndexDto> tableIndex, List<TablePartDto> sharding, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }
@@ -329,10 +319,10 @@ public class DatabaseSqlService {
             eleCodes.add(ds.getDbEleCode());
             StringBuffer column = new StringBuffer();
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getPostgresql().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("postgresql不支持字段：" + type);
-            }
+//            String dataType = columnSet.getPostgresql().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("postgresql不支持字段：" + type);
+//            }
             String accuracy = ds.getAccuracy();
             if (StringUtils.isNotBlank(accuracy) && !"0".equals(accuracy) && type.toUpperCase().indexOf("INT") == -1) {
                 accuracy = "(" + accuracy.replace(".", ",") + ")";
@@ -340,7 +330,7 @@ public class DatabaseSqlService {
                 accuracy = "";
             }
             String isNull = ds.getIsNull() ? " NULL" : " NOT NULL";
-            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
+//            column.append(ds.getDbEleCode()).append(" ").append(dataType.toUpperCase()).append(accuracy).append(isNull);
             if (StringUtils.isNotBlank(ds.getDefaultValue())) {
                 column.append(" DEFAULT '").append(ds.getDefaultValue()).append("'");
             }
@@ -351,10 +341,8 @@ public class DatabaseSqlService {
             columns.append(column);
         }
         String dp_shard = "";
-        for (ShardingDto s : sharding) {
-            if ("D".equals(s.getShardingType())) {
-                dp_shard = s.getColumnName();
-            }
+        for (TablePartDto s : sharding) {
+                dp_shard = s.getPartitions();
         }
         String template = sqlTemplate.getTemplate();
         template = template.replace("${tableName}", schema + "." + dataTable.getTableName());
@@ -409,17 +397,17 @@ public class DatabaseSqlService {
         return template;
     }
 
-    public String getPostgreSqlQuerySql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getPostgreSqlQuerySql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }
         List<String> columns = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getPostgresql().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Postgresql不支持字段：" + type);
-            }
+//            String dataType = columnSet.getPostgresql().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Postgresql不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
         }
         StringBuffer sql = new StringBuffer();
@@ -428,7 +416,7 @@ public class DatabaseSqlService {
         return sql.toString();
     }
 
-    public String getPostgreSqlInsertSql(DataTableDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
+    public String getPostgreSqlInsertSql(DataTableInfoDto dataTable, List<TableColumnDto> dataStructures, String schema) throws Exception {
         if (schema.equals(schema.toUpperCase())) {
             schema = "\"" + schema + "\"";
         }
@@ -436,10 +424,10 @@ public class DatabaseSqlService {
         List<String> flags = new ArrayList<>();
         for (TableColumnDto ds : dataStructures) {
             String type = ds.getType().toLowerCase();
-            String dataType = columnSet.getPostgresql().get(type);
-            if (StringUtils.isBlank(dataType)) {
-                throw new Exception("Postgresql不支持字段：" + type);
-            }
+//            String dataType = columnSet.getPostgresql().get(type);
+//            if (StringUtils.isBlank(dataType)) {
+//                throw new Exception("Postgresql不支持字段：" + type);
+//            }
             columns.add(ds.getDbEleCode());
             flags.add("?");
         }

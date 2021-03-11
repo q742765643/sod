@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库外键关联
@@ -20,7 +21,7 @@ import java.util.List;
  * @date 2019年 12月09日 14:07:13
  */
 @Service
-public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEntity> implements TableForeignKeyService {
+public class TableForeignKeyServiceImpl extends BaseService<TableForeignKeyEntity> implements TableForeignKeyService {
     @Autowired
     private TableForeignKeyDao tableForeignKeyDao;
     @Autowired
@@ -45,9 +46,14 @@ public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEnti
     }
 
     @Override
-    public List<TableForeignKeyDto> findByClassLogicId(String classLogicId) {
-        List<TableForeignKeyEntity> all = this.tableForeignKeyDao.findByClassLogicId(classLogicId);
-        return this.tableForeignKeyMapper.toDto(all);
+    public List<Map<String, Object>> findByTableId(String tableId) {
+        return this.tableForeignKeyDao.findList(tableId);
+    }
+
+    @Override
+    public List<TableForeignKeyDto> findBySubOrTableId(String tableId) {
+        List<TableForeignKeyEntity> tableForeignKey = this.tableForeignKeyDao.findByTableIdOrSubTableId(tableId, tableId);
+        return this.tableForeignKeyMapper.toDto(tableForeignKey);
     }
 
     @Override
@@ -57,7 +63,7 @@ public class TableForeignKeyServiceImpl  extends BaseService<TableForeignKeyEnti
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public int deleteByIdIn(List<String> ids) {
         return this.tableForeignKeyDao.deleteByIdIn(ids);
     }

@@ -49,7 +49,7 @@ public class DataServerConfigServiceImpl extends BaseService<DataServerConfigEnt
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<DataServerConfigDto> saveDtoList(List<DataServerConfigDto> dataServerConfigDtos) {
         List<DataServerConfigEntity> dataServerConfigEntity = this.dataServerConfigMapper.toEntity(dataServerConfigDtos);
         dataServerConfigEntity = this.dataServerConfigDao.saveAll(dataServerConfigEntity);
@@ -63,7 +63,7 @@ public class DataServerConfigServiceImpl extends BaseService<DataServerConfigEnt
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void delByIds(String ids) {
         String[] split = ids.split(",");
         this.deleteByIds(Arrays.asList(split));

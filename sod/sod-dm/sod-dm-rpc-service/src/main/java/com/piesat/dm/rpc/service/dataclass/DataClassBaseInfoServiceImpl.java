@@ -85,7 +85,7 @@ public class DataClassBaseInfoServiceImpl extends BaseService<DataClassBaseInfoE
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DataClassBaseInfoDto saveDataClassBaseInfo(DataClassBaseInfoDto dataClassBaseInfoDto) {
         DataClassBaseInfoEntity sodDataClassBaseInfo = dataClassBaseInfoDao.findByDataClassId(dataClassBaseInfoDto.getDataClassId());
         DataClassBaseInfoEntity dataClassBaseInfo = mybatisQueryMapper.getDataClassBaseInfo(dataClassBaseInfoDto.getDataClassId());

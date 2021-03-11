@@ -3,12 +3,11 @@ package com.piesat.dm.web.controller.dataclass;
 import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassLabelService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataClassUserService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.sso.client.annotation.Log;
@@ -22,6 +21,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class DataClassController {
     @Autowired
     private DataClassUserService dataClassUserService;
     @Autowired
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @Autowired
     private GrpcService grpcService;
 
@@ -107,29 +107,7 @@ public class DataClassController {
     public ResultT findByClassId(String id) {
         try {
             DataClassDto dataClassDto = this.dataClassService.findByDataClassId(id);
-            List<DataLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(id);
-            List<DatabaseDto> all = this.databaseService.all();
-            List<LogicDefineDto> allLogicDefine = this.grpcService.getAllLogicDefine();
-            for (DataLogicDto dl : byDataClassId) {
-                for (LogicDefineDto ld : allLogicDefine) {
-                    if (dl.getLogicFlag().equals(ld.getLogicFlag())) {
-                        dl.setLogicName(ld.getLogicName());
-                        for (DatabaseDto ldd : all) {
-                            if (dl.getDatabaseId().equals(ldd.getId())) {
-                                dl.setDatabaseName(ldd.getDatabaseName());
-                                dl.setDatabasePId(ldd.getDatabaseDefine().getId());
-                                dl.setDatabasePName(ldd.getDatabaseDefine().getDatabaseName());
-                            }
-                        }
-                        List<LogicStorageTypesDto> logicStorageTypesEntityList = ld.getLogicStorageTypesEntityList();
-                        for (LogicStorageTypesDto ls : logicStorageTypesEntityList) {
-                            if (dl.getStorageType().equals(ls.getStorageType())) {
-                                dl.setStorageName(ls.getStorageName());
-                            }
-                        }
-                    }
-                }
-            }
+            List<DataClassLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(id);
             dataClassDto.setDataLogicList(byDataClassId);
             List<DataClassLabelDto> dataClassLabels = this.dataClassLabelService.findByDataClassId(dataClassDto.getDataClassId());
             dataClassDto.setDataClassLabelList(dataClassLabels);
@@ -259,10 +237,14 @@ public class DataClassController {
     @ApiOperation(value = "根据目录查询资料")
     @RequiresPermissions("dm:dataClass:getListBYIn")
     @GetMapping(value = "/getListBYIn")
-    public ResultT getListBYIn(String stringList, String className, String dDataId) {
+    public ResultT getListBYIn(String stringList, String className, String dDataId, String dataclassId) {
         try {
-            String[] split = stringList.split(",");
-            List<Map<String, Object>> all = this.dataClassService.getListBYIn(Arrays.asList(split), className, dDataId);
+            List<String> l = new ArrayList<>();
+            if (StringUtils.isNotEmpty(stringList)) {
+                String[] split = stringList.split(",");
+                l = Arrays.asList(split);
+            }
+            List<Map<String, Object>> all = this.dataClassService.getListBYIn(l, className, dDataId, dataclassId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();
@@ -354,4 +336,18 @@ public class DataClassController {
         return this.dataClassService.haveClassByDataId(dataId);
     }
 
+    @GetMapping("/getClassByTableId")
+    @ApiOperation(value = "根据tableId查询相关资料", notes = "根据tableId查询相关资料")
+    public ResultT getClassByTableId(String tableId) {
+        return this.dataClassService.getClassByTableId(tableId);
+    }
+
+    @GetMapping("/getTableInfo")
+    @ApiOperation(value = "根据存储编码查询关联表", notes = "根据存储编码查询关联表")
+    public ResultT getTableInfo(String dataclassId) {
+        ResultT resultT = new ResultT<>();
+        List<Map<String, Object>> tableInfo = this.dataClassService.getTableInfo(dataclassId);
+        resultT.setData(tableInfo);
+        return resultT;
+    }
 }

@@ -874,7 +874,7 @@
             <w:rFonts w:hint="fareast"/>
             <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
           </w:rPr>
-          <w:t>${typeInfo.menu_type_name}</w:t>
+          <w:t>${typeInfo.menu_type_name!""}</w:t>
         </w:r>
       </w:p>
 	  <#list typeInfo.dataInfoList as dataInfo>
@@ -896,7 +896,7 @@
             <w:rFonts w:hint="fareast"/>
             <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
           </w:rPr>
-          <w:t>${dataInfo.menu_data_name}</w:t>
+          <w:t>${dataInfo.menu_data_name!""}</w:t>
         </w:r>
       </w:p>
       <w:p>
@@ -917,7 +917,7 @@
             <w:rFonts w:hint="fareast"/>
             <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
           </w:rPr>
-          <w:t>${dataInfo.menu_sub_description}</w:t>
+          <w:t>${dataInfo.menu_sub_description!""}</w:t>
         </w:r>
       </w:p>
       <w:tbl>
@@ -1010,7 +1010,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${dataInfo.data_name}</w:t>
+                <w:t>${dataInfo.data_name!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -1082,7 +1082,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${dataInfo.table_name}</w:t>
+                <w:t>${dataInfo.table_name!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -1154,7 +1154,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${dataInfo.d_data_id}</w:t>
+                <w:t>${dataInfo.d_data_id!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -1186,7 +1186,7 @@
             <w:rFonts w:hint="fareast"/>
             <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
           </w:rPr>
-          <w:t>${dataInfo.menu_sub_table}</w:t>
+          <w:t>${dataInfo.menu_sub_table!""}</w:t>
         </w:r>
       </w:p>
       <w:tbl>
@@ -1452,7 +1452,7 @@
 		  <w:vertAlign w:val="baseline"/>
 		  <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
 		</w:rPr>
-		<w:t>${columnInfo.column_num}</w:t>
+		<w:t>${columnInfo.column_num!""}</w:t>
 	  </w:r>
 	</w:p>
   </w:tc>
@@ -1477,7 +1477,7 @@
 		  <w:vertAlign w:val="baseline"/>
 		  <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
 		</w:rPr>
-		<w:t>${columnInfo.ele_name}</w:t>
+		<w:t>${columnInfo.ele_name!""}</w:t>
 	  </w:r>
 	</w:p>
   </w:tc>
@@ -1502,7 +1502,7 @@
 		  <w:vertAlign w:val="baseline"/>
 		  <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
 		</w:rPr>
-		<w:t>${columnInfo.db_ele_code}</w:t>
+		<w:t>${columnInfo.db_ele_code!""}</w:t>
 	  </w:r>
 	</w:p>
   </w:tc>
@@ -1527,7 +1527,7 @@
 		  <w:vertAlign w:val="baseline"/>
 		  <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
 		</w:rPr>
-		<w:t>${columnInfo.type}</w:t>
+		<w:t>${columnInfo.type!""}</w:t>
 	  </w:r>
 	</w:p>
   </w:tc>
@@ -1552,7 +1552,7 @@
 		  <w:vertAlign w:val="baseline"/>
 		  <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
 		</w:rPr>
-		<w:t>${columnInfo.constraint}</w:t>
+		<w:t>${columnInfo.constraint!""}</w:t>
 	  </w:r>
 	</w:p>
   </w:tc>
@@ -1577,7 +1577,7 @@
 		  <w:vertAlign w:val="baseline"/>
 		  <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
 		</w:rPr>
-		<w:t>${columnInfo.description}</w:t>
+		<w:t>${columnInfo.description!""}</w:t>
 	  </w:r>
 	</w:p>
   </w:tc>
@@ -1602,7 +1602,7 @@
             <w:rFonts w:hint="fareast"/>
             <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
           </w:rPr>
-          <w:t>${dataInfo.menu_sub_index}</w:t>
+          <w:t>${dataInfo.menu_sub_index!""}</w:t>
         </w:r>
       </w:p>
       <w:tbl>
@@ -1805,7 +1805,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${indexInfo.index_num}</w:t>
+                <w:t>${indexInfo.index_num!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -1830,7 +1830,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${indexInfo.index_type}</w:t>
+                <w:t>${indexInfo.index_type!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -1855,7 +1855,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${indexInfo.index_name}</w:t>
+                <w:t>${indexInfo.index_name!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -1880,7 +1880,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${indexInfo.index_column}</w:t>
+                <w:t>${indexInfo.index_column!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -1913,7 +1913,7 @@
             <w:rFonts w:hint="fareast"/>
             <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
           </w:rPr>
-          <w:t>${dataInfo.menu_sub_shared}</w:t>
+          <w:t>${dataInfo.menu_sub_shared!""}</w:t>
         </w:r>
       </w:p>
       <w:tbl>
@@ -2091,7 +2091,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${sharedInfo.shared_num!}</w:t>
+                <w:t>${sharedInfo.shared_num!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -2116,7 +2116,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${sharedInfo.shared_type!}</w:t>
+                <w:t>${sharedInfo.shared_type!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>
@@ -2141,7 +2141,7 @@
                   <w:vertAlign w:val="baseline"/>
                   <w:lang w:val="EN-US" w:fareast="ZH-CN"/>
                 </w:rPr>
-                <w:t>${sharedInfo.shared_column!}</w:t>
+                <w:t>${sharedInfo.shared_column!""}</w:t>
               </w:r>
             </w:p>
           </w:tc>

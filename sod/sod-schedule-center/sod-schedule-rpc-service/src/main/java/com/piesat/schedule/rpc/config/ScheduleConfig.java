@@ -75,6 +75,10 @@ public class ScheduleConfig implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments applicationArguments) throws Exception {
 
+        if (true){
+            return;
+        }
+
         sendThread.init();
         scheduleThread.start();
         ThreadFactory timingPoolFactory = new ThreadFactoryBuilder().setNameFormat("worker-timing-pool-%d").build();

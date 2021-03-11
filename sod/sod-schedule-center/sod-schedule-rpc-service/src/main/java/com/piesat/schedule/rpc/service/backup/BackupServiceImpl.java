@@ -9,17 +9,16 @@ import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.OwnException;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
-import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.TableForeignKeyService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.entity.backup.BackupEntity;
-import com.piesat.schedule.entity.backup.BackupLogEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.backup.BackupLogService;
@@ -70,13 +69,13 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
     @Autowired
     private DiSendService diSendService;
     @GrpcHthtClient
-    private DatabaseService databaseService;
+    private SchemaService schemaService;
     @GrpcHthtClient
     private TableForeignKeyService tableForeignKeyService;
     @GrpcHthtClient
     private DataLogicService dataLogicService;
     @GrpcHthtClient
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
     @Autowired
     private BackupLogService backupLogService;
     private static final String BACKUP_TIME="backupTime";
@@ -157,13 +156,13 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         backupEntity = this.saveNotNull(backupEntity);
         diSendService.sendBackup(backupEntity);
         jobInfoService.start(backupMapstruct.toDto(backupEntity));
-        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(backupEntity.getDataClassId(), backupEntity.getDatabaseId(), backupEntity.getTableName());
-        for (DataLogicDto dl : dataLogic) {
-            StorageConfigurationDto scd = new StorageConfigurationDto();
-            scd.setClassLogicId(dl.getId());
+        List<DataTableInfoDto> dataTable = this.dataLogicService.getDataLogic(backupEntity.getDataClassId(), backupEntity.getDatabaseId(), backupEntity.getTableName());
+        for (DataTableInfoDto dl : dataTable) {
+            AdvancedConfigDto scd = new AdvancedConfigDto();
+            scd.setTableId(dl.getId());
             scd.setBackupIdentifier(1);
             scd.setBackupId(backupEntity.getId());
-            this.storageConfigurationService.updateDataAuthorityConfig(scd);
+            this.advancedConfigService.updateDataAuthorityConfig(scd);
         }
     }
 
@@ -198,15 +197,15 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         }
 
         List<Map<String, Object>> databaseDtos = new ArrayList<>();
-        List<DatabaseDto> databaseListAll = dataBaseService.findAllDataBase();
-        for (DatabaseDto databaseDto : databaseListAll) {
-            String databaseName = databaseDto.getDatabaseDefine().getDatabaseName() + "_" + databaseDto.getDatabaseName();
-            String parentId = databaseDto.getDatabaseDefine().getId();
+        List<SchemaDto> databaseListAll = dataBaseService.findAllDataBase();
+        for (SchemaDto schemaDto : databaseListAll) {
+            String databaseName = schemaDto.getDatabase().getDatabaseName() + "_" + schemaDto.getDatabaseName();
+            String parentId = schemaDto.getDatabase().getId();
             if (dicts.contains(parentId.toUpperCase())) {
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                map.put("KEY", databaseDto.getId());
+                map.put("KEY", schemaDto.getId());
                 map.put("VALUE", databaseName);
-                map.put("parentId", databaseDto.getDatabaseDefine().getId());
+                map.put("parentId", schemaDto.getDatabase().getId());
                 databaseDtos.add(map);
             }
 
@@ -307,6 +306,7 @@ public class BackupServiceImpl extends BaseService<BackupEntity> implements Back
         util.exportExcel(entities, "数据备份配置");
     }
 
+    @Override
     public ResultT<String> execute(String id){
         ResultT resultT=new ResultT();
         BackupEntity backupEntity=this.getById(id);

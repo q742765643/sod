@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库外键关联
@@ -95,12 +96,12 @@ public class TableForeignKeyController {
         }
     }
 
-    @ApiOperation(value = "根据类型和逻辑库关系id查询")
-    @RequiresPermissions("dm:foreignKey:findByClassLogicId")
-    @GetMapping(value = "/findByClassLogicId")
-    public ResultT findByClassLogicId(String logicId){
+    @ApiOperation(value = "根据表id查询相关的外键关联表")
+    @RequiresPermissions("dm:foreignKey:findByTableId")
+    @GetMapping(value = "/findByTableId")
+    public ResultT findByTableId(String tableId){
         try {
-            List<TableForeignKeyDto> all = this.tableForeignKeyService.findByClassLogicId(logicId);
+            List<Map<String, Object>> all = this.tableForeignKeyService.findByTableId(tableId);
             return ResultT.success(all);
         } catch (Exception e) {
             e.printStackTrace();

@@ -5,15 +5,15 @@ import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * 数据库基础库专题库
+ * 数据库类型定义
  *
  * @author cwh
- * @date 2019年 11月22日 15:31:30
+ * @date 2019年 11月22日 15:30:47
  */
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DatabaseService {
@@ -23,29 +23,23 @@ public interface DatabaseService {
 
     void delete(String id);
 
-    ResultT deleteById(String id);
+    ResultT delByIds(String ids);
 
     List<DatabaseDto> all();
 
-    List<Map<String,Object>> getDatabaseName();
+    List<DatabaseDto> export(String id, String databaseName);
 
-    List<Map<String,Object>> getByDatabaseDefineId(String id);
+    List<DatabaseDto> findByType(String databaseType);
 
-    List<DatabaseDto> findByLevel(int level);
+    PageBean getPage(DatabaseDto databaseDto, int pageNum, int pageSize);
 
-    List<DatabaseDto> findByDatabaseClassifyAndIdIn(String databaseClassify,List<String> ids);
+    DatabaseDto conStatus(String id);
 
-    List<DatabaseDto> findByDatabaseClassifyAndDatabaseDefineIdIn(String databaseClassify,List<String> databaseDefineIds);
+    ResultT connStatus(DatabaseDto databaseDto);
 
-    List<DatabaseDto> findByDatabaseDefineIdIn(List<String> databaseDefineIds);
+    List<DatabaseDto> findByIdIn(List<String> ids);
 
-    List<DatabaseDto> findByDatabaseDefineId(String id);
+    void exportExcel(String id,String databaseName);
 
-    List<DatabaseDto> findByDatabaseClassify(String databaseClassify);
-
-    List<Map<String,Object>> findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId);
-
-    List<Map<String, Object>> getDatabaseList(String ifDisplay);
-
-    List<DatabaseDto> findByDatabaseName(String databaseName);
+    List<DatabaseDto> getDatabaseDefineList();
 }

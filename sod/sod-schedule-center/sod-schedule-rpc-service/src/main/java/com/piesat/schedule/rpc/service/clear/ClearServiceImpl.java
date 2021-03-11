@@ -8,22 +8,18 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.api.StorageConfigurationService;
+import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
-import com.piesat.dm.rpc.dto.StorageConfigurationDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.dataclass.DataLogicDto;
+import com.piesat.dm.rpc.dto.AdvancedConfigDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
+import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.dto.datatable.TableForeignKeyDto;
 import com.piesat.schedule.dao.clear.ClearDao;
-import com.piesat.schedule.entity.backup.BackupEntity;
 import com.piesat.schedule.entity.clear.ClearEntity;
-import com.piesat.schedule.entity.clear.ClearEntity;
-import com.piesat.schedule.entity.clear.ClearLogEntity;
 import com.piesat.schedule.mapper.JobInfoMapper;
 import com.piesat.schedule.rpc.api.JobInfoService;
 import com.piesat.schedule.rpc.api.clear.ClearService;
 import com.piesat.schedule.rpc.dto.clear.ClearDto;
-import com.piesat.schedule.rpc.dto.clear.ClearLogDto;
 import com.piesat.schedule.rpc.mapstruct.clear.ClearMapstruct;
 import com.piesat.schedule.rpc.service.DataBaseService;
 import com.piesat.schedule.rpc.service.DiSendService;
@@ -65,7 +61,7 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
     @GrpcHthtClient
     private DataLogicService dataLogicService;
     @GrpcHthtClient
-    private StorageConfigurationService storageConfigurationService;
+    private AdvancedConfigService advancedConfigService;
     @Override
     public BaseDao<ClearEntity> getBaseDao() {
         return clearDao;
@@ -131,24 +127,24 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
 
     }
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
         clearEntity=this.saveNotNull(clearEntity);
         diSendService.sendClear(clearEntity);
         jobInfoService.start(clearMapstruct.toDto(clearEntity));
-        List<DataLogicDto> dataLogic = this.dataLogicService.getDataLogic(clearEntity.getDataClassId(), clearEntity.getDatabaseId(), clearEntity.getTableName());
-        for (DataLogicDto dl : dataLogic) {
-            StorageConfigurationDto scd = new StorageConfigurationDto();
-            scd.setClassLogicId(dl.getId());
+        List<DataTableInfoDto> dataTable = this.dataLogicService.getDataLogic(clearEntity.getDataClassId(), clearEntity.getDatabaseId(), clearEntity.getTableName());
+        for (DataTableInfoDto dl : dataTable) {
+            AdvancedConfigDto scd = new AdvancedConfigDto();
+            scd.setTableId(dl.getId());
             scd.setBackupIdentifier(1);
             scd.setBackupId(clearEntity.getId());
-            this.storageConfigurationService.updateDataAuthorityConfig(scd);
+            this.advancedConfigService.updateDataAuthorityConfig(scd);
         }
     }
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateClear(ClearDto clearDto){
         ClearEntity clearEntity=clearMapstruct.toEntity(clearDto);
         this.getDataBaseAndClassId(clearEntity);
@@ -176,13 +172,13 @@ public class ClearServiceImpl extends BaseService<ClearEntity> implements ClearS
         }
 
         List<Map<String,Object>> databaseDtos=new ArrayList<>();
-        List<DatabaseDto> databaseListAll= dataBaseService.findAllDataBase();
-        for(DatabaseDto databaseDto:databaseListAll){
-            String databaseName=databaseDto.getDatabaseDefine().getDatabaseName()+"_"+databaseDto.getDatabaseName();
-            String parentId=databaseDto.getDatabaseDefine().getId();
+        List<SchemaDto> databaseListAll= dataBaseService.findAllDataBase();
+        for(SchemaDto schemaDto :databaseListAll){
+            String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+            String parentId= schemaDto.getDatabase().getId();
             if(dicts.contains(parentId.toUpperCase())) {
                 LinkedHashMap<String,Object> map=new LinkedHashMap<>();
-                map.put("KEY",databaseDto.getId());
+                map.put("KEY", schemaDto.getId());
                 map.put("VALUE",databaseName);
                 databaseDtos.add(map);
             }

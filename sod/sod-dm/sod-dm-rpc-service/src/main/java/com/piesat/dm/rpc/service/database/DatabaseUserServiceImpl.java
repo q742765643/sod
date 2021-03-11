@@ -7,39 +7,39 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.poi.ExcelUtil;
+import com.piesat.dm.common.constants.ConstantsMsg;
+import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.api.DatabaseDcl;
-import com.piesat.dm.core.api.impl.Cassandra;
-import com.piesat.dm.core.api.impl.Gbase8a;
-import com.piesat.dm.core.api.impl.Xugu;
+import com.piesat.dm.core.constants.Constants;
+import com.piesat.dm.core.model.ConnectVo;
+import com.piesat.dm.core.model.UserInfo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseAdministratorDao;
 import com.piesat.dm.dao.database.DatabaseDao;
-import com.piesat.dm.dao.database.DatabaseDefineDao;
 import com.piesat.dm.dao.database.DatabaseUserDao;
+import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
-import com.piesat.dm.entity.database.DatabaseDefineEntity;
 import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.DatabaseUserEntity;
-import com.piesat.dm.entity.datatable.DataTableEntity;
+import com.piesat.dm.entity.database.SchemaEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
-import com.piesat.dm.rpc.api.database.DatabaseDefineService;
+import com.piesat.dm.rpc.api.database.DatabaseAuthorizedService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
+import com.piesat.dm.rpc.api.database.DbUserAlterLogService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
-import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
-import com.piesat.dm.rpc.dto.database.DatabaseAdministratorDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDefineDto;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
-import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
+import com.piesat.dm.rpc.dto.database.*;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseUserMapper;
 import com.piesat.dm.rpc.util.DatabaseUtil;
 import com.piesat.ucenter.dao.system.UserDao;
-import com.piesat.ucenter.entity.system.DictTypeEntity;
 import com.piesat.ucenter.entity.system.UserEntity;
+import com.piesat.ucenter.rpc.dto.system.UserDto;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
@@ -48,6 +48,7 @@ import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -70,11 +71,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Autowired
     private DatabaseUserMapper databaseUserMapper;
     @Autowired
-    private DatabaseDao databaseDao;
+    private SchemaDao schemaDao;
     @Autowired
-    private DatabaseDefineService databaseDefineService;
+    private DatabaseService databaseService;
     @Autowired
     private DatabaseInfo databaseInfo;
+    @Autowired
+    private DbUserAlterLogService dbUserAlterLogService;
     @Autowired
     private DatabaseUserService databaseUserService;
     @Autowired
@@ -92,7 +95,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @GrpcHthtClient
     private UserDao userDao;
     @Autowired
-    private DatabaseDefineDao databaseDefineDao;
+    private DatabaseDao databaseDao;
+    @Autowired
+    private DatabaseAuthorizedService databaseAuthorizedService;
     @Value("${mng.ip}")
     private String mngIp;
     @Value("${database.sys-users}")
@@ -122,8 +127,8 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         List<DatabaseUserEntity> databaseUserEntityList = (List<DatabaseUserEntity>) pageBean.getPageData();
         List<DatabaseUserDto> databaseUserDtoList = databaseUserMapper.toDto(databaseUserEntityList);
         //获取数据库列表，查询展示数据库中文名称
-        List<DatabaseDefineEntity> databaseDefineEntities = databaseDefineDao.findAll();
-        if (databaseUserDtoList != null && databaseUserDtoList.size() > 0 && databaseDefineEntities != null && databaseDefineEntities.size() > 0) {
+        List<DatabaseEntity> databaseDefineEntities = databaseDao.findAll();
+        if (databaseUserDtoList != null && !databaseUserDtoList.isEmpty() && databaseDefineEntities != null && databaseDefineEntities.size() > 0) {
             for (DatabaseUserDto dto : databaseUserDtoList) {
                 dto.setDatabaseUpPassword("");
                 //获取数据库中文名称
@@ -131,9 +136,9 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     String[] examineDatabaseIdArray = dto.getExamineDatabaseId().split(",");
                     String applyDatabaseName = "";
                     for (String examineDatabaseId : examineDatabaseIdArray) {
-                        for (DatabaseDefineEntity databaseDefineEntity : databaseDefineEntities) {
-                            if (examineDatabaseId.equals(databaseDefineEntity.getId())) {
-                                applyDatabaseName += databaseDefineEntity.getDatabaseName() + ",";
+                        for (DatabaseEntity databaseEntity : databaseDefineEntities) {
+                            if (examineDatabaseId.equals(databaseEntity.getId())) {
+                                applyDatabaseName += databaseEntity.getDatabaseName() + ",";
                                 break;
                             }
                         }
@@ -143,7 +148,6 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     }
                     dto.setApplyDatabaseName(applyDatabaseName);
                 }
-
                 //获取申请用户信息
                 UserEntity userEntity = userDao.findByUserNameAndUserType(dto.getUserId(), "11");
                 if (userEntity != null) {
@@ -167,12 +171,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public void exportData(String examineStatus) {
-        List<DatabaseUserEntity> byExamineStatus = null;
-        if (StringUtils.isNotBlank(examineStatus)) {
-            byExamineStatus = this.databaseUserDao.findByExamineStatus(examineStatus);
-        } else {
-            byExamineStatus = this.databaseUserDao.findAll();
-        }
+        List<DatabaseUserEntity> byExamineStatus =
+                StringUtils.isNotBlank(examineStatus) ?
+                        this.databaseUserDao.findByExamineStatus(examineStatus) :
+                        this.databaseUserDao.findAll();
         ExcelUtil<DatabaseUserEntity> util = new ExcelUtil(DatabaseUserEntity.class);
         util.exportExcel(byExamineStatus, "数据库访问账户信息");
     }
@@ -204,26 +206,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String upId = dotById1.getDatabaseUpId().toLowerCase();
         if (!sysIdList.contains(upId) && StringUtils.isNotBlank(dotById1.getExamineDatabaseId())) {
             String[] needEmpowerIdArr = dotById1.getExamineDatabaseId().split(",");
-            Arrays.stream(needEmpowerIdArr).filter(e -> !StringUtils.isEmpty(e)).forEach(e -> {
-                DatabaseDefineDto dotById = this.databaseDefineService.getDotById(e);
-                DatabaseDcl databaseVO = null;
-                try {
-                    databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    Optional.ofNullable(databaseVO).ifPresent(DatabaseDcl::closeConnect);
-                }
-                Optional.ofNullable(databaseVO).ifPresent(d -> {
-                    try {
-                        d.deleteUser(dotById1.getDatabaseUpId());
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        d.closeConnect();
-                    } finally {
-                        d.closeConnect();
-                    }
-                });
-            });
+            this.tryDropDbUser(needEmpowerIdArr, upId, new ResultT());
         }
         this.delete(id);
     }
@@ -250,7 +233,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     public DatabaseUserDto findByUserIdAndDatabaseUpId(String userId, String upId) {
         List<DatabaseUserEntity> byUserId = this.databaseUserDao.findByUserIdAndDatabaseUpId(userId, upId);
         DatabaseUserEntity d = null;
-        if (byUserId != null && byUserId.size() > 0) {
+        if (byUserId != null && !byUserId.isEmpty()) {
             d = byUserId.get(0);
         }
         return this.databaseUserMapper.toDto(d);
@@ -265,28 +248,21 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public boolean databaseUserExi(DatabaseUserDto databaseUserDto) {
-        String[] needEmpowerIdArr = databaseUserDto.getApplyDatabaseId().split(",");
-        return Optional.ofNullable(needEmpowerIdArr).map(id -> Arrays.stream(id).filter(e -> !StringUtils.isEmpty(e)).anyMatch(d -> {
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(d);
-            DatabaseDcl databaseVO = null;
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Optional.ofNullable(databaseVO).ifPresent(DatabaseDcl::closeConnect);
+        String[] ids = databaseUserDto.getApplyDatabaseId().split(Constants.COMMA);
+        ResultT r = new ResultT();
+        return Arrays.stream(ids).anyMatch(e -> {
+            DatabaseDto database = this.databaseService.getDotById(e);
+            ConnectVo coreInfo = database.getCoreInfo();
+            ExcAbs exc = coreInfo.build(r);
+            if (!r.isSuccess()) {
+                return false;
             }
-            return Optional.ofNullable(databaseVO).map(o -> {
-                try {
-                    return o.getUserNum(databaseUserDto.getDatabaseUpId());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    o.closeConnect();
-                } finally {
-                    o.closeConnect();
-                }
-                return 1;
-            }).equals(0);
-        })).orElse(false);
+            UserInfo u = new UserInfo();
+            u.setUserName(databaseUserDto.getDatabaseUpId());
+            boolean b = exc.existUser(u, r);
+            exc.close();
+            return b;
+        });
     }
 
     @Override
@@ -325,17 +301,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return this.databaseUserMapper.toDto(databaseUserEntity);
     }
 
-    public static void main(String[] args) {
-
-    }
-
     @Override
     public ResultT empower(DatabaseUserDto databaseUserDto) {
         String[] sysIds = this.sysUsers.toLowerCase().split(",");
         List<String> sysIdList = Arrays.asList(sysIds);
         String upId = databaseUserDto.getDatabaseUpId().toLowerCase();
         if (sysIdList.contains(upId)) {
-            return ResultT.failed(databaseUserDto.getDatabaseUpId() + "为数据库内部用户，禁止创建！");
+            return ResultT.failed(String.format(ConstantsMsg.MSG1, databaseUserDto.getDatabaseUpId()));
         }
         //根据ID获取旧的申请信息
         DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
@@ -361,15 +333,15 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             e += "," + mngIp;
             return e.split(",");
         }).orElse(mngIp.split(","));
-        List<DatabaseDefineDto> DatabaseDefineList = needEmpowerList.stream().map(this.databaseDefineService::getDotById).collect(Collectors.toList());
-        for (DatabaseDefineDto d : DatabaseDefineList) {
+        List<DatabaseDto> databaseDtoList = needEmpowerList.stream().map(this.databaseService::getDotById).collect(Collectors.toList());
+        for (DatabaseDto d : databaseDtoList) {
             Set<DatabaseAdministratorDto> databaseAdministratorList = d.getDatabaseAdministratorList();
             boolean b = databaseAdministratorList.stream().anyMatch(DatabaseAdministratorDto::getIsManager);
             if (!b) {
                 return ResultT.failed(String.format("%s 数据库管理账户缺失!", d.getDatabaseName()));
             }
         }
-        DatabaseDefineList.forEach(d -> {
+        databaseDtoList.forEach(d -> {
             DatabaseDcl databaseVO = null;
             String databaseId = d.getId();
             try {
@@ -386,7 +358,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 String message = e.getMessage();
                 Boolean pass = StringUtils.isNotBlank(message) && (message.contains("已经存在") || message.contains("已存在") || message.contains("already exists"));
                 if (pass) {
-                    if (!thisHaveIds.contains(databaseId)){
+                    if (!thisHaveIds.contains(databaseId)) {
                         thisHaveIds.add(databaseId);
                     }
                 } else {
@@ -402,7 +374,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             List<String> stringList = Arrays.stream(needEmpowerIds).collect(Collectors.toList());
             return !stringList.contains(e);
         }).filter(StringUtils::isNotEmpty).forEach(s -> {
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(s);
+            DatabaseDto dotById = this.databaseService.getDotById(s);
             DatabaseDcl databaseVO = null;
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
@@ -423,7 +395,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
 
         Arrays.stream(needEmpowerIds).filter(StringUtils::isNotEmpty).forEach(s -> {
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(s);
+            DatabaseDto dotById = this.databaseService.getDotById(s);
             DatabaseDcl databaseVO = null;
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
@@ -446,7 +418,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
         //修改绑定ip
         thisHaveIds.forEach(s -> {
-            DatabaseDefineDto dotById = this.databaseDefineService.getDotById(s);
+            DatabaseDto dotById = this.databaseService.getDotById(s);
             DatabaseDcl databaseVO = null;
             try {
                 databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
@@ -574,16 +546,16 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 //下面判断是否为可分配权限的数据库ID。
                 Boolean Flag = false;
                 //下面取得database_id对应的父物理库ID。
-                DatabaseEntity databaseEntity = databaseDao.findById(database_id).get();
-                DatabaseDto databaseDto = this.databaseMapper.toDto(databaseEntity);
+                SchemaEntity schemaEntity = schemaDao.findById(database_id).get();
+                SchemaDto schemaDto = this.databaseMapper.toDto(schemaEntity);
 
                 //下面取得资料信息。
-                List<DataTableEntity> dataTableList = dataTableDao.findByDataServiceIdAndClassLogicId(data_class_id, database_id);
+                List<DataTableInfoEntity> dataTableList = dataTableDao.getByClassIdAndDatabaseId(data_class_id, database_id);
                 //下面根据物理库ID取得物理库对应详细信息。
                 //DataBasePhysics databasephysics = dataBasePhysicsDao.queryDataBasePhysicsByDbIds(database_id);
                 //获取数据库管理账户
                 DatabaseAdministratorEntity databaseAdministratorEntity = null;
-                Set<DatabaseAdministratorEntity> databaseAdministratorList = databaseEntity.getDatabaseDefine().getDatabaseAdministratorList();
+                Set<DatabaseAdministratorEntity> databaseAdministratorList = schemaEntity.getDatabase().getDatabaseAdministratorList();
                 for (DatabaseAdministratorEntity databasephysics : databaseAdministratorList) {
                     if (databasephysics.getIsManager()) {
                         databaseAdministratorEntity = databasephysics;
@@ -591,23 +563,23 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     }
                 }
                 //下面循环处理li中的每张表。
-                for (DataTableEntity dataTableEntity : dataTableList) {
+                for (DataTableInfoEntity dataTableEntity : dataTableList) {
                     //下面取得表名。
                     String table_name = dataTableEntity.getTableName();
                     DatabaseDcl databaseDcl = null;
                     try {
-                        databaseDcl = DatabaseUtil.getDatabase(databaseDto, databaseInfo);
+                        databaseDcl = DatabaseUtil.getDatabase(schemaDto, databaseInfo);
                     } catch (Exception e) {
                         if (e.getMessage().contains("用户不存在")) {
                             map.put("returnCode", 1);
-                            map.put("returnMessage", databaseDto.getDatabaseDefine().getDatabaseName() + "用户不存在！");
+                            map.put("returnMessage", schemaDto.getDatabase().getDatabaseName() + "用户不存在！");
                             Optional.ofNullable(databaseDcl).ifPresent(DatabaseDcl::closeConnect);
                             continue;
                         }
                     }
                     try {
                         if (databaseDcl != null) {
-                            databaseDcl.deletePermissions(permission, databaseEntity.getSchemaName(), table_name, dbaccount.getDatabaseUpId(), null, null);
+                            databaseDcl.deletePermissions(permission, schemaEntity.getSchemaName(), table_name, dbaccount.getDatabaseUpId(), null, null);
                             databaseDcl.closeConnect();
                         }
                     } catch (Exception e) {
@@ -764,24 +736,24 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         boolean flag = true;
         String[] databaseIds = databaseUserDto.getExamineDatabaseId().split(",");
         for (String databaseId : databaseIds) {
-            DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(databaseId);
+            DatabaseDto databaseDto = databaseService.getDotById(databaseId);
 
             DatabaseDcl databaseDefine = null;
             try {
-                databaseDefine = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+                databaseDefine = DatabaseUtil.getDatabaseDefine(databaseDto, databaseInfo);
             } catch (Exception e) {
-                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
+                buffer.append("物理库：" + databaseDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
                 continue;
             }
             try {
                 databaseDefine.updateAccount(databaseUserDto.getDatabaseUpId(), newPwd);
             } catch (Exception e) {
-                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",密码修改失败" + "<br/>");
+                buffer.append("物理库：" + databaseDto.getDatabaseName() + ",密码修改失败" + "<br/>");
             }
             Optional.ofNullable(databaseDefine).ifPresent(DatabaseDcl::closeConnect);
             //获取数据库管理账户
             DatabaseAdministratorDto databaseAdministratorDto = null;
-            Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDefineDto.getDatabaseAdministratorList();
+            Set<DatabaseAdministratorDto> databaseAdministratorList = databaseDto.getDatabaseAdministratorList();
             for (DatabaseAdministratorDto databaseAdministratorDto1 : databaseAdministratorList) {
                 if (databaseAdministratorDto1.getIsManager()) {
                     databaseAdministratorDto = databaseAdministratorDto1;
@@ -789,7 +761,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 }
             }
             if (databaseAdministratorDto == null) {
-                buffer.append("物理库：" + databaseDefineDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
+                buffer.append("物理库：" + databaseDto.getDatabaseName() + ",没有管理员账户" + "<br/>");
                 continue;
             }
 
@@ -804,10 +776,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     @Override
     public ResultT updateBizPwd(String bizUserId, String ids, String newPwd) {
         for (String id : ids.split(",")) {
-            DatabaseDefineDto databaseDefineDto = databaseDefineService.getDotById(id);
+            DatabaseDto databaseDto = databaseService.getDotById(id);
             DatabaseDcl databaseDcl = null;
             try {
-                databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDefineDto, databaseInfo);
+                databaseDcl = DatabaseUtil.getDatabaseDefine(databaseDto, databaseInfo);
                 databaseDcl.updateAccount(bizUserId, newPwd);
                 databaseDcl.closeConnect();
             } catch (Exception e) {
@@ -819,6 +791,135 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         return ResultT.success();
     }
 
+    /**
+     * 新增数据库用户
+     *
+     * @param principal
+     * @param resultT
+     */
+    @Override
+    public void addDbUser(DatabaseUserDto principal, ResultT resultT) {
+        if (!velUsername(principal, resultT)) {
+            return;
+        }
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+        String whitelist = principal.getDatabaseUpIp();
+        whitelist = StringUtils.isNotBlank(whitelist) ? whitelist + Constants.COMMA + mngIp : Constants.PERCENT;
+        //数据库用户信息
+        UserInfo u = new UserInfo();
+        u.setUserName(principal.getUserName());
+        u.setPassword(principal.getDatabaseUpPassword());
+        u.setWhitelistStr(whitelist.replaceAll(Constants.COMMA, Constants.SPACE));
+        String[] databaseIds = principal.getCreateDatabaseIds().split(Constants.COMMA);
+        Map<String, ConnectVo> connectInfo = getConnectInfo(databaseIds);
+        List<String> e_databaseIds = new ArrayList<>();
+        String e_databaseIdStr = principal.getExamineDatabaseId();
+        if (StringUtils.isNotBlank(e_databaseIdStr)) {
+            e_databaseIds = Arrays.stream(e_databaseIdStr.split(Constants.COMMA)).collect(Collectors.toList());
+        }
+        List<DatabaseAuthorizedDto> list = new ArrayList<>();
+        //各个数据库新增用户
+        for (String databaseId : databaseIds) {
+            if (e_databaseIds.contains(databaseId)) {
+                continue;
+            }
+            ResultT<String> r = new ResultT();
+            ConnectVo connectVo = connectInfo.get(databaseId);
+            if (connectVo == null) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
+            }
+            connectVo.build(r)
+                    .doCreateUser(u, r)
+                    .close();
+
+            e_databaseIds.add(databaseId);
+            String log = String.format(ConstantsMsg.MSG4
+                    , connectVo.getIp()
+                    , u.getUserName()
+                    , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
+
+            DatabaseAuthorizedDto da = new DatabaseAuthorizedDto();
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(u.getUserName());
+            da.setStatus(r.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_CREATE);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
+            list.add(databaseAuthorizedDto);
+            DbUserAlterLogDto dl = new DbUserAlterLogDto();
+            dl.setAuthorizeId(databaseAuthorizedDto.getId());
+            dl.setStatus(r.isSuccess());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_CREATE);
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
+        }
+
+        principal.setExamineDatabaseId(e_databaseIds.stream().collect(Collectors.joining(Constants.COMMA)));
+        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        databaseUserDto.setList(list);
+        resultT.setData(databaseUserDto);
+    }
+
+    /**
+     * 删除数据库用户
+     *
+     * @param principal
+     * @param resultT
+     */
+    @Override
+    public void dropDbUser(DatabaseUserDto principal, ResultT resultT) {
+        if (!velUsername(principal, resultT)) {
+            return;
+        }
+        String databaseId = principal.getDropDatabaseId();
+        List<String> e_databaseIds = new ArrayList<>();
+        String e_databaseIdStr = principal.getExamineDatabaseId();
+        if (StringUtils.isNotBlank(e_databaseIdStr)) {
+            e_databaseIds = Arrays.stream(e_databaseIdStr.split(Constants.COMMA)).collect(Collectors.toList());
+        }
+        DbUserAlterLogDto dl = new DbUserAlterLogDto();
+        tryDropDbUser(new String[]{databaseId}, principal.getUserName(), resultT);
+        if (resultT.isSuccess()) {
+            e_databaseIds.remove(databaseId);
+            principal.setExamineDatabaseId(e_databaseIds.stream().collect(Collectors.joining(Constants.COMMA)));
+            DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+            principal = this.databaseUserMapper.toDto(save);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            if (databaseAuthorizedDto != null) {
+                this.dbUserAlterLogService.deleteByAuthorizeId(databaseAuthorizedDto.getId());
+            }
+            this.databaseAuthorizedService.delete(principal.getUserName(), databaseId);
+        } else {
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            String log = String.format(ConstantsMsg.MSG5
+                    , databaseId
+                    , principal.getUserName()
+                    , resultT.isSuccess()
+                            ? ConstantsMsg.SUCCESS
+                            : String.format(ConstantsMsg.FAIL, resultT.getProcessMsg()));
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(principal.getUserName());
+            da.setStatus(resultT.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_CREATE);
+            da = this.databaseAuthorizedService.saveDto(da);
+            List<DatabaseAuthorizedDto> list = new ArrayList<>();
+            list.add(da);
+            dl.setStatus(resultT.isSuccess());
+            dl.setAuthorizeId(da.getId());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_DROP);
+            UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
+            principal.setList(list);
+            resultT.setData(principal);
+        }
+
+    }
+
     @Override
     public List<DatabaseUserDto> getByUserId(String userId) {
         List<DatabaseUserEntity> databaseUserEntities = this.databaseUserDao.findByUserId(userId);
@@ -826,4 +927,181 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
     }
 
 
+    public void tryDropDbUser(String[] databaseIds, String userName, ResultT resultT) {
+        UserInfo u = new UserInfo();
+        u.setUserName(userName);
+        Map<String, ConnectVo> connectInfo = getConnectInfo(databaseIds);
+        for (int i = 0; i < databaseIds.length; i++) {
+            String databaseId = databaseIds[i];
+            ConnectVo connectVo = connectInfo.get(databaseId);
+            if (connectVo == null) {
+                resultT.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
+            }
+            connectVo.build(resultT)
+                    .dropUser(u, resultT)
+                    .close();
+        }
+    }
+
+    /**
+     * 修改数据库用户密码
+     *
+     * @param principal
+     * @param resultT
+     */
+    @Override
+    public void alterPwd(DatabaseUserDto principal, ResultT resultT) {
+        if (!velUsername(principal, resultT)) {
+            return;
+        }
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+        UserInfo u = new UserInfo();
+        u.setUserName(principal.getUserName());
+        u.setPassword(principal.getDatabaseUpPassword());
+
+        String e_databaseIdStr = principal.getExamineDatabaseId();
+        String[] databaseIds;
+        if (StringUtils.isNotBlank(e_databaseIdStr)) {
+            databaseIds = e_databaseIdStr.split(Constants.COMMA);
+        } else {
+            resultT.setErrorMessage(ConstantsMsg.MSG2);
+            return;
+        }
+
+        List<DatabaseAuthorizedDto> list = new ArrayList<>();
+        Map<String, ConnectVo> connectInfo = getConnectInfo(databaseIds);
+        for (String databaseId : databaseIds) {
+            ResultT r = new ResultT();
+            ConnectVo connectVo = connectInfo.get(databaseId);
+            if (connectVo == null) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
+            }
+            connectVo.build(r)
+                    .alterPwd(u, r)
+                    .close();
+
+            String log = String.format(ConstantsMsg.MSG6
+                    , connectVo.getIp()
+                    , u.getUserName()
+                    , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            if (da == null) {
+                da = new DatabaseAuthorizedDto();
+            }
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(u.getUserName());
+            da.setStatus(r.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_ALERT_PWD);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
+            list.add(databaseAuthorizedDto);
+            DbUserAlterLogDto dl = new DbUserAlterLogDto();
+            dl.setAuthorizeId(databaseAuthorizedDto.getId());
+            dl.setStatus(r.isSuccess());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_ALERT_PWD);
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
+        }
+        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        databaseUserDto.setList(list);
+        resultT.setData(databaseUserDto);
+    }
+
+    /**
+     * 修改数据库用户白名单
+     *
+     * @param principal
+     * @param resultT
+     */
+    @Override
+    public void alterWhitelist(DatabaseUserDto principal, ResultT resultT) {
+        if (!velUsername(principal, resultT)) {
+            return;
+        }
+        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
+        String whitelist = principal.getDatabaseUpIp();
+        whitelist = StringUtils.isNotBlank(whitelist) ? whitelist + Constants.COMMA + mngIp : Constants.PERCENT;
+        UserInfo u = new UserInfo();
+        u.setUserName(principal.getUserName());
+        u.setWhitelistStr(whitelist.replaceAll(Constants.COMMA, Constants.SPACE));
+        String e_databaseIdStr = principal.getExamineDatabaseId();
+        String[] databaseIds = null;
+        if (StringUtils.isNotBlank(e_databaseIdStr)) {
+            databaseIds = e_databaseIdStr.split(Constants.COMMA);
+        } else {
+            resultT.setErrorMessage(ConstantsMsg.MSG2);
+            return;
+        }
+        List<DatabaseAuthorizedDto> list = new ArrayList<>();
+        Map<String, ConnectVo> connectInfo = getConnectInfo(databaseIds);
+        for (String databaseId : databaseIds) {
+            ResultT r = new ResultT();
+            ConnectVo connectVo = connectInfo.get(databaseId);
+            if (connectVo == null) {
+                r.setErrorMessage(String.format(ConstantsMsg.MSG2_1, databaseId));
+            }
+
+            connectVo.build(r)
+                    .alterWhitelist(u, r)
+                    .close();
+
+            String log = String.format(ConstantsMsg.MSG7
+                    , connectVo.getIp()
+                    , u.getUserName()
+                    , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            if (da == null) {
+                da = new DatabaseAuthorizedDto();
+            }
+            da.setDatabaseId(databaseId);
+            da.setDatabaseUsername(u.getUserName());
+            da.setStatus(r.isSuccess());
+            da.setMsg(log);
+            da.setOpeType(ConstantsMsg.OPE_ALERT_WHITELIST);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
+            list.add(databaseAuthorizedDto);
+            DbUserAlterLogDto dl = new DbUserAlterLogDto();
+            dl.setAuthorizeId(databaseAuthorizedDto.getId());
+            dl.setStatus(r.isSuccess());
+            dl.setLog(log);
+            dl.setOpeType(ConstantsMsg.OPE_ALERT_WHITELIST);
+            dl.setUpdateBy(loginUser.getWebUserId());
+            this.dbUserAlterLogService.saveDto(dl);
+        }
+        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        databaseUserDto.setList(list);
+        resultT.setData(databaseUserDto);
+    }
+
+    /**
+     * 验证用户的合法性
+     *
+     * @param principal
+     * @param resultT
+     */
+    public Boolean velUsername(DatabaseUserDto principal, ResultT resultT) {
+        String[] sysIds = this.sysUsers.toLowerCase().split(Constants.COMMA);
+        List<String> sysIdList = Arrays.asList(sysIds);
+        String upId = principal.getDatabaseUpId().toLowerCase();
+        if (sysIdList.contains(upId)) {
+            resultT.setErrorMessage(String.format(ConstantsMsg.MSG1, principal.getDatabaseUpId()));
+        }
+        return resultT.isSuccess();
+    }
+
+    /**
+     * 获取连接信息
+     *
+     * @param databaseIds
+     * @return
+     */
+    public Map<String, ConnectVo> getConnectInfo(String[] databaseIds) {
+        return Arrays.stream(databaseIds)
+                .map(this.databaseService::getDotById)
+                .map(DatabaseDto::getCoreInfo)
+                .collect(Collectors.toMap(ConnectVo::getPid, t -> t));
+    }
 }

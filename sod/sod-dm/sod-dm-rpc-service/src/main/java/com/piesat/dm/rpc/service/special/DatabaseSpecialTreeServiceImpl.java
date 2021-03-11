@@ -157,7 +157,7 @@ public class DatabaseSpecialTreeServiceImpl extends BaseService<DatabaseSpecialT
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> deleteRecordByTdbId(String tdbId, String typeId) {
         Map<String, Object> map = new HashMap<>();
         try {

@@ -1,17 +1,21 @@
 package com.piesat.dm.mapper;
 
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
-import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataLogicEntity;
-import com.piesat.dm.entity.datatable.*;
+import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
+import com.piesat.dm.entity.datatable.CmccElementEntity;
+import com.piesat.dm.entity.datatable.DataTableInfoEntity;
+import com.piesat.dm.entity.datatable.DatumTableEntity;
+import com.piesat.dm.entity.datatable.GridAreaEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
-import com.piesat.dm.entity.special.DatabaseSpecialEntity;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 联表查询Mapper
@@ -21,7 +25,7 @@ import java.util.*;
  */
 @Component
 public interface MybatisQueryMapper {
-    List<Map<String, Object>> getDataClassListBYIn(@Param("classIds") List<String> classIds, @Param("className") String className, @Param("dDataId") String dDataId);
+    List<Map<String, Object>> getDataClassListBYIn(@Param("classIds") List<String> classIds, @Param("className") String className, @Param("dDataId") String dDataId, @Param("dataclassId") String dataclassId);
 
     List<Map<String, Object>> getDataLogicByDatabaseId(String databaseId);
 
@@ -125,7 +129,7 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getLogicByDdataId(@Param("dDataId") String dDataId);
 
-    List<DataLogicEntity> getDataLogic(@Param("dataclassId") String dataclassId, @Param("databaseId") String databaseId, @Param("tableName") String tableName);
+    List<DataTableInfoEntity> getDataLogic(@Param("dataclassId") String dataclassId, @Param("databaseId") String databaseId, @Param("tableName") String tableName);
 
     List<Map<String, Object>> getDataTypeList(@Param("dataClassIds") String dataClassIds);
 
@@ -234,5 +238,10 @@ public interface MybatisQueryMapper {
 
     List<Map<String,Object>> onLineTimeByClassId(@Param("dataClassId")String dataClassId);
 
-
+    /**
+     * 分页条件查询表信息
+     * @param map
+     * @return
+     */
+    List<Map<String, Object>> getPageTableInfo(@Param("map") Map<String, String> map);
 }

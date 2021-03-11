@@ -4,6 +4,7 @@ import com.piesat.util.BaseDto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 数据库管理账户
@@ -54,6 +55,16 @@ public class DatabaseUserDto extends BaseDto {
      * 申请数据库ID
      */
     private String applyDatabaseId;
+
+    /**
+     * 删除数据库账户
+     */
+    private String dropDatabaseId;
+
+    /**
+     * 新增创建用户的数据库id
+     */
+    private String createDatabaseIds;
 
     /**
      * 申请材料pdf
@@ -112,4 +123,6 @@ public class DatabaseUserDto extends BaseDto {
     private String tutorPhone;
 
     private String phonenumber;
+
+    private List<DatabaseAuthorizedDto> list;
 }

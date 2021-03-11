@@ -1,8 +1,8 @@
 package com.piesat.dm.rpc.mapper.datatable;
 
 import com.piesat.common.jpa.BaseMapper;
-import com.piesat.dm.entity.datatable.ShardingEntity;
-import com.piesat.dm.rpc.dto.datatable.ShardingDto;
+import com.piesat.dm.entity.datatable.TablePartEntity;
+import com.piesat.dm.rpc.dto.datatable.TablePartDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Service;
@@ -15,5 +15,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface ShardingMapper extends BaseMapper<ShardingDto, ShardingEntity> {
+public interface ShardingMapper extends BaseMapper<TablePartDto, TablePartEntity> {
 }

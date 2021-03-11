@@ -3,8 +3,7 @@ package com.piesat.dm.dao.dataclass;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.dataclass.DataOnlineTimeEntity;
 import org.springframework.stereotype.Repository;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author yaya
@@ -13,7 +12,7 @@ import javax.transaction.Transactional;
  */
 @Repository
 public interface DataOnlineTimeDao extends BaseDao<DataOnlineTimeEntity> {
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     void deleteByDataClassId(String dataClassId);
 //    DataOnlineTimeEntity findAll()
     DataOnlineTimeEntity findByDataClassId(String dataClassId);

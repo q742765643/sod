@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.piesat.dm.mapper.MybatisModifyMapper">
 
-    <update id="updateDataAuthorityConfig" parameterType="StorageConfigurationEntity">
-        update T_SOD_STORAGE_CONFIGURATION
+    <update id="updateDataAuthorityConfig" parameterType="AdvancedConfigEntity">
+        update T_SOD_ADVANCED_CONFIG
         <set>
             <if test="storageDefineIdentifier != null">
                 storage_define_identifier = #{storageDefineIdentifier},
@@ -33,7 +33,7 @@
                 backup_id = #{backupId},
             </if>
         </set>
-        where  class_logic_id = #{classLogicId}
+        where  TABLE_ID = #{tableId}
     </update>
 
     <update id="modifyDatabaseSpecialReadWrite" parameterType="databaseSpecialReadWriteEntity">
