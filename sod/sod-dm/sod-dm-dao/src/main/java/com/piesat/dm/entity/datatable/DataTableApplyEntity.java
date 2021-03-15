@@ -78,4 +78,4 @@ public class DataTableApplyEntity extends BaseEntity {
      */
     @Column(name = "remark", columnDefinition = "TEXT")
     private String remark;
-}GrpcServiceProxy
+}
