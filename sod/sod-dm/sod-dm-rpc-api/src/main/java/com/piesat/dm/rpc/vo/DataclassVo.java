@@ -13,17 +13,16 @@ import java.util.Map;
  * @date 2020年 12月24日 10:50:35
  */
 @Data
-public class TableInfoVo {
+public class DataclassVo {
     private List<String> classIds;
-    private String tableNameCn;
-    private String tableName;
+    private String className;
+    private String dataId;
+    private String dataClassId;
+    private String databaseName;
+    private String schemaNameCn;
     private String databaseId;
     private String databasePid;
-    private String schemaNameCn;
-    private String databaseName;
-    private String className;
-    private String classId;
-    private String dataId;
+    private String tableName;
     public Map<String,Object> getMap(){
        return BeanMap.create(this);
     }

@@ -19,4 +19,5 @@ public interface UserManageService {
 
     UserManageDto resetPwd(UserManageDto userManageDto);
 
+    UserManageDto saveDto(UserManageDto userManageDto);
 }

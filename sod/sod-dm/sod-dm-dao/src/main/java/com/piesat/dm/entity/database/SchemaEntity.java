@@ -21,8 +21,8 @@ public class SchemaEntity extends BaseEntity {
      * 数据库名称
      * database_name
      */
-    @Column(name = "database_name", length = 36, nullable = false)
-    private String databaseName;
+    @Column(name = "schema_name_cn", length = 36, nullable = false)
+    private String schemaNameCn;
 
     /**
      * 与数据库定义关联id

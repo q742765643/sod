@@ -43,7 +43,7 @@
         select
         f.META_DATA_NAME,f.CLASS_NAME,b.TABLE_NAME,
         ee.DATABASE_NAME,a.DATA_CLASS_ID,b.STORAGE_TYPE,b.DATABASE_ID,
-        f.D_DATA_ID,e.DATABASE_NAME as SPECIAL_DATABASE_NAME,ee.DATABASE_TYPE,
+        f.D_DATA_ID,e.SCHEMA_NAME_CN as SPECIAL_DATABASE_NAME,ee.DATABASE_TYPE,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = ee.id) MOVE_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = ee.id) CLEAR_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = ee.id) BACKUP_ST,
@@ -96,7 +96,7 @@
     <!--存储字段检索-->
     <select id="storageFieldList" parameterType="java.util.Map" resultType="java.util.Map">
         select g.*, f.CLASS_NAME,f.D_DATA_ID, b.TABLE_NAME,a.id LOGIC_ID,a.DATA_CLASS_ID,
-        b.STORAGE_TYPE,b.DATABASE_ID,e.DATABASE_NAME SPECIAL_DATABASE_NAME,
+        b.STORAGE_TYPE,b.DATABASE_ID,e.SCHEMA_NAME_CN SPECIAL_DATABASE_NAME,
         ee.DATABASE_NAME,ee.DATABASE_TYPE
         from t_sod_data_class f
         left join T_SOD_DATACLASS_TABLE a on (a.DATA_CLASS_ID = f.DATA_CLASS_ID AND f.type = 2 )
@@ -391,18 +391,18 @@
 
     <select id="getDatabaseTree" resultType="java.util.Map">
         SELECT *
-        FROM (SELECT CONCAT(ID, '-P') ID, '999' PID, DATABASE_NAME NAME, '' DATA_CLASS_ID, 1 TYPE, true isParent
+        FROM (SELECT ID, '999' PID, DATABASE_NAME NAME, '' DATA_CLASS_ID, 1 TYPE, true isParent
               FROM T_SOD_DATABASE_DEFINE
               WHERE USER_DISPLAY_CONTROL = 1
               ORDER BY SERIAL_NUMBER) A
         UNION
         SELECT *
-        FROM (SELECT ID                                                           ID,
-                     CONCAT(DATABASE_DEFINE_ID, '-P')                             PID,
-                     CONCAT(CONCAT(CONCAT(DATABASE_NAME, '('), SCHEMA_NAME), ')') NAME,
-                     ''                                                           DATA_CLASS_ID,
-                     1                                                            TYPE,
-                     true                                                         isParent
+        FROM (SELECT ID                                                            ID,
+                     DATABASE_DEFINE_ID                                            PID,
+                     CONCAT(CONCAT(CONCAT(SCHEMA_NAME_CN, '('), SCHEMA_NAME), ')') NAME,
+                     ''                                                            DATA_CLASS_ID,
+                     1                                                             TYPE,
+                     true                                                          isParent
               FROM T_SOD_DATABASE
               WHERE STOP_USE = false
                 AND DATABASE_DEFINE_ID IN
@@ -417,12 +417,12 @@
               ORDER BY ID) A
         UNION
         SELECT *
-        FROM (SELECT ID                                                              ID,
-                     CONCAT(DATABASE_DEFINE_ID, '-P')                                PID,
-                     CONCAT(CONCAT(CONCAT(DATABASE_NAME, '('), SCHEMA_NAME), ')') as NAME,
-                     ''                                                              DATA_CLASS_ID,
-                     1                                                            as TYPE,
-                     true                                                            isParent
+        FROM (SELECT ID                                                               ID,
+                     CONCAT(DATABASE_DEFINE_ID, '-P')                                 PID,
+                     CONCAT(CONCAT(CONCAT(SCHEMA_NAME_CN, '('), SCHEMA_NAME), ')') as NAME,
+                     ''                                                               DATA_CLASS_ID,
+                     1                                                             as TYPE,
+                     true                                                             isParent
               FROM T_SOD_DATABASE
               WHERE STOP_USE = false
                 AND DATABASE_DEFINE_ID IN
@@ -575,7 +575,7 @@
     </update>
     <select id="getByUserIdAndApplyId" resultType="java.util.Map">
         select a.*,d.id physicId,e.class_name dataName,
-        c.database_name || '【' || c.schema_name || '】' as schemaName,d.database_name || '【' || d.id || '】' as
+        c.SCHEMA_NAME_CN || '【' || c.schema_name || '】' as schemaName,d.database_name || '【' || d.id || '】' as
         physicName
         from T_SOD_NEWDATA_APPLY a
         left join T_SOD_DATABASE c on a.database_id = c.id
@@ -638,7 +638,7 @@
         d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
         from t_sod_data_authority_record d left join
         (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name type_name,b.id
-        class_logic_id,c.database_id,c.table_name,e.database_name special_database_name,ee.database_name
+        class_logic_id,c.database_id,c.table_name,e.SCHEMA_NAME_CN special_database_name,ee.database_name
         from T_SOD_DATA_CLASS a
         left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,1,1) = f.data_class_id
         left join T_SOD_DATACLASS_TABLE b on a.data_class_id = b.data_class_id
@@ -679,7 +679,7 @@
         d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
         from t_sod_data_authority_record d left join
         (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name
-        type_name,c.database_id,b.id class_logic_id,c.table_name,e.database_name special_database_name,ee.database_name
+        type_name,c.database_id,b.id class_logic_id,c.table_name,e.SCHEMA_NAME_CN special_database_name,ee.database_name
         from T_SOD_DATA_CLASS a
         left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,0,1) = f.data_class_id
         left join T_SOD_DATACLASS_TABLE b on a.data_class_id = b.data_class_id
@@ -784,7 +784,7 @@
                e.class_name        data_service_name,
                d.table_name,
                e.class_name,
-               c.database_name,
+               c.SCHEMA_NAME_CN    database_name,
                cc.database_name as special_database_name,
                e.is_access,
                e.d_data_id
@@ -834,13 +834,13 @@
                dt.name_cn,
                dt.table_name,
                da.user_id,
-               da.create_time    as "apply_time",
-               sdb.database_name as "special_name",
-               sdb.schema_name   as "schema_name",
-               sdd.database_name as "database_name",
-               sdd.id            as "database_define_id",
+               da.create_time     as "apply_time",
+               sdb.SCHEMA_NAME_CN as "special_name",
+               sdb.schema_name    as "schema_name",
+               sdd.database_name  as "database_name",
+               sdd.id             as "database_define_id",
                sdc.class_name,
-               tsu.web_username     user_name
+               tsu.web_username      user_name
         from t_sod_data_authority_record dd
                  left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
                  left join T_SOD_DATA_TABLE_INFO dt
@@ -868,7 +868,7 @@
                sdd.database_name  database_name,
                sdd.id          as "database_define_id",
                sdb.schema_name as "schema_name",
-               sdb.database_name  special_name,
+               sdb.SCHEMA_NAME_CN special_name,
                sdc.class_name,
                tsu.web_username   web_username,
                tsu.user_name      biz_userid
@@ -900,7 +900,7 @@
                da.create_time    as "apply_time",
                sdb.database_name as "schema_name",
                sdb.schema_name   as "schema_id",
-               sdd.database_name,
+               sdd.SCHEMA_NAME_CN   database_name,
                sdd.id            as "database_define_id",
                sdc.class_name,
                tsu.web_username     user_name
@@ -1063,17 +1063,17 @@
     </select>
 
     <select id="findByUserIdAndDatabaseDefineId1" resultType="java.util.Map" parameterType="String">
-        select a.id                                           as "id",
-               a.database_name || '【' || a.schema_name || '】' as "name",
-               a.database_define_id                           as "physicId"
+        select a.id                                            as "id",
+               a.SCHEMA_NAME_CN || '【' || a.schema_name || '】' as "name",
+               a.database_define_id                            as "physicId"
         from t_sod_database a
         where a.database_classify = '物理库'
           and a.database_define_id = #{databaseDefineId}
     </select>
     <select id="findByUserIdAndDatabaseDefineId2" resultType="java.util.Map" parameterType="String">
-        select a.id                                           as "id",
-               a.database_name || '【' || a.schema_name || '】' as "name",
-               a.database_define_id                           as "physicId"
+        select a.id                                            as "id",
+               a.SCHEMA_NAME_CN || '【' || a.schema_name || '】' as "name",
+               a.database_define_id                            as "physicId"
         from t_sod_database a
                  left join t_sod_database_special b on a.tdb_id = b.id
         where a.database_classify = '专题库'
@@ -1137,7 +1137,7 @@
         d.table_name,c.data_class_id,t2.class_name as "dataName",
         t2.d_data_id,d.table_type,wm_concat(d.storage_type) storage_type,
         t.data_class_id pid,t.class_name as "className",t.d_data_id pd_data_id,
-        db.database_name as special_database_name,db.id database_id,db.database_define_id,db.schema_name
+        db.SCHEMA_NAME_CN as special_database_name,db.id database_id,db.database_define_id,db.schema_name
         database_schema_name
         FROM
         T_SOD_DATA_TABLE_INFO d
@@ -1178,7 +1178,7 @@
         select
         b.DATA_CLASS_ID,e.class_name DATA_SERVICE_NAME,ee.D_DATA_ID,
         b.APPLY_AUTHORITY,b.EMPOWER_AUTHORITY,
-        b.examine_status,b.failure_reason,c1.DATABASE_NAME,c.DATABASE_NAME SPECIAL_DATABASE_NAME,
+        b.examine_status,b.failure_reason,c1.DATABASE_NAME,c.SCHEMA_NAME_CN SPECIAL_DATABASE_NAME,
         d.TABLE_NAME,e.CLASS_NAME,b.DATABASE_ID
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATACLASS_TABLE f on b.data_class_id = f.data_class_id
@@ -1205,7 +1205,7 @@
         DATABASE_NAME,M.DATA_TYPE,M.SPECIAL_DATABASE_NAME,M.SPECIAL_DATABASE_ID
         FROM(
         SELECT DISTINCT f.DATA_CLASS_ID,e.class_name DATA_SERVICE_NAME,ee.D_DATA_ID,
-        b.APPLY_AUTHORITY,b.empower_authority,c1.DATABASE_NAME,c.DATABASE_NAME
+        b.APPLY_AUTHORITY,b.empower_authority,c1.DATABASE_NAME,c.SCHEMA_NAME_CN
         SPECIAL_DATABASE_NAME,c.ID SPECIAL_DATABASE_ID,d.TABLE_NAME,e.CLASS_NAME,b.DATA_TYPE
         from T_SOD_DATABASE_SPECIAL_READ_WRITE b
         inner join T_SOD_DATACLASS_TABLE f on b.data_class_id = f.data_class_id
@@ -1238,7 +1238,7 @@
         select
         t1.database_id,t6.class_name as "categoryName",t1.apply_id
         ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
-        t3.class_name as "dataName",t4.database_name as "databaseSchemaName",
+        t3.class_name as "dataName",t4.SCHEMA_NAME_CN as "databaseSchemaName",
         t4.schema_name,t4.database_define_id,t5.database_name as "databaseName"
         from
         t_sod_data_authority_record t1
@@ -1520,7 +1520,7 @@
     <select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
         select
         t1.data_class_id as "dataClassId",t4.id as "databaseId",
-        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】' as "dataName" ,
+        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.SCHEMA_NAME_CN ||'】' as "dataName" ,
         t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl",t5.table_name as "tableName"
         from
         t_sod_data_class t1
@@ -1589,7 +1589,7 @@
     <select id="getDataInfoByUserId" resultType="java.util.Map">
         select nvl(sna.id,(sdc.data_class_id || srw.sdb_id)) as APPLY_ID,srw.sdb_id,
         sdc.class_name dataname,sdc.data_class_id,sdb.id as SCHEMAID,sdc.D_DATA_ID,
-        wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdb.database_name || '【' ||
+        wm_concat(dit.TABLE_NAME) as TABLE_NAME,sdb.SCHEMA_NAME_CN || '【' ||
         sdb.schema_name || '】' as schemaName,
         sdd.id as PHYSICSID,sdd.DATABASE_NAME PHYSICNAME,sdc.is_access is_publish
         from T_SOD_DATA_TABLE_INFO dit
@@ -1613,18 +1613,18 @@
 
     <!-- 获取专题库自建资料 -->
     <select id="getSpecialDBData" resultType="java.util.Map">
-        select nvl(sna.id, (sdc.DATA_CLASS_ID || srw.SDB_ID))     as APPLY_ID,
+        select nvl(sna.id, (sdc.DATA_CLASS_ID || srw.SDB_ID))      as APPLY_ID,
                srw.SDB_ID,
-               sdc.class_name                                        dataname,
+               sdc.class_name                                         dataname,
                sdc.DATA_CLASS_ID,
-               sdb.id                                             as SCHEMAID,
+               sdb.id                                              as SCHEMAID,
                sdc.D_DATA_ID,
                srw.database_id,
-               wm_concat(sdt.TABLE_NAME)                          as TABLE_NAME,
-               sdb.database_name || '【' || sdb.schema_name || '】' as schemaName,
-               sdd.id                                                PHYSICSID,
-               sdd.DATABASE_NAME                                     PHYSICNAME,
-               sdc.is_access                                         is_publish
+               wm_concat(sdt.TABLE_NAME)                           as TABLE_NAME,
+               sdb.SCHEMA_NAME_CN || '【' || sdb.schema_name || '】' as schemaName,
+               sdd.id                                                 PHYSICSID,
+               sdd.DATABASE_NAME                                      PHYSICNAME,
+               sdc.is_access                                          is_publish
         from T_SOD_DATABASE_SPECIAL_READ_WRITE srw
                  inner join T_SOD_DATA_CLASS sdc on srw.data_class_id = sdc.data_class_id
                  inner join T_SOD_DATACLASS_TABLE sdl on sdc.data_class_id = sdl.data_class_id
@@ -1679,9 +1679,9 @@
           AND B.C_SOURSDATUM_CODE = C.PRODUCTIONCODE
     </select>
     <select id="getDatabaseName" resultType="java.util.Map">
-        select t.id                                                  ID,
-               concat(concat(d.database_name, '_'), t.database_name) DATABASE_NAME,
-               d.database_type                                       DATABASE_TYPE
+        select t.id                                                   ID,
+               concat(concat(d.database_name, '_'), t.SCHEMA_NAME_CN) DATABASE_NAME,
+               d.database_type                                        DATABASE_TYPE
         from T_SOD_DATABASE t
                  inner join T_SOD_DATABASE_DEFINE d on t.DATABASE_DEFINE_ID = d.id and d.user_display_control != '2'
     </select>
@@ -1716,10 +1716,10 @@
                dt.name_cn,
                dt.table_name,
                da.user_id,
-               sdb.database_name as "special_name",
+               sdb.SCHEMA_NAME_CN as "special_name",
                sdb.schema_name,
-               sdd.database_name as "database_name",
-               sdd.id            as "database_define_id",
+               sdd.database_name  as "database_name",
+               sdd.id             as "database_define_id",
                sdc.class_name
         from t_sod_data_authority_record dd
                  left join T_SOD_DATACLASS_TABLE dl on dl.data_class_id = dd.data_class_id
@@ -1740,16 +1740,16 @@
     <select id="getSpecialReadWriteFileDataInfo" resultType="java.util.Map" parameterType="String">
         select a.data_class_id,
                a.database_id,
-               a.examine_status  as "authorize",
+               a.examine_status   as "authorize",
                a.apply_authority,
                sdn.dir_norm,
                dt.name_cn,
                dt.table_name,
                b.user_id,
-               sdb.database_name as "special_name",
+               sdb.SCHEMA_NAME_CN as "special_name",
                sdb.schema_name,
-               sdd.database_name as "database_name",
-               sdd.id            as "database_define_id",
+               sdd.database_name  as "database_name",
+               sdd.id             as "database_define_id",
                sdc.class_name
         from T_SOD_DATABASE_SPECIAL_READ_WRITE a
                  left join T_SOD_DATABASE_SPECIAL b on b.id = a.sdb_ID
@@ -1767,24 +1767,35 @@
     </select>
 
     <select id="getPageTableInfo" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT DISTINCT A.*,E.DICT_LABEL,D.DATABASE_NAME,F.DATABASE_NAME DATABASE_P_NAME,
+        SELECT DISTINCT A.TABLE_NAME,E.DICT_LABEL,D.SCHEMA_NAME_CN,F.DATABASE_NAME,
+        FG.ID, FG.NICK_NAME, A.DATABASE_ID, A.STORAGE_TYPE,
+        C.CLASS_NAME, C.D_DATA_ID, C.DATA_CLASS_ID, D.DATABASE_CLASSIFY,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = F.id) MOVE_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = F.id) CLEAR_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = F.id) BACKUP_ST,
         H.STORAGE_DEFINE_IDENTIFIER,H.SYNC_IDENTIFIER,H.CLEAN_IDENTIFIER,H.MOVE_IDENTIFIER,
-        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID
+        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID,A.ID TABLE_ID
         FROM T_SOD_DATA_TABLE_INFO A
         LEFT JOIN T_SOD_DICT_DATA E ON A.STORAGE_TYPE = E.dict_value
         LEFT JOIN T_SOD_DATACLASS_TABLE B ON A.ID = B.TABLE_ID
         LEFT JOIN T_SOD_DATA_CLASS C ON B.DATA_CLASS_ID = C.DATA_CLASS_ID
         LEFT JOIN T_SOD_DATABASE D ON A.DATABASE_ID = D.ID
         LEFT JOIN T_SOD_DATABASE_DEFINE F ON D.DATABASE_DEFINE_ID = F.ID
+        LEFT JOIN T_SOD_DATABASE_SPECIAL FS ON D."TDB_ID" = FS."ID"
+        LEFT JOIN T_SOD_USER FG ON FS."USER_ID" = FG."WEB_USERID"
         LEFT JOIN T_SOD_ADVANCED_CONFIG H ON H.TABLE_ID=A.ID
         LEFT JOIN T_SOD_DATA_CLASS_LABEL G ON G.DATA_CLASS_ID = C.DATA_CLASS_ID
         LEFT JOIN T_SOD_DICT_DATA HH ON (G.LABEL_KEY = HH.DICT_VALUE AND HH.DICT_TYPE = 'dataclass_label')
         <where>
+            A.table_type != 'K' AND A.DEL_FLAG <![CDATA[ <> ]]> 2 AND C.DEL_FLAG <![CDATA[ <> ]]> 2
+            <if test="map.classIds!=null and map.classIds.size()>0">
+                AND D.ID in
+                <foreach collection="map.classIds" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
             <if test="map.tableNameCn != null and map.tableNameCn  != ''">
-                A.NAME_CN LIKE '%${map.tableNameCn}%'
+                AND A.NAME_CN LIKE '%${map.tableNameCn}%'
             </if>
             <if test="map.tableName != null and map.tableName  != ''">
                 AND A.TABLE_NAME LIKE '%${map.tableName}%'
@@ -1807,4 +1818,88 @@
         </where>
         ORDER BY A.TABLE_NAME,A.DATABASE_ID,A.STORAGE_TYPE
     </select>
+
+    <select id="getPageDataclassInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT DISTINCT A.CLASS_NAME, A.D_DATA_ID, A.DATA_CLASS_ID, C.TABLE_NAME,C.DATABASE_ID , E.DATABASE_NAME,
+        D.DATABASE_CLASSIFY,
+        D.SCHEMA_NAME_CN, G.ID, G.NICK_NAME, C.STORAGE_TYPE,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = F.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = F.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = F.id) BACKUP_ST,
+        H.STORAGE_DEFINE_IDENTIFIER,H.SYNC_IDENTIFIER,H.CLEAN_IDENTIFIER,H.MOVE_IDENTIFIER,
+        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID
+        FROM T_SOD_DATA_CLASS A
+        LEFT JOIN T_SOD_DATACLASS_TABLE B ON A."DATA_CLASS_ID" = B."DATA_CLASS_ID"
+        LEFT JOIN T_SOD_DATA_TABLE_INFO C ON B."TABLE_ID" = C."ID"
+        LEFT JOIN T_SOD_DATABASE D ON C."DATABASE_ID" = D."ID"
+        LEFT JOIN T_SOD_DATABASE_DEFINE E ON D."DATABASE_DEFINE_ID" = E."ID"
+        LEFT JOIN T_SOD_DATABASE_SPECIAL F ON D."TDB_ID" = F."ID"
+        LEFT JOIN T_SOD_USER G ON F."USER_ID" = G."WEB_USERID"
+        LEFT JOIN T_SOD_ADVANCED_CONFIG H ON C."ID" = H."TABLE_ID"
+        <where>
+            A."TYPE" = 2 AND A.DEL_FLAG <![CDATA[ <> ]]> 2 AND C.DEL_FLAG <![CDATA[ <> ]]> 2
+            <if test="map.classIds!=null and map.classIds.size()>0">
+                AND A.DATA_CLASS_ID in
+                <foreach collection="map.classIds" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="map.className != null and map.className  != ''">
+                AND A.CLASS_NAME LIKE '%${map.className}%'
+            </if>
+            <if test="map.dataId != null and map.dataId  != ''">
+                AND A.D_DATA_ID LIKE '%${map.dataId}%'
+            </if>
+            <if test="map.dataClassId != null and map.dataClassId  != ''">
+                AND A.DATA_CLASS_ID LIKE '%${map.dataClassId}%'
+            </if>
+            <if test="map.databaseName != null and map.databaseName  != ''">
+                AND E.DATABASE_NAME LIKE '%${map.databaseName}%'
+            </if>
+            <if test="map.schemaNameCn != null and map.schemaNameCn  != ''">
+                AND E.SCHEMA_NAME_CN LIKE '%${map.schemaNameCn}%'
+            </if>
+            <if test="map.databaseId != null and map.databaseId  != ''">
+                AND D.ID = #{map.databaseId}
+            </if>
+            <if test="map.databasePid != null and map.databasePid  != ''">
+                AND E.ID = #{map.databasePid}
+            </if>
+            <if test="map.tableName != null and map.tableName  != ''">
+                AND C.TABLE_NAME LIKE '%${map.tableName}%'
+            </if>
+        </where>
+        ORDER BY A.DATA_CLASS_ID,C.DATABASE_ID,C.STORAGE_TYPE
+    </select>
+
+    <select id="findAuthorityList" resultType="java.util.Map" parameterType="String">
+        SELECT *
+        FROM T_SOD_DATA_AUTHORITY_APPLY A
+                 INNER JOIN T_SOD_DATA_AUTHORITY_RECORD B ON A."ID" = B."APPLY_ID"
+                 LEFT JOIN T_SOD_USER C ON A."USER_ID" = C."USER_NAME"
+        WHERE B."DATA_CLASS_ID" = #{dataclassId}
+          AND B."DATABASE_ID" = #{databaseId}
+    </select>
+
+    <select id="getRecycle" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT DISTINCT A.*, C.DATABASE_NAME, B.SCHEMA_NAME_CN, B.SCHEMA_NAME, D.DICT_LABEL
+        FROM T_SOD_DATA_TABLE_INFO A
+                 LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID
+                 LEFT JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID
+                 LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE
+        WHERE DEL_FLAG = '2'
+        <if test="map.tableName != null and map.tableName  != ''">
+            AND A.TABLE_NAME LIKE '%${map.tableName}%'
+        </if>
+        <if test="map.databaseId != null and map.databaseId  != ''">
+            AND B.ID = #{map.databaseId}
+        </if>
+        <if test="map.databasePid != null and map.databasePid  != ''">
+            AND C.ID = #{map.databasePid}
+        </if>
+    </select>
+
+
+    databasePid
+    databaseId
 </mapper>

@@ -138,8 +138,8 @@ public class AdvancedConfigController {
                     map.put("database_name", advancedConfigDto.getSchemaDto().getDatabase().getDatabaseName());
                 }
             }
-            if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseName())) {
-                map.put("special_database_name", advancedConfigDto.getSchemaDto().getDatabaseName());
+            if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getSchemaNameCn())) {
+                map.put("special_database_name", advancedConfigDto.getSchemaDto().getSchemaNameCn());
             }
         }
         if (advancedConfigDto.getDataClassDto() != null) {
@@ -186,8 +186,8 @@ public class AdvancedConfigController {
                     map.put("database_name", advancedConfigDto.getSchemaDto().getDatabase().getDatabaseName());
                 }
             }
-            if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getDatabaseName())) {
-                map.put("special_database_name", advancedConfigDto.getSchemaDto().getDatabaseName());
+            if (StringUtils.isNotNullString(advancedConfigDto.getSchemaDto().getSchemaNameCn())) {
+                map.put("special_database_name", advancedConfigDto.getSchemaDto().getSchemaNameCn());
             }
         }
         if (advancedConfigDto.getDataClassDto() != null) {

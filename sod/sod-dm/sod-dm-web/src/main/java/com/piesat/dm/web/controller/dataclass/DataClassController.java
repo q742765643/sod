@@ -10,6 +10,8 @@ import com.piesat.dm.rpc.api.dataclass.DataClassUserService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.service.GrpcService;
+import com.piesat.dm.rpc.vo.DataclassVo;
+import com.piesat.dm.rpc.vo.TableInfoVo;
 import com.piesat.sso.client.annotation.Log;
 import com.piesat.sso.client.enums.BusinessType;
 import com.piesat.util.ResultT;
@@ -349,5 +351,32 @@ public class DataClassController {
         List<Map<String, Object>> tableInfo = this.dataClassService.getTableInfo(dataclassId);
         resultT.setData(tableInfo);
         return resultT;
+    }
+
+
+    @GetMapping("/getPageDataclassInfo")
+    @ApiOperation(value = "条件分页查询")
+    @RequiresPermissions("dm:dataClass:getPageDataclassInfo")
+    public ResultT<List> getPageDataclassInfo(DataclassVo dataclassVo,
+                                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                              @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Map<String, Object> map = dataclassVo.getMap();
+        PageForm<Map<String, Object>> pageForm = new PageForm<>(pageNum, pageSize, map);
+        PageBean pageBean = this.dataClassService.getPageDataclassInfo(pageForm);
+        return ResultT.success(pageBean.getPageData());
+    }
+
+    @ApiOperation(value = "逻辑删除（2）/恢复（0）")
+    @RequiresPermissions("dm:dataClass:tombstone")
+    @Log(title = "资料分类管理", businessType = BusinessType.UPDATE)
+    @PostMapping(value = "/tombstone")
+    public ResultT tombstone(String dataClassId, String delFlag) {
+        try {
+            this.dataClassService.tombstone(dataClassId, delFlag);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
     }
 }

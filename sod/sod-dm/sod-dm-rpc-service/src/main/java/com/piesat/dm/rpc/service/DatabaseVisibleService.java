@@ -221,7 +221,7 @@ public class DatabaseVisibleService {
                     JSONObject bbb = new JSONObject();
                     bbb.put("SCHEMA_NAME", dotById.getSchemaName());
                     bbb.put("DATABASE_ID", dotById.getDatabase().getId());
-                    bbb.put("DATABASE_NAME", dotById.getDatabase().getDatabaseName() + "(" + dotById.getDatabaseName() + ")");
+                    bbb.put("DATABASE_NAME", dotById.getDatabase().getDatabaseName() + "(" + dotById.getSchemaNameCn() + ")");
                     aaa.add(bbb);
                     jo.put("DATABASE", aaa);
                     arr.add(jo);
@@ -349,7 +349,7 @@ public class DatabaseVisibleService {
                 tt.put("D_DATA_ID", dataClassDto.getDDataId());
                 tt.put("CLASS_NAME", dataClassDto.getClassName());
                 tt.put("PHYSICAL", de.getDatabase().getId());
-                tt.put("DATABASE_NAME", de.getDatabase().getDatabaseName() + "(" + de.getDatabaseName() + ")");
+                tt.put("DATABASE_NAME", de.getDatabase().getDatabaseName() + "(" + de.getSchemaNameCn() + ")");
                 tt.put("DATA_CLASS_ID", dataClassDto.getDataClassId());
                 jrr.add(tt);
             }

@@ -4,11 +4,15 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.dataapply.DataResourceApplyDao;
 import com.piesat.dm.entity.dataapply.DataResourceApplyEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataResourceApplyService;
 import com.piesat.dm.rpc.dto.dataapply.DataResourceApplyDto;
 import com.piesat.dm.rpc.mapper.dataapply.DataResourceApplyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -20,6 +24,9 @@ public class DataResourceApplyServiceImpl extends BaseService<DataResourceApplyE
 
     @Autowired
     private DataResourceApplyDao dataResourceApplyDao;
+
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
     @Autowired
     private DataResourceApplyMapper dataResourceApplyMapper;
@@ -34,5 +41,10 @@ public class DataResourceApplyServiceImpl extends BaseService<DataResourceApplyE
         DataResourceApplyEntity dataResourceApplyEntity = dataResourceApplyMapper.toEntity(dataResourceApplyDto);
         dataResourceApplyEntity = this.saveNotNull(dataResourceApplyEntity);
         return dataResourceApplyMapper.toDto(dataResourceApplyEntity);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAuthorityList(String dataclassId, String databaseId) {
+        return this.mybatisQueryMapper.findAuthorityList(dataclassId,databaseId);
     }
 }

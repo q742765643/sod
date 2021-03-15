@@ -3,7 +3,9 @@ package com.piesat.dm.dao.dataclass;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
 import io.swagger.models.auth.In;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -19,7 +21,7 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
 
     List<DataClassEntity> findByDDataId(String dDataId);
 
-    List<DataClassEntity> findByDataClassIdAndCreateBy(String dataclassId,String userId);
+    List<DataClassEntity> findByDataClassIdAndCreateBy(String dataclassId, String userId);
 
     List<DataClassEntity> findByParentIdOrderByDataClassIdAsc(String parentId);
 
@@ -50,16 +52,25 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
      * @return
      */
     @Query(value =
-            "SELECT E.STORAGE_TYPE,C.DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME " +
-            "DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,F.DICT_LABEL,B.TABLE_ID,B.SUB_TABLE_ID,E.TABLE_NAME,G.TABLE_NAME SUB_TABLE_NAME " +
-            "FROM T_SOD_DATACLASS_TABLE B " +
-            "LEFT JOIN T_SOD_DATA_TABLE_INFO E ON B.TABLE_ID = E.ID " +
-            "LEFT JOIN T_SOD_DATA_TABLE_INFO G ON B.SUB_TABLE_ID = G.ID " +
-            "LEFT JOIN T_SOD_DATABASE C ON E.DATABASE_ID=C.ID " +
-            "LEFT JOIN T_SOD_DATABASE_DEFINE D ON C.DATABASE_DEFINE_ID = D.ID " +
-            "LEFT JOIN T_SOD_DICT_DATA F ON E.STORAGE_TYPE = F.DICT_VALUE AND F.DICT_TYPE = 'sys_storage_type'  WHERE B.DATA_CLASS_ID = ?1 ", nativeQuery = true)
+            "SELECT E.STORAGE_TYPE,C.SCHEMA_NAME_CN DATABASE_NAME,C.SCHEMA_NAME,C.DATABASE_CLASSIFY,C.STOP_USE,C.DATABASE_DEFINE_ID,D.DATABASE_NAME " +
+                    "DATABASE_NAME_F,D.DATABASE_INSTANCE,D.DATABASE_TYPE,F.DICT_LABEL,B.TABLE_ID,B.SUB_TABLE_ID,E.TABLE_NAME,G.TABLE_NAME SUB_TABLE_NAME " +
+                    "FROM T_SOD_DATACLASS_TABLE B " +
+                    "LEFT JOIN T_SOD_DATA_TABLE_INFO E ON B.TABLE_ID = E.ID " +
+                    "LEFT JOIN T_SOD_DATA_TABLE_INFO G ON B.SUB_TABLE_ID = G.ID " +
+                    "LEFT JOIN T_SOD_DATABASE C ON E.DATABASE_ID=C.ID " +
+                    "LEFT JOIN T_SOD_DATABASE_DEFINE D ON C.DATABASE_DEFINE_ID = D.ID " +
+                    "LEFT JOIN T_SOD_DICT_DATA F ON E.STORAGE_TYPE = F.DICT_VALUE AND F.DICT_TYPE = 'sys_storage_type'  WHERE B.DATA_CLASS_ID = ?1 ", nativeQuery = true)
     List<Map<String, Object>> getTableInfo(String dataclassId);
 
-
+    /**
+     * 逻辑删除
+     *
+     * @param dataClassId
+     * @return
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update DataClassEntity set delFlag = :delFlag  where dataClassId = :dataClassId")
+    int tombstone(@Param("dataClassId") String dataClassId, @Param("delFlag") String delFlag);
 
 }

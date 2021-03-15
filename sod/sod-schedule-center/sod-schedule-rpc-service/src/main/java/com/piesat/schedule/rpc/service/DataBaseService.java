@@ -75,7 +75,7 @@ public class DataBaseService
         SchemaDto schemaDto = (SchemaDto) mapResultT.get("database");
         String schemaName= schemaDto.getSchemaName();
         String parentId= schemaDto.getDatabase().getId();
-        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getSchemaNameCn();
         String tableName= (String) mapResultT.get("K");
         String vTableName= (String)mapResultT.get("E");
         String databaseType= schemaDto.getDatabase().getDatabaseType();

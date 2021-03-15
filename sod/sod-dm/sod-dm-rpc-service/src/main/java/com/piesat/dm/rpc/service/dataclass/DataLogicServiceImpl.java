@@ -118,7 +118,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
 
     @Override
     public List<Map<String, Object>> getDistinctDatabaseAndLogic() {
-        String sql = "select f.*,d.database_name from (select distinct logic_flag, database_id from T_SOD_DATA_LOGIC) f left join T_SOD_DATABASE d on f.database_id = d.id";
+        String sql = "select f.*,d.SCHEMA_NAME_CN database_name from (select distinct logic_flag, database_id from T_SOD_DATA_LOGIC) f left join T_SOD_DATABASE d on f.database_id = d.id";
         List<Map<String, Object>> list = this.queryByNativeSQL(sql);
         return list;
     }

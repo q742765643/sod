@@ -99,7 +99,7 @@ public class StrategyPolicyService {
                 SchemaDto schemaDto = schemaService.getDotById(dotById.getDatabaseId());
                 strategyPolicyDto.setDatabaseId(schemaDto.getId());
                 String parentId= schemaDto.getDatabase().getId();
-                String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+                String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getSchemaNameCn();
                 strategyPolicyDto.setDatabaseName(databaseName);
                 this.findBackup(schemaDto.getId(),dataClassId,parentId,policyDtos);
                 this.findClear(schemaDto.getId(),dataClassId,parentId,policyDtos);

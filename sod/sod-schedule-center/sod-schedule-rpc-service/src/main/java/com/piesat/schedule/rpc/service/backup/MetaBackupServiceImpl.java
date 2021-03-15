@@ -146,7 +146,7 @@ public class MetaBackupServiceImpl extends BaseService<MetaBackupEntity> impleme
     public void getDataBase(MetaBackupEntity metaBackupEntity){
         SchemaDto schemaDto = schemaService.getDotById(metaBackupEntity.getDatabaseId());
         String parentId= schemaDto.getDatabase().getId();
-        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getSchemaNameCn();
         metaBackupEntity.setDatabaseName(databaseName);
         metaBackupEntity.setParentId(parentId);
         metaBackupEntity.setDatabaseType(schemaDto.getDatabase().getDatabaseType());

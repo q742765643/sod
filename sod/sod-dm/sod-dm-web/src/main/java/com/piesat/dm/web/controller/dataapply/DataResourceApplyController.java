@@ -1,15 +1,19 @@
 package com.piesat.dm.web.controller.dataapply;
 
 import com.piesat.dm.rpc.api.dataapply.DataResourceApplyService;
+import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataResourceApplyDto;
 import com.piesat.util.ResultT;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author yaya
@@ -36,6 +40,16 @@ public class DataResourceApplyController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @GetMapping("/findAuthorityList")
+    @RequiresPermissions("dm:resourceApply:findAuthorityList")
+    @ApiOperation(value = "查询资料被申请权限", notes = "查询资料被申请权限")
+    public ResultT<List<Map<String, Object>>> findAuthorityList(String dataclassId, String databaseId) {
+        ResultT<List<Map<String, Object>>> resultT = new ResultT<>();
+        List<Map<String, Object>> authorityList = this.dataResourceApplyService.findAuthorityList(dataclassId, databaseId);
+        resultT.setData(authorityList);
+        return resultT;
     }
 
 }

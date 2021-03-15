@@ -39,16 +39,15 @@ public interface SchemaDao extends BaseDao<SchemaEntity> {
 
     List<SchemaEntity> findByDatabaseClassifyAndDatabaseId(String databaseClassify, String databaseDefineId);
 
-    List<SchemaEntity> findByDatabaseClassifyAndDatabaseNameAndSchemaNameAndDatabaseId(String databaseClassify, String databaseName, String schemaName, String databaseDefineId);
+    List<SchemaEntity> findByDatabaseClassifyAndSchemaNameCnAndSchemaNameAndDatabaseId(String databaseClassify, String databaseName, String schemaName, String databaseDefineId);
 
     void deleteByDatabase_Id(String id);
 
-    List<SchemaEntity> findByDatabase_IdAndDatabaseName(String id, String databaseName);
-
+    List<SchemaEntity> findByDatabase_IdAndSchemaNameCn(String id, String databaseName);
 
     List<SchemaEntity> findByDatabase_UserDisplayControl(int use);
 
     void deleteByTdbId(String sdbId);
 
-    List<SchemaEntity> findByDatabaseName(String databaseName);
+    List<SchemaEntity> findBySchemaNameCn(String databaseName);
 }

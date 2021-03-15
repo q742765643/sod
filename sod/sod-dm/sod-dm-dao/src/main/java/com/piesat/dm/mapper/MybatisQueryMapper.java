@@ -3,7 +3,6 @@ package com.piesat.dm.mapper;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
-import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.datatable.CmccElementEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.datatable.DatumTableEntity;
@@ -243,5 +242,26 @@ public interface MybatisQueryMapper {
      * @param map
      * @return
      */
-    List<Map<String, Object>> getPageTableInfo(@Param("map") Map<String, String> map);
+    List<Map<String, Object>> getPageTableInfo(@Param("map") Map<String, Object> map);
+
+    /**
+     * 分页条件查询资料信息
+     * @param map
+     * @return
+     */
+    List<Map<String, Object>> getPageDataclassInfo(@Param("map") Map<String, Object> map);
+
+    /**
+     * 查询资料被申请权限
+     * @param dataclassId
+     * @param databaseId
+     * @return
+     */
+    List<Map<String, Object>> findAuthorityList(@Param("dataclassId")String dataclassId,@Param("databaseId")String databaseId);
+
+    /**
+     * 查询回收站
+     * @return
+     */
+    List<Map<String, Object>> getRecycle(@Param("map") Map<String, Object> map);
 }

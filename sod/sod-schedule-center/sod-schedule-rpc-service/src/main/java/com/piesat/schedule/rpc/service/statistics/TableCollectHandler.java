@@ -136,12 +136,12 @@ public class TableCollectHandler  implements BaseHandler {
                         String sql = "";
                         Map<String, Object> tableInfo = dataTableList.get(i);
                         String table_name = String.valueOf(tableInfo.get("table_name"));
-                        System.out.println(schemaEntity.getDatabaseName()+"="+schemaEntity.getDatabase().getDatabaseName()+"="+schemaName+"="+table_name);
+                        System.out.println(schemaEntity.getSchemaNameCn()+"="+schemaEntity.getDatabase().getDatabaseName()+"="+schemaName+"="+table_name);
                         /*if(!Arrays.asList(arr).contains(table_name)){
                             continue;
                         }*/
                         String data_class_id = String.valueOf(tableInfo.get("data_class_id"));
-                        msg.append("定时统计：").append(schemaEntity.getDatabase().getDatabaseName() + "_" + schemaEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
+                        msg.append("定时统计：").append(schemaEntity.getDatabase().getDatabaseName() + "_" + schemaEntity.getSchemaNameCn() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
                         if("xugu".equalsIgnoreCase(databaseType) && dbTableNams != null && dbTableNams.size()>0 && !dbTableNams.contains(table_name.toUpperCase())){
                             continue;
@@ -314,7 +314,7 @@ public class TableCollectHandler  implements BaseHandler {
                             continue;
                         }
 //                        String data_class_id = String.valueOf(tableInfo.get("data_class_id"));
-                        msg.append("定时统计：").append(schemaEntity.getDatabase().getDatabaseName() + "_" + schemaEntity.getDatabaseName() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
+                        msg.append("定时统计：").append(schemaEntity.getDatabase().getDatabaseName() + "_" + schemaEntity.getSchemaNameCn() + "[" + dataTableList.size() + "/" + i + "]" + ":" + table_name);
 
                         //判断昨天数据是否已经统计入库
                         /*List<TableDataStatisticsEntity> tableDataStatisticsEntities = tableDataStatisticsDao.findByDatabaseIdAndTableIdAndStatisticDate(schemaEntity.getId(), String.valueOf(tableInfo.get("id")), yesterdayZeroDate);

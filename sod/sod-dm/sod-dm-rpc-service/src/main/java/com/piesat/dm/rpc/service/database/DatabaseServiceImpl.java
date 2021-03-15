@@ -172,7 +172,7 @@ public class DatabaseServiceImpl extends BaseService<DatabaseEntity> implements 
     public DatabaseDto getDotById(String id) {
         DatabaseEntity databaseEntity = this.getById(id);
         DatabaseDto databaseDto = this.databaseDefineMapper.toDto(databaseEntity);
-        List<SchemaEntity> databaseEntities = this.schemaDao.findByDatabase_IdAndDatabaseName(id, "基础库");
+        List<SchemaEntity> databaseEntities = this.schemaDao.findByDatabase_IdAndSchemaNameCn(id, "基础库");
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
             SchemaDto schemaDto = this.databaseMapper.toDto(databaseEntities).get(0);
             databaseDto.setSchemaDto(schemaDto);

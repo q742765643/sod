@@ -22,7 +22,7 @@ public class SchemaDto {
      * 数据库名称
      * database_name
      */
-    private String databaseName;
+    private String schemaNameCn;
 
     /**
      * 与数据库定义关联id
