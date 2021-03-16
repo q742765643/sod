@@ -113,4 +113,6 @@ public class UserManageDto extends BaseDto {
      * 公开方式
      */
     String openType;
+
+    private String[] roleIds;
 }

@@ -72,8 +72,19 @@ public class UserManageController {
         return resultT;
     }
 
+
+    @PutMapping("/editUserRole")
+    @ApiOperation(value = "修改用户所属角色", notes = "修改用户所属角色")
+    public ResultT<UserManageDto> editUserRole(@RequestBody UserManageDto userManageDto)
+    {
+        ResultT<UserManageDto> resultT=new ResultT<>();
+        userManageDto = this.userManageService.editUserRole(userManageDto);
+        resultT.setData(userManageDto);
+        return resultT;
+    }
+
     @PutMapping("/resetPwd")
-    @ApiOperation(value = "编辑", notes = "编辑")
+    @ApiOperation(value = "重置密码", notes = "重置密码")
     public ResultT<UserManageDto> resetPwd(@RequestBody UserManageDto userManageDto)
     {
         ResultT<UserManageDto> resultT=new ResultT<>();

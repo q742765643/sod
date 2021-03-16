@@ -52,3 +52,20 @@ export function delMenu(menuId) {
     params: menuId
   })
 }
+
+// 根据角色ID查询菜单下拉树结构
+export function roleMenuTreeselect(roleId) {
+  return request({
+    url: baseUrl+'/portal/menuManage/roleMenuTreeselect/' + roleId,
+    method: 'get'
+  })
+}
+
+// 修改角色
+export function updateRole(data) {
+  return request({
+    url: baseUrl + '/system/role',
+    method: 'put',
+    data: data
+  })
+}

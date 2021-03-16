@@ -9,7 +9,10 @@ import com.piesat.common.utils.IdUtils;
 import com.piesat.common.utils.MD5Util;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.dao.UserManageDao;
+import com.piesat.portal.dao.UserRoleManageDao;
 import com.piesat.portal.entity.UserManageEntity;
+import com.piesat.portal.entity.UserRoleManageEntity;
+import com.piesat.portal.mapper.RoleManageMapper;
 import com.piesat.portal.mapper.UserManageMapper;
 import com.piesat.portal.rpc.api.DepartManageService;
 import com.piesat.portal.rpc.api.UserManageService;
@@ -20,7 +23,9 @@ import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +43,12 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
 
     @Autowired
     private UserManageMapper userManageMapper;
+
+    @Autowired
+    private RoleManageMapper roleManageMapper;
+
+    @Autowired
+    private UserRoleManageDao userRoleManageDao;
 
     @Override
     public BaseDao<UserManageEntity> getBaseDao() {
@@ -91,6 +102,9 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
             deptName = getAllDeptName(deptName,departManageDtos.get(0));
             userManageDto.setDeptName(deptName);
         }
+        //获取用户角色
+        List<String> roles = roleManageMapper.selectRoleListByUserId(id);
+        userManageDto.setRoleIds(roles.toArray(new String[roles.size()]));
         return userManageDto;
     }
 
@@ -137,6 +151,33 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         //userManageEntity = this.saveNotNull(userManageEntity);
         userManageMapper.updateUser(userManageEntity);
         return userManageMapstruct.toDto(userManageEntity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserManageDto editUserRole(UserManageDto userManageDto) {
+        // 删除用户与角色关联
+        userRoleManageDao.deleteByUserId(userManageDto.getId());
+        // 新增用户与角色管理
+        insertUserRole(userManageDto);
+        return null;
+    }
+
+    public void insertUserRole(UserManageDto user) {
+        String[] roles = user.getRoleIds();
+        if (StringUtils.isNotNull(roles)) {
+            // 新增用户与角色管理
+            List<UserRoleManageEntity> list = new ArrayList<>();
+            for (String roleId : roles) {
+                UserRoleManageEntity ur = new UserRoleManageEntity();
+                ur.setUserId(user.getId());
+                ur.setRoleId(roleId);
+                list.add(ur);
+            }
+            if (list.size() > 0) {
+                userRoleManageDao.saveNotNullAll(list);
+            }
+        }
     }
 
     @Override

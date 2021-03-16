@@ -16,7 +16,10 @@ public interface UserManageService {
 
     UserManageDto updateDto(UserManageDto userManageDto);
 
+    UserManageDto saveDto(UserManageDto userManageDto);
 
     UserManageDto resetPwd(UserManageDto userManageDto);
+
+    UserManageDto editUserRole(UserManageDto userManageDto);
 
 }

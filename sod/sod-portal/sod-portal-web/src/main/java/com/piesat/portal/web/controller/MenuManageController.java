@@ -83,4 +83,14 @@ public class MenuManageController {
         return resultT;
     }
 
+    @GetMapping(value = "/roleMenuTreeselect/{roleId}")
+    public ResultT<List<String>> roleMenuTreeselect(@PathVariable("roleId") String roleId)
+    {
+        ResultT<List<String>> resultT=new ResultT<>();
+        List<String> list=menuManageService.selectMenuListByRoleId(roleId);
+        resultT.setData(list);
+        return resultT;
+    }
+
+
 }

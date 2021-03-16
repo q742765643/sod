@@ -20,4 +20,6 @@ public interface MenuManageService {
     public MenuManageDto selectMenuById(String menuId);
 
     public void deleteMenuById(String menuId);
+
+    List<String> selectMenuListByRoleId(String roleId);
 }
