@@ -21,7 +21,7 @@
         <el-input
           clearable
           size="small"
-          v-model.trim="searchObj.dDataId"
+          v-model.trim="searchObj.dataId"
           placeholder="四级编码"
         ></el-input>
       </el-form-item>
@@ -59,7 +59,7 @@
           <el-option
             v-for="(citem, cindex) in specialList"
             :key="cindex"
-            :label="citem.databaseName"
+            :label="citem.schemaNameCn"
             :value="citem.id"
           ></el-option>
         </el-select>
@@ -72,7 +72,7 @@
           placeholder="请输入表名称"
         />
       </el-form-item>
-      <el-form-item label="数据权限" prop="databaseId">
+      <!-- <el-form-item label="数据权限" prop="databaseId">
         <el-select
           size="small"
           filterable
@@ -86,11 +86,14 @@
             :value="citem.id"
           ></el-option>
         </el-select>
-      </el-form-item>
-      <el-form-item label="展示纬度" prop="databaseId">
-        <el-radio-group v-model="searchObj.dataRadio">
-          <el-radio :label="0">资料</el-radio>
-          <el-radio :label="6">数据表</el-radio>
+      </el-form-item> -->
+      <el-form-item label="展示纬度">
+        <el-radio-group
+          v-model="searchObj.tableDataRadio"
+          @change="changeTableDataRadio"
+        >
+          <el-radio :label="'资料'">资料</el-radio>
+          <el-radio :label="'数据表'">数据表</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -104,15 +107,12 @@
         <el-button size="mini" type="primary" @click="searchFun('search')"
           >数据表注册</el-button
         >
-        <el-button size="mini" type="primary" @click="searchFun('search')"
-          >权限申请</el-button
-        >
         <!-- 资料的时候不显示回收站 -->
         <el-button
           size="mini"
           type="primary"
-          v-show="searchObj.dataRadio != 0"
-          @click="searchFun('search')"
+          v-show="searchObj.tableDataRadio == '数据表'"
+          @click="goPage"
           >回收站</el-button
         >
       </el-form-item>
@@ -123,6 +123,7 @@
       <StructureClassify
         ref="classifyTree"
         :treeIdOfDR="treeIdOfDR"
+        :tableDataRadio="searchObj.tableDataRadio"
         @showMaterialSingle="showMaterialSingle"
         @getTreeUrlOfTab="getTreeUrlOfTab"
         @searchFun="searchFun"
@@ -141,62 +142,17 @@
           {{ tableName + "数据集信息" }}
         </div>
         <div class="tableCon">
-          <!--  <div class="tableTop">
-            <div class="tableSearch">
-              <el-form :inline="true">
-                <el-form-item label="资料名称">
-                  <el-input
-                    clearable
-                    size="small"
-                    v-model.trim="searchObj.className"
-                    placeholder="资料名称"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="四级编码">
-                  <el-input
-                    clearable
-                    size="small"
-                    v-model.trim="searchObj.dDataId"
-                    placeholder="四级编码"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item label="存储编码">
-                  <el-input
-                    clearable
-                    size="small"
-                    v-model.trim="searchObj.dataclassId"
-                    placeholder="存储编码"
-                  ></el-input>
-                </el-form-item>
-                <el-form-item>
-                  <el-button
-                    size="small"
-                    type="primary"
-                    icon="el-icon-search"
-                    @click="searchFun('search')"
-                    >搜索</el-button
-                  >
-                </el-form-item>
-              </el-form>
-            </div>
-            <div class="sourceOperate">
-              <el-button
-                type="primary"
-                size="small"
-                icon="el-icon-plus"
-                @click="showMaterialSingle('新增资料')"
-                >新增资料</el-button
-              >
-            </div>
-          </div> -->
           <el-table
+            v-if="searchObj.tableDataRadio == '资料'"
             :height="tableH"
             :data="tableData"
             border
             highlight-current-row
             @current-change="handleCurrentChange"
             ref="singleTable"
+            :span-method="objectSpanMethod"
           >
+            <!-- 资料纬度 start -->
             <el-table-column
               width="140"
               label="资料名称"
@@ -215,17 +171,83 @@
               label="存储编码"
               prop="DATA_CLASS_ID"
             ></el-table-column>
-            <el-table-column label="关联数据表" width="360">
-              <el-table-column label="数据表名称" prop=""> </el-table-column>
-              <el-table-column label="数据库" prop=""> </el-table-column>
-              <el-table-column label="专题库" prop=""> </el-table-column>
+            <el-table-column label="关联数据表">
+              <el-table-column label="数据表名称" prop="TABLE_NAME" width="160">
+              </el-table-column>
+              <el-table-column label="数据库" prop="DATABASE_NAME" width="140">
+              </el-table-column>
+              <el-table-column label="专题库" prop="SCHEMA_NAME_CN">
+              </el-table-column>
             </el-table-column>
+            <!-- 资料纬度 end -->
+            <!-- 数据表纬度 start -->
+            <el-table-column
+              label="数据表名称"
+              prop="TABLE_NAME"
+              width="160"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="数据库"
+              prop="DATABASE_NAME"
+              width="140"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="专题库"
+              prop="SCHEMA_NAME_CN"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="关联资料"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+              <el-table-column
+                width="140"
+                label="资料名称"
+                prop="CLASS_NAME"
+              ></el-table-column>
+              <el-table-column
+                width="140"
+                sortable
+                label="四级编码"
+                prop="D_DATA_ID"
+                v-if="tableStructureManageContral"
+              ></el-table-column>
+              <el-table-column
+                width="140"
+                sortable
+                label="存储编码"
+                prop="DATA_CLASS_ID"
+              ></el-table-column>
+            </el-table-column>
+            <!-- 数据表纬度 end -->
             <el-table-column label="数据权限" width="360">
-              <el-table-column label="数据权限" prop=""> </el-table-column>
-              <el-table-column label="申请状态" prop=""> </el-table-column>
-              <el-table-column label="权限管理" prop=""> </el-table-column>
+              <el-table-column label="数据归属" prop="">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.SCHEMA_NAME_CN == '基础库'"
+                    >信息中心</span
+                  >
+                  <span v-else>{{ scope.row.NICK_NAME }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="权限管理" prop="">
+                <!-- 权限管理 存储只有查看 -->
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    size="mini"
+                    icon="el-icon-view"
+                    @click="showPower(scope.row)"
+                    >查看</el-button
+                  >
+                </template>
+              </el-table-column>
             </el-table-column>
-            <el-table-column label="存储结构管理" prop="" width="360">
+            <el-table-column label="存储结构管理" prop="" width="560">
               <template slot-scope="scope">
                 <!-- 存储结构 -->
                 <el-button
@@ -311,7 +333,11 @@
                 >
               </template>
             </el-table-column>
-            <el-table-column label="资料操作" width="200px">
+            <el-table-column
+              label="资料操作"
+              width="200px"
+              v-if="searchObj.tableDataRadio == '资料'"
+            >
               <template slot-scope="scope">
                 <div style="text-align: left; padding-left: 10px">
                   <el-button
@@ -336,7 +362,7 @@
                     >删除</el-button
                   >
                   <!-- 解码配置，区域信息，数据服务存在任意一个，显示服务信息按钮 -->
-                  <el-button
+                  <!-- <el-button
                     type="text"
                     size="mini"
                     icon="el-icon-notebook-2"
@@ -349,11 +375,185 @@
                         storage[scope.row.STORAGE_TYPE].pl)
                     "
                     >服务信息</el-button
-                  >
+                  > -->
                 </div>
               </template>
             </el-table-column>
           </el-table>
+          <!-- 数据表纬度 start -->
+          <el-table
+            v-if="searchObj.tableDataRadio == '数据表'"
+            :height="tableH"
+            :data="tableData"
+            border
+            highlight-current-row
+            @current-change="handleCurrentChange"
+            ref="singleTable"
+            :span-method="objectSpanMethod"
+          >
+            <el-table-column
+              label="数据表名称"
+              prop="TABLE_NAME"
+              width="160"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="数据库"
+              prop="DATABASE_NAME"
+              width="140"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="专题库"
+              prop="SCHEMA_NAME_CN"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column label="关联资料">
+              <el-table-column
+                width="140"
+                label="资料名称"
+                prop="CLASS_NAME"
+              ></el-table-column>
+              <el-table-column
+                width="140"
+                sortable
+                label="四级编码"
+                prop="D_DATA_ID"
+                v-if="tableStructureManageContral"
+              ></el-table-column>
+              <el-table-column
+                width="140"
+                sortable
+                label="存储编码"
+                prop="DATA_CLASS_ID"
+              ></el-table-column>
+            </el-table-column>
+            <el-table-column label="数据权限" width="360">
+              <el-table-column label="数据归属" prop="">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.SCHEMA_NAME_CN == '基础库'"
+                    >信息中心</span
+                  >
+                  <span v-else>{{ scope.row.NICK_NAME }}</span>
+                </template>
+              </el-table-column>
+              <!-- <el-table-column label="申请状态" prop=""> </el-table-column> portal才有-->
+              <el-table-column label="权限管理" prop="">
+                <!-- 权限管理 存储只有查看 -->
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    size="mini"
+                    icon="el-icon-view"
+                    @click="showPower(scope.row)"
+                    >查看</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="存储结构管理" prop="" width="560">
+              <template slot-scope="scope">
+                <!-- 存储结构 -->
+                <el-button
+                  disabled
+                  v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 3"
+                  size="mini"
+                >
+                  <i class="btnRound orangRound"></i>存储结构
+                </el-button>
+                <el-button
+                  v-else
+                  size="mini"
+                  @click="handledDBMethods(scope.row)"
+                >
+                  <i
+                    class="btnRound blueRound"
+                    v-if="scope.row.STORAGE_DEFINE_IDENTIFIER == 1"
+                  ></i>
+                  <i class="btnRound orangRound" v-else></i>存储结构
+                </el-button>
+                <!-- 数据同步 -->
+                <el-button
+                  disabled
+                  v-if="scope.row.SYNC_IDENTIFIER == 3"
+                  size="mini"
+                >
+                  <i class="btnRound orangRound"></i>数据同步
+                </el-button>
+                <el-button
+                  v-else
+                  size="mini"
+                  @click="handlSyncMethods(scope.row)"
+                >
+                  <i class="btnRound blueRound" v-if="scope.row.SYNC_ID"></i>
+                  <i class="btnRound orangRound" v-else></i>数据同步
+                </el-button>
+                <!-- 迁移 -->
+
+                <el-button
+                  v-if="scope.row.MOVE_ST === 1"
+                  size="mini"
+                  @click="handlMoveMethods(scope.row)"
+                >
+                  <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
+                  <i class="btnRound blueRound" v-if="scope.row.MOVE_ID"></i>
+                  <i class="btnRound orangRound" v-else></i>迁移
+                </el-button>
+
+                <!-- 清除 -->
+                <el-button
+                  v-if="scope.row.CLEAR_ST === 1"
+                  size="mini"
+                  @click="handlClearMethods(scope.row)"
+                >
+                  <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
+                  <i class="btnRound blueRound" v-if="scope.row.CLEAR_ID"></i>
+                  <i class="btnRound orangRound" v-else></i>清除
+                </el-button>
+
+                <!-- 备份 -->
+                <el-button
+                  v-if="scope.row.BACKUP_ST === 1"
+                  size="mini"
+                  @click="handleBackUpMethods(scope.row)"
+                >
+                  <!-- 在这里判断颜色，在函数里判断是哪种迁移清除 -->
+                  <i class="btnRound blueRound" v-if="scope.row.BACKUP_ID"></i>
+                  <i class="btnRound orangRound" v-else></i>备份
+                </el-button>
+
+                <!-- 恢复 -->
+                <el-button
+                  disabled
+                  v-if="scope.row.ARCHIVING_IDENTIFIER == 3"
+                  size="mini"
+                  >恢复</el-button
+                >
+                <el-button
+                  v-else
+                  size="mini"
+                  @click="handlRecoverMethods(scope.row)"
+                  >恢复</el-button
+                >
+              </template>
+            </el-table-column>
+
+            <el-table-column label="数据表操作" width="100px">
+              <template slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="mini"
+                  icon="el-icon-delete"
+                  @click="deleteDataTable(scope.row)"
+                  >删除</el-button
+                >
+              </template>
+            </el-table-column>
+          </el-table>
+          <!-- 数据表纬度 end -->
         </div>
       </el-main>
       <!-- 公共元数据 -->
@@ -444,6 +644,34 @@
         :handleId="handleId"
       ></handleBaseMsg>
     </el-dialog>
+
+    <!-- 查看权限 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      v-dialogDrag
+      :title="powerTitle"
+      :visible.sync="showPowerDialog"
+      width="80%"
+      :before-close="handleClose"
+    >
+      <el-table :data="powerTableData" style="width: 100%">
+        <el-table-column prop="DATA_CLASS_ID" label="存储编码">
+        </el-table-column>
+        <el-table-column prop="NICK_NAME" label="用户名"> </el-table-column>
+        <el-table-column prop="AUTHORIZE" label="状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.AUTHORIZE == 1">通过</span>
+            <span v-else>拒绝</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="APPLY_AUTHORITY" label="权限">
+          <template slot-scope="scope">
+            <span v-if="scope.row.APPLY_AUTHORITY == 1">读</span>
+            <span v-else>写</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -461,9 +689,14 @@ import handleSQL from "@/views/structureManagement/dataList/handleSQL";
 //关联表信息--弹出层
 import linkTableInfo from "@/views/structureManagement/dataList/linkTableInfo";
 import {
-  getListBYIn,
+  getPageDataclassInfo,
+  getPageTableInfo,
   delByClass,
+  tombstone,
   enable,
+  getCanShowDatabaseDefineList,
+  findByDatabaseDefineId,
+  findAuthorityList,
 } from "@/api/structureManagement/dataList/index";
 import handleBaseMsg from "@/views/structureManagement/dataList/TableManage/handleBaseMsg";
 export default {
@@ -478,6 +711,9 @@ export default {
   },
   data() {
     return {
+      powerTitle: "",
+      powerTableData: [],
+      showPowerDialog: false,
       tableH: null,
       DatabaseDefineList: [],
       specialList: [],
@@ -564,10 +800,10 @@ export default {
       tableStructureManageContral: false,
       treeIdOfDR: this.$route.params.treeIdOfDR,
       searchObj: {
-        stringList: "",
+        classIds: "",
         className: "",
-        dDataId: "",
-        dataRadio: 0,
+        dataId: "",
+        tableDataRadio: "资料",
       },
       tableData: [],
       dataTotal: 0,
@@ -596,7 +832,10 @@ export default {
       treeRefreshData: {},
     };
   },
-  created() {
+  async created() {
+    await getCanShowDatabaseDefineList().then((res) => {
+      this.DatabaseDefineList = res.data;
+    });
     enable().then((res) => {
       if (res.data == "true") {
         this.tableStructureManageContral = true;
@@ -606,6 +845,7 @@ export default {
     });
   },
   mounted() {
+    // 动态设置高度
     this.$nextTick(() => {
       let qH = document.getElementsByClassName("searchBox")[0].offsetHeight;
       this.tableH = document.body.clientHeight - qH + "px";
@@ -613,6 +853,7 @@ export default {
         "elTreeAsideBox"
       )[0].style.height = this.tableH;
     });
+    // 拉宽拉窄
     var resize = document.getElementById("resize");
     var left = document.getElementById("left");
     var right = document.getElementById("right");
@@ -642,7 +883,31 @@ export default {
     };
   },
   methods: {
-    handleFindSpec() {},
+    //查看权限
+    showPower(row) {
+      findAuthorityList({
+        databaseId: row.DATABASE_ID,
+        dataclassId: row.DATA_CLASS_ID,
+      }).then((res) => {
+        this.powerTitle = row.CLASS_NAME + "权限查看";
+        this.powerTableData = res.data;
+        this.showPowerDialog = true;
+      });
+    },
+    // 切换展示纬度
+    changeTableDataRadio() {
+      if (this.searchObj.tableDataRadio == "资料") {
+        this.$refs.classifyTree.handleTabClick({ label: "资料分类树" });
+      } else {
+        this.$refs.classifyTree.handleTabClick({ label: "数据库分类树" });
+      }
+    },
+    //切换数据库查询专题库
+    handleFindSpec(val) {
+      findByDatabaseDefineId({ id: val }).then((res) => {
+        this.specialList = res.data;
+      });
+    },
     // 查看关联表信息
     showLinkTable(row) {
       this.linkTableVisible = true;
@@ -655,8 +920,35 @@ export default {
       if (!this.queryAll) {
         queryObj = this.searchObj;
       }
-      getListBYIn(queryObj).then((response) => {
+      this.queryMethods(queryObj);
+    },
+    queryMethods(queryObj) {
+      let queryUrl = getPageDataclassInfo;
+      if (this.searchObj.tableDataRadio == "数据表") {
+        queryUrl = getPageTableInfo;
+      }
+      queryUrl(queryObj).then((response) => {
         this.tableData = response.data;
+        if (this.tableData.length > 0) {
+          this.tableData.forEach((item, index) => {
+            item.roundCount =
+              item.STORAGE_TYPE == "K_E_table"
+                ? 1
+                : item.STORAGE_TYPE == "MK_table"
+                ? 1
+                : 0;
+          });
+          this.rowspanMethods();
+        }
+        if (this.currentRow.length > 0) {
+          this.tableData.forEach((element, index) => {
+            if (element.DATA_CLASS_ID == this.currentRow[0].DATA_CLASS_ID) {
+              this.$refs.singleTable.setCurrentRow(this.tableData[index]);
+            }
+          });
+        } else {
+          this.$refs.singleTable.setCurrentRow(this.tableData[0]);
+        }
       });
     },
     // 基础信息
@@ -694,9 +986,9 @@ export default {
     // 左侧tab点击时获取树的url
     getTreeUrlOfTab(tree) {
       this.whichTree = tree;
-      this.searchObj.stringList = "";
+      this.searchObj.classIds = "";
       this.searchObj.className = "";
-      this.searchObj.dDataId = "";
+      this.searchObj.dataId = "";
     },
     searchFun(checkedNodeStr, treeRefreshData) {
       if (treeRefreshData) {
@@ -712,23 +1004,12 @@ export default {
         this.otherMain = true;
         this.publicMain = false;
         if (checkedNodeStr && checkedNodeStr != "search") {
-          this.searchObj.stringList = checkedNodeStr;
+          this.searchObj.classIds = checkedNodeStr;
         } else if (checkedNodeStr == "" && checkedNodeStr != "search") {
-          this.searchObj.stringList = "";
+          this.searchObj.classIds = "";
         }
         console.log(this.searchObj);
-        getListBYIn(this.searchObj).then((response) => {
-          this.tableData = response.data;
-          if (this.currentRow.length > 0) {
-            this.tableData.forEach((element, index) => {
-              if (element.DATA_CLASS_ID == this.currentRow[0].DATA_CLASS_ID) {
-                this.$refs.singleTable.setCurrentRow(this.tableData[index]);
-              }
-            });
-          } else {
-            this.$refs.singleTable.setCurrentRow(this.tableData[0]);
-          }
-        });
+        this.queryMethods(this.searchObj);
       }
     },
     deleteMaterialSingle(row) {
@@ -749,6 +1030,26 @@ export default {
               }
             }
           );
+        })
+        .catch(() => {});
+    },
+    // 删除数据表
+    deleteDataTable(row) {
+      this.$confirm("是否删除数据表" + row.TABLE_NAME, "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          tombstone({ tableId: row.TABLE_ID, delFlag: 2 }).then((response) => {
+            if (response.code == 200) {
+              this.$message({
+                type: "success",
+                message: "删除成功",
+              });
+              this.searchFun("search");
+            }
+          });
         })
         .catch(() => {});
     },
@@ -800,11 +1101,86 @@ export default {
       this.materialSingleVisible = false;
     },
     handleClose() {
+      this.showPowerDialog = false;
       this.baseMsgEditDialog = false;
     },
     //关闭新增或编辑资料弹出层
     closeMaterialDialog() {
       this.materialSingleVisible = false;
+    },
+    goPage() {
+      this.$router.push({
+        name: "回收站",
+      });
+    },
+    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      //表格合并
+      if (columnIndex === 0) {
+        const _row = this.spanArr[rowIndex];
+        const _col = _row > 0 ? 1 : 0;
+        return {
+          rowspan: _row,
+          colspan: _col,
+        };
+      }
+      if (this.searchObj.tableDataRadio == "资料") {
+        if (columnIndex === 1) {
+          const _row = this.spanArr[rowIndex];
+          const _col = _row > 0 ? 1 : 0;
+          return {
+            rowspan: _row,
+            colspan: _col,
+          };
+        }
+      }
+
+      if (this.searchObj.tableDataRadio == "数据表") {
+        if (columnIndex === 6 || columnIndex === 7 || columnIndex === 8) {
+          const _row = this.spanArr[rowIndex];
+          const _col = _row > 0 ? 1 : 0;
+          return {
+            rowspan: _row,
+            colspan: _col,
+          };
+        }
+      }
+    },
+    // 判断哪些需要合并
+    rowspanMethods() {
+      this.spanArr = [];
+      this.position = 0;
+      this.tableData.forEach((item, index) => {
+        if (index === 0) {
+          this.spanArr.push(1);
+          this.position = 0;
+        } else {
+          if (this.searchObj.tableDataRadio == "资料") {
+            if (
+              this.tableData[index].DATA_CLASS_ID ===
+              this.tableData[index - 1].DATA_CLASS_ID
+            ) {
+              this.spanArr[this.position] += 1;
+              this.spanArr.push(0);
+            } else {
+              this.spanArr.push(1);
+              this.position = index;
+            }
+          }
+          if (this.searchObj.tableDataRadio == "数据表") {
+            if (
+              this.tableData[index].TABLE_NAME ===
+              this.tableData[index - 1].TABLE_NAME
+            ) {
+              this.spanArr[this.position] += 1;
+              this.spanArr.push(0);
+            } else {
+              this.spanArr.push(1);
+              this.position = index;
+            }
+          }
+        }
+      });
+      console.log(this.spanArr);
     },
   },
 };
