@@ -525,7 +525,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
 
         //剔除还没在物理库建表的资料
-        List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
+       /* List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
         for (int i = result.size() - 1; i > -1; i--) {
             Map<String, Object> map = result.get(i);
             String databaseId = (String) map.get("DATABASEID");
@@ -563,7 +563,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 }
             }
 
-        }
+        }*/
         return result;
     }
 
