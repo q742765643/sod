@@ -369,7 +369,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             if (databaseEntity != null && !databaseIds.contains(databaseId)) {
                 SchemaEntity schemaEntity = new SchemaEntity();
                 schemaEntity.setDatabaseClassify("专题库");
-                schemaEntity.setDatabaseName(schemaDto.getDatabaseName());
+                schemaEntity.setSchemaNameCn(schemaDto.getSchemaNameCn());
                 schemaEntity.setSchemaName(schemaDto.getSchemaName());
                 schemaEntity.setStopUse(false);
                 schemaEntity.setTdbId(schemaDto.getTdbId());

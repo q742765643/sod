@@ -104,4 +104,18 @@ public interface DataClassService {
      * @return
      */
     List<Map<String, Object>> getTableInfo(String dataclassId);
+
+    /**
+     * 分页查询
+     * @param pageForm
+     * @return
+     */
+    PageBean getPageDataclassInfo(PageForm<Map<String, Object>> pageForm);
+
+    /**
+     * 逻辑删除
+     * @param dataClassId
+     * @return
+     */
+    int tombstone(String dataClassId,String delFlag);
 }

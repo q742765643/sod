@@ -62,7 +62,7 @@
     <select id="selectPageList" parameterType="com.piesat.schedule.entity.sync.SyncTaskEntity" resultMap="BaseResultMap">
         select d.*,dbd.sourceDatabaseName from T_SOD_JOB_SYNCTASK_INFO d
         left join
-        (select dd.database_name || '_' || db.database_name as sourceDatabaseName, db.id from t_sod_database db inner join t_sod_database_define dd on db.database_define_id = dd.id) dbd  on dbd.id=d.source_database_id
+        (select dd.database_name || '_' || db.SCHEMA_NAME_CN as sourceDatabaseName, db.id from t_sod_database db inner join t_sod_database_define dd on db.database_define_id = dd.id) dbd  on dbd.id=d.source_database_id
         where 1=1
         <if test="taskName!=null and taskName!=''">
             and d.TASK_NAME like '%${taskName}%'

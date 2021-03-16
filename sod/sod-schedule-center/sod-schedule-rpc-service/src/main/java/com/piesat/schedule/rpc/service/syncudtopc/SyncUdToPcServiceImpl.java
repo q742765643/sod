@@ -7,7 +7,6 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
-import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.schedule.dao.syncudtopc.SyncUdToPcDao;
 import com.piesat.schedule.entity.syncudtopc.SyncUdToPcEntity;
@@ -143,7 +142,7 @@ public class SyncUdToPcServiceImpl extends BaseService<SyncUdToPcEntity> impleme
         List<Map<String, Object>> databaseDtos = new ArrayList<>();
         List<SchemaDto> databaseListAll = dataBaseService.findAllDataBase();
         for (SchemaDto databaseDto : databaseListAll) {
-            String databaseName = databaseDto.getDatabase().getDatabaseName() + "_" + databaseDto.getDatabaseName();
+            String databaseName = databaseDto.getDatabase().getDatabaseName() + "_" + databaseDto.getSchemaNameCn();
             String parentId = databaseDto.getDatabase().getId();
             if (dicts.contains(parentId.toUpperCase())) {
                 LinkedHashMap<String, Object> map = new LinkedHashMap<>();

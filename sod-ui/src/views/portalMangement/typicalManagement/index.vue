@@ -3,7 +3,7 @@
     <!-- 典型应用管理 -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" class="searchBox">
       <el-form-item prop="classCode" label="应用类型:">
-        <el-select v-model="queryParams.classCode">
+        <el-select v-model="queryParams.classCode" @change="handleQuery">
           <el-option label="国家级" value="C"></el-option>
           <el-option label="省级" value="P"></el-option>
           <el-option label="公有云" value="CC"></el-option>
@@ -50,9 +50,15 @@
           <span v-if="scope.row.classCode == 'CC'">公有云</span>
         </template>
       </el-table-column>
+      <el-table-column prop="province" label="省份" v-if="queryParams.classCode=='P'"></el-table-column>
+      <el-table-column prop="orgName" label="机构名称" v-if="queryParams.classCode != 'P'"></el-table-column>
       <el-table-column prop="appName" label="应用名称"></el-table-column>
-      <el-table-column prop="orgName" label="机构名称"></el-table-column>
-      <el-table-column prop="url" label="应用链接"></el-table-column>
+      <el-table-column prop="url" label="图标" v-if="queryParams.classCode == 'C'">
+        <template slot-scope="scope">
+          <img style="width:20px;height:20px;" :src=baseCode+scope.row.icon />
+        </template>
+      </el-table-column>
+      <el-table-column prop="url" label="应用链接" v-if="queryParams.classCode == 'C'"></el-table-column>
       <el-table-column prop="serialNumber" label="排序"></el-table-column>
       <el-table-column prop="isshow" label="是否显示">
         <template slot-scope="scope">
@@ -114,6 +120,7 @@ export default {
         pageSize: 10,
         appName: "",
         orgName:"",
+        classCode:"C",
       },
       tableData: [],
       total: 0,
@@ -124,6 +131,7 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
+      baseCode: "data:image/png;base64,",
     };
   },
   /** 方法调用 */

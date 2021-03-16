@@ -155,7 +155,7 @@ public class ConsistencyCheckController {
     public void downloadDfcheckFile(@RequestBody SchemaDto schemaDto, HttpServletResponse response){
          schemaDto = schemaService.getDotById(schemaDto.getId());
 
-        String fileName = schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName()+"_"+ schemaDto.getSchemaName()+"_"
+        String fileName = schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getSchemaNameCn()+"_"+ schemaDto.getSchemaName()+"_"
                 +"元数据差异"+"_"+ DateUtils.dateTimeNow("yyyyMMddhhMMss")+".xls";
 
 

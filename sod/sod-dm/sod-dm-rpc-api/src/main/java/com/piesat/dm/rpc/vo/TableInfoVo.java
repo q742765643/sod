@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.vo;
 import lombok.Data;
 import org.springframework.cglib.beans.BeanMap;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,14 +14,17 @@ import java.util.Map;
  */
 @Data
 public class TableInfoVo {
+    private List<String> classIds;
     private String tableNameCn;
     private String tableName;
     private String databaseId;
     private String databasePid;
+    private String schemaNameCn;
+    private String databaseName;
     private String className;
     private String classId;
     private String dataId;
-    public Map<String,String> getMap(){
+    public Map<String,Object> getMap(){
        return BeanMap.create(this);
     }
 }

@@ -51,4 +51,12 @@ public interface TableForeignKeyDao extends BaseDao<TableForeignKeyEntity> {
             "(SELECT TABLE_NAME FROM T_SOD_DATA_TABLE_INFO B WHERE A.SUB_TABLE_ID = B.ID) SUB_TABLE_NAME " +
             "FROM T_SOD_DATA_TABLE_FOREIGNKEY A WHERE TABLE_ID = ?1 OR SUB_TABLE_ID = ?1 ", nativeQuery = true)
     List<Map<String, Object>> findList(String tableId);
+
+    /**
+     * 根据表id删除
+     * @param tableId
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    int deleteByTableId(String tableId);
 }

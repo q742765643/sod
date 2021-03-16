@@ -119,6 +119,7 @@ p {
   }
 
   th {
+    display: table-cell !important;
     padding-top: 9px;
     padding-bottom: 9px;
     border-bottom: 1px solid #dfe6ec;

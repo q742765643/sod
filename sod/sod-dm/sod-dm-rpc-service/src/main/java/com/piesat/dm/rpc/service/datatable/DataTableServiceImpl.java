@@ -26,6 +26,7 @@ import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.database.SchemaService;
+import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.dataapply.NewdataApplyDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
@@ -143,6 +144,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         this.shardingDao.deleteById(id);
         this.tableColumnDao.deleteByTableId(id);
         this.tableIndexDao.deleteByTableId(id);
+        this.tableForeignKeyDao.deleteByTableId(id);
         this.delete(id);
     }
 
@@ -283,8 +285,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         s.setTableName(sampleData.getTableName());
 
         new DataBuild()
-                .init(coreInfo,r)
-                .sampleData(s,r)
+                .init(coreInfo, r)
+                .sampleData(s, r)
                 .close();
 
         r.setMessage(String.valueOf(r.getProcessMsg()));
@@ -355,7 +357,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         }
         List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
                 .findByDataClassIdAndUserId(dataClassEntity.getDataClassId(), dataClassEntity.getCreateBy());
-        if (NewdataApplyDtos !=null && !NewdataApplyDtos.isEmpty() && copys!=null && !copys.isEmpty()) {
+        if (NewdataApplyDtos != null && !NewdataApplyDtos.isEmpty() && copys != null && !copys.isEmpty()) {
             NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
             newdataApplyDto.setTableName(copys.get(0).getTableName());
             this.newdataApplyService.saveDto(newdataApplyDto);
@@ -449,10 +451,40 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     }
 
     @Override
-    public PageBean getPageTableInfo(PageForm<Map<String, String>> pageForm) {
-        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+    public PageBean getPageTableInfo(PageForm<Map<String, Object>> pageForm) {
+//        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
         List<Map<String, Object>> lists = mybatisQueryMapper.getPageTableInfo(pageForm.getT());
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
+        List<Map<String, Object>> new_list = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>();
+        String tableName = "";
+        String databaseId = "";
+        List<String> classNames = new ArrayList<>();
+        List<String> dataIds = new ArrayList<>();
+        List<String> dataClassIds = new ArrayList<>();
+        for (int i = 0; i < lists.size(); i++) {
+            Map<String, Object> m = lists.get(i);
+            String table_name = String.valueOf(m.get("TABLE_NAME"));
+            String database_id = String.valueOf(m.get("DATABASE_ID"));
+            classNames.add(String.valueOf(m.get("CLASS_NAME")));
+            dataIds.add(String.valueOf(m.get("D_DATA_ID")));
+            dataClassIds.add(String.valueOf(m.get("DATA_CLASS_ID")));
+            if (!tableName.equals(table_name) || !databaseId.equals(database_id) || i == (lists.size() - 1)) {
+                if (map.isEmpty()) {
+                    map = m;
+                }
+                map.put("CLASS_NAME", classNames);
+                map.put("D_DATA_ID", dataIds);
+                map.put("DATA_CLASS_ID", dataClassIds);
+                new_list.add(map);
+                map = new HashMap<>();
+                classNames = new ArrayList<>();
+                dataIds = new ArrayList<>();
+                dataClassIds = new ArrayList<>();
+            }
+        }
+
+
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(new_list);
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
         return pageBean;
     }
@@ -468,8 +500,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         s.setTableName(tableSqlDto.getTableName());
 
         new DataBuild()
-                .init(coreInfo,r)
-                .countData(s,true,r)
+                .init(coreInfo, r)
+                .countData(s, true, r)
                 .close();
 
         return Integer.valueOf(r.getData().get(CountEnum.ALL_COUNT));
@@ -488,6 +520,21 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public List<Map<String, Object>> findAllETables() {
         return this.dataTableDao.findAllETables();
+    }
+
+    @Override
+    public int tombstone(String tableId, String delFlag) {
+        return this.dataTableDao.tombstone(tableId, delFlag);
+    }
+
+    @Override
+    public PageBean getRecycle(PageForm<Map<String, Object>> pageForm) {
+        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+        Map<String, Object> t = pageForm.getT();
+        List<Map<String, Object>> lists = mybatisQueryMapper.getRecycle(t);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
+        return pageBean;
     }
 
 }

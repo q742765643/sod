@@ -241,7 +241,7 @@ public class DatabaseSpecialController {
             schemaDto.setTdbId(specialParamVO.getSdbId());
             schemaDto.setDatabaseSpecialAuthorityList(specialParamVO.getDatabaseSpecialAuthorityList());
             schemaDto.setSchemaName(specialParamVO.getSimpleName());
-            schemaDto.setDatabaseName(specialParamVO.getSdbName());
+            schemaDto.setSchemaNameCn(specialParamVO.getSdbName());
             this.databaseSpecialService.empowerDatabaseSpecial(schemaDto);
             //修改授权状态
             DatabaseSpecialDto databaseSpecialDto = databaseSpecialService.getDotById(specialParamVO.getSdbId());

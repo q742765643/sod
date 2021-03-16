@@ -125,7 +125,7 @@ public class DataTableController {
     @DeleteMapping(value = "/del")
     public ResultT del(String id) {
         try {
-            this.dataTableService.delete(id);
+            this.dataTableService.deleteById(id);
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();
@@ -342,13 +342,13 @@ public class DataTableController {
     @GetMapping("/getPageTableInfo")
     @ApiOperation(value = "条件分页查询")
     @RequiresPermissions("dm:dataTable:getPageTableInfo")
-    public ResultT<PageBean> getPageTableInfo(TableInfoVo tableInfoVo,
-                                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
-                                              @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
-        Map<String, String> map = tableInfoVo.getMap();
-        PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
+    public ResultT<List> getPageTableInfo(TableInfoVo tableInfoVo,
+                                          @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                          @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        Map<String, Object> map = tableInfoVo.getMap();
+        PageForm<Map<String, Object>> pageForm = new PageForm<>(pageNum, pageSize, map);
         PageBean pageBean = this.dataTableService.getPageTableInfo(pageForm);
-        return ResultT.success(pageBean);
+        return ResultT.success(pageBean.getPageData());
     }
 
     @ApiOperation(value = "查询表数据量")
@@ -407,6 +407,36 @@ public class DataTableController {
     public ResultT findAllETables() {
         try {
             return ResultT.success(this.dataTableService.findAllETables());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "逻辑删除（2）/恢复（0）")
+    @RequiresPermissions("dm:dataTable:tombstone")
+    @Log(title = "表信息管理", businessType = BusinessType.UPDATE)
+    @PostMapping(value = "/tombstone")
+    public ResultT tombstone(String tableId, String delFlag) {
+        try {
+            this.dataTableService.tombstone(tableId, delFlag);
+            return ResultT.success();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询回收站")
+    @RequiresPermissions("dm:dataTable:getRecycle")
+    @GetMapping(value = "/getRecycle")
+    public ResultT getRecycle(TableInfoVo tableInfoVo ,@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                              @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        try {
+            Map<String, Object> map = tableInfoVo.getMap();
+            PageForm<Map<String, Object>> pageForm = new PageForm<>(pageNum, pageSize);
+            pageForm.setT(map);
+            return ResultT.success(this.dataTableService.getRecycle(pageForm));
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

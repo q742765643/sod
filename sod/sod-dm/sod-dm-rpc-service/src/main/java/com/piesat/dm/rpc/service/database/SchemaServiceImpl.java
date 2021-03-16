@@ -4,7 +4,6 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
-import com.piesat.dm.entity.database.DatabaseEntity;
 import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
@@ -43,7 +42,7 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
 
     @Override
     public SchemaDto saveDto(SchemaDto schemaDto) {
-        if ("基础库".equals(schemaDto.getDatabaseName())) {
+        if ("基础库".equals(schemaDto.getSchemaNameCn())) {
             schemaDto.setLevel(1);
         }
         SchemaEntity schemaEntity = this.databaseMapper.toEntity(schemaDto);
@@ -138,7 +137,7 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
 
     @Override
     public List<SchemaDto> findByDatabaseName(String databaseName) {
-        List<SchemaEntity> databaseEntityList = this.schemaDao.findByDatabaseName(databaseName);
+        List<SchemaEntity> databaseEntityList = this.schemaDao.findBySchemaNameCn(databaseName);
         return this.databaseMapper.toDto(databaseEntityList);
     }
 

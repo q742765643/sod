@@ -16,7 +16,10 @@
         @click="columnAdd"
         >新增</el-button
       >
-      <el-button type="primary" size="small" icon="el-icon-edit"
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-edit"
         @click="columnEdit"
         >编辑</el-button
       >
@@ -96,7 +99,12 @@
       >
     </el-button-group>
     <!-- 字段表格 -->
-    <el-form :model="columnForm" ref="columnForm" label-width="100px" class="ruleForm">
+    <el-form
+      :model="columnForm"
+      ref="columnForm"
+      label-width="100px"
+      class="ruleForm"
+    >
       <el-table
         :data="columnForm.columnData"
         border
@@ -107,82 +115,144 @@
         @row-click="handleClickTableRow"
         class="columnTable"
       >
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
+        <el-table-column type="selection" width="55"> </el-table-column>
 
         <el-table-column label="排序">
           <template slot-scope="scope">
-            <el-form-item label-width="0px" :prop="`columnData.${scope.$index}.serialNumber`" :rules="tableRules.serialNumber" v-show="scope.row.isEdit">
-              <el-input type="number" v-model="scope.row.serialNumber"></el-input>
+            <el-form-item
+              label-width="0px"
+              :prop="`columnData.${scope.$index}.serialNumber`"
+              :rules="tableRules.serialNumber"
+              v-show="scope.row.isEdit"
+            >
+              <el-input
+                type="number"
+                v-model="scope.row.serialNumber"
+              ></el-input>
             </el-form-item>
-            <span v-show="!scope.row.isEdit">{{scope.row.serialNumber}}</span>
+            <span v-show="!scope.row.isEdit">{{ scope.row.serialNumber }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column width="120" :label="column.label" v-for="(column, field) of tableTem1" :key="field">
+        <el-table-column
+          width="120"
+          :label="column.label"
+          v-for="(column, field) of tableTem1"
+          :key="field"
+        >
           <template slot-scope="scope">
-            <el-form-item label-width="0px" :prop="`columnData.${scope.$index}.${field}`" :rules="tableRules[field]" v-show="scope.row.isEdit">
+            <el-form-item
+              label-width="0px"
+              :prop="`columnData.${scope.$index}.${field}`"
+              :rules="tableRules[field]"
+              v-show="scope.row.isEdit"
+            >
               <el-input v-model="scope.row[field]"></el-input>
             </el-form-item>
-            <span v-show="!scope.row.isEdit">{{scope.row[field]}}</span>
+            <span v-show="!scope.row.isEdit">{{ scope.row[field] }}</span>
           </template>
         </el-table-column>
 
         <el-table-column width="120" label="数据类型">
           <template slot-scope="scope">
-            <el-form-item label-width="0px" :prop="`columnData.${scope.$index}.type`" :rules="tableRules.type" v-if="scope.row.isEdit">
+            <el-form-item
+              label-width="0px"
+              :prop="`columnData.${scope.$index}.type`"
+              :rules="tableRules.type"
+              v-if="scope.row.isEdit"
+            >
               <el-select v-model="scope.row.type">
-                <el-option v-for="(item,index) in dataTypes" :key="index" :label="item.text" :value="item.value"></el-option>
+                <el-option
+                  v-for="(item, index) in dataTypes"
+                  :key="index"
+                  :label="item.text"
+                  :value="item.value"
+                ></el-option>
               </el-select>
             </el-form-item>
-            <span v-else>{{scope.row.type}}</span>
+            <span v-else>{{ scope.row.type }}</span>
           </template>
         </el-table-column>
         <el-table-column label="要素单位" align="center">
           <template slot-scope="scope">
-              <el-form-item label-width="0px" :prop="'columnData.'+scope.$index+'unit'" :rules='tableRules.unit' v-if="scope.row.isEdit">
-                  <el-input v-model="scope.row.unit"></el-input>
-              </el-form-item>
-              <span v-else>{{scope.row.unit}}</span>
+            <el-form-item
+              label-width="0px"
+              :prop="'columnData.' + scope.$index + 'unit'"
+              :rules="tableRules.unit"
+              v-if="scope.row.isEdit"
+            >
+              <el-input v-model="scope.row.unit"></el-input>
+            </el-form-item>
+            <span v-else>{{ scope.row.unit }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column :label="column.label" v-for="(column, field) of tableTem2" :key="field">
+        <el-table-column
+          :label="column.label"
+          v-for="(column, field) of tableTem2"
+          :key="field"
+        >
           <template slot-scope="scope">
-            <el-form-item label-width="0px" :prop="`columnData.${scope.$index}.${field}`" :rules="tableRules[field]" v-if="scope.row.isEdit">
+            <el-form-item
+              label-width="0px"
+              :prop="`columnData.${scope.$index}.${field}`"
+              :rules="tableRules[field]"
+              v-if="scope.row.isEdit"
+            >
               <el-input type="number" v-model="scope.row[field]"></el-input>
             </el-form-item>
-            <span v-else>{{scope.row[field]}}</span>
+            <span v-else>{{ scope.row[field] }}</span>
           </template>
         </el-table-column>
- 
-        <el-table-column width="60" :label="column.label" v-for="(column, field) of tableTem3" :key="field">
+
+        <el-table-column
+          width="60"
+          :label="column.label"
+          v-for="(column, field) of tableTem3"
+          :key="field"
+        >
           <template slot-scope="scope">
-            <el-form-item label-width="0px" :prop="`columnData.${scope.$index}.${field}`" :rules="tableRules[field]" v-if="scope.row.isEdit">
-              <el-radio-group v-model="scope.row[field]">
+            <el-form-item
+              label-width="0px"
+              :prop="`columnData.${scope.$index}.${field}`"
+              :rules="tableRules[field]"
+              v-if="scope.row.isEdit"
+            >
+              <!-- <el-radio-group v-model="scope.row[field]">
                 <el-radio :label="item.value" v-for="(item,index) in column.options" :key="index">{{item.text}}</el-radio>
-              </el-radio-group>
+              </el-radio-group> -->
+              <el-checkbox v-model="scope.row[field]"></el-checkbox>
             </el-form-item>
-            <span v-else>{{scope.row[field]}}</span>
+            <span v-else
+              ><el-checkbox v-model="scope.row[field]" disabled></el-checkbox
+            ></span>
           </template>
         </el-table-column>
 
         <el-table-column label="默认值">
           <template slot-scope="scope">
-            <el-form-item label-width="0px" :prop="`columnData.${scope.$index}.defaultValue`" :rules="tableRules.defaultValue" v-if="scope.row.isEdit">
+            <el-form-item
+              label-width="0px"
+              :prop="`columnData.${scope.$index}.defaultValue`"
+              :rules="tableRules.defaultValue"
+              v-if="scope.row.isEdit"
+            >
               <el-input v-model="scope.row.defaultValue"></el-input>
             </el-form-item>
-            <span v-else>{{scope.row.defaultValue}}</span>
+            <span v-else>{{ scope.row.defaultValue }}</span>
           </template>
         </el-table-column>
         <el-table-column label="中文描述">
           <template slot-scope="scope">
-            <el-form-item label-width="0px" :prop="`columnData.${scope.$index}.nameCn`" :rules="tableRules.nameCn" v-if="scope.row.isEdit">
+            <el-form-item
+              label-width="0px"
+              :prop="`columnData.${scope.$index}.nameCn`"
+              :rules="tableRules.nameCn"
+              v-if="scope.row.isEdit"
+            >
               <el-input v-model="scope.row.nameCn"></el-input>
             </el-form-item>
-            <span v-else>{{scope.row.nameCn}}</span>
+            <span v-else>{{ scope.row.nameCn }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -429,7 +499,7 @@
         >
       </span>
     </el-dialog>
-   
+
     <el-dialog
       :close-on-click-modal="false"
       width="80%"
@@ -559,9 +629,12 @@ export default {
   data() {
     var nameValidate = (rule, value, callback) => {
       let msg = "";
-      if (rule.field == "dbEleCode"||rule.field.indexOf('dbEleCode')>-1) {
+      if (rule.field == "dbEleCode" || rule.field.indexOf("dbEleCode") > -1) {
         msg = "公共元数据字段";
-      } else if (rule.field == "celementCode"||rule.field.indexOf('celementCode')>-1) {
+      } else if (
+        rule.field == "celementCode" ||
+        rule.field.indexOf("celementCode") > -1
+      ) {
         msg = "字段编码";
       }
       if (value === "") {
@@ -574,7 +647,7 @@ export default {
         callback();
       }
     };
-    
+
     const tableNumValidate = (rule, value, callback) => {
       if (value === "" || value === null || value === undefined) {
         callback(new Error("请输入序号"));
@@ -587,58 +660,58 @@ export default {
             return;
           }
         });
-        if (flag>1) {
+        if (flag > 1) {
           callback(new Error("序号不能重复"));
         } else {
           callback();
         }
       }
     };
-    
+
     const accuracyValidate = (rule, value, callback) => {
-      if(value === null||value === ''){
+      if (value === null || value === "") {
         callback();
-      }else{
-        if(value>0){
+      } else {
+        if (value > 0) {
           callback();
-        }else{
+        } else {
           callback(new Error("不是正整数"));
         }
       }
-    }
+    };
     const lengthValidate = (rule, value, callback) => {
-      if(value === null||value === ''){
+      if (value === null || value === "") {
         callback();
-      }else{
-        if(value>0){
+      } else {
+        if (value > 0) {
           callback();
-        }else{
+        } else {
           callback(new Error("不是正整数"));
         }
       }
-    }
+    };
     return {
-      columnForm:{//字段表格
-        columnData:[]
+      columnForm: {
+        //字段表格
+        columnData: [],
       },
-      selColumnData: [],//选中的表格值
-      tableTem1:{},//新增表格模板1
-      tableTem2:{},//新增表格模板2
-      tableTem3:{},//新增表格模板3
-      oldColumnData:[],//存储当前的字段数据
+      selColumnData: [], //选中的表格值
+      tableTem1: {}, //新增表格模板1
+      tableTem2: {}, //新增表格模板2
+      tableTem3: {}, //新增表格模板3
+      oldColumnData: [], //存储当前的字段数据
       uploadTableId: "",
       uploadTableType: "",
       uploadColumnData: [],
       tableStructureManageContral: false,
       codeTitle: "新增字段",
       dialogStatus: {
-        
         publicMatedataDialog: false,
         codeSortDialog: false,
       },
       exportInnerVisible: false,
       filepath: "",
-     
+
       pubData: { matedata: [], mmdata: [] }, //公共元数据字段，管理字段
       searchMatedata: {
         c_datatype: "",
@@ -657,7 +730,7 @@ export default {
       mmdataSelection: [],
       activePublicName: "first",
       repeatIndex: 0,
-      
+
       tableRules: {
         serialNumber: [
           { required: true, validator: tableNumValidate, trigger: "blur" },
@@ -681,7 +754,7 @@ export default {
           { required: true, validator: accuracyValidate, trigger: "change" },
         ],
         length: [
-          { required: true,  validator: lengthValidate, trigger: "change" },
+          { required: true, validator: lengthValidate, trigger: "change" },
         ],
       },
       // 字段导入
@@ -727,7 +800,7 @@ export default {
         },
       },
     };
-    this.tableTem2={
+    this.tableTem2 = {
       accuracy: {
         label: "数据精度",
         type: "number",
@@ -735,9 +808,9 @@ export default {
       length: {
         label: "数据长度",
         type: "number",
-      }
+      },
     };
-    this.tableTem3={
+    this.tableTem3 = {
       isNull: {
         label: "是否可空",
         type: "radio",
@@ -851,14 +924,14 @@ export default {
       await findByTableId({ tableId: this.tableInfo.id }).then((response) => {
         if (response.code == 200) {
           let resData = response.data;
-          resData.forEach((item,index)=>{
+          resData.forEach((item, index) => {
             item.isEdit = false;
             item.isAdd = false;
             item.indexNum = index;
-          })
+          });
           this.columnForm.columnData = resData;
 
-          this.oldColumnData = JSON.parse(JSON.stringify(resData));//用于是否修改的数据对比
+          this.oldColumnData = JSON.parse(JSON.stringify(resData)); //用于是否修改的数据对比
           console.log(this.oldColumnData);
           this.$emit("reloadTableInfo");
         }
@@ -869,35 +942,36 @@ export default {
       let serialNumber = 0;
       let indexNum = 0;
       let columnData = this.columnForm.columnData;
-      if(columnData.length!=0){
-        let numArr = [],indexArr = [];
-        columnData.forEach(item=>{
+      if (columnData.length != 0) {
+        let numArr = [],
+          indexArr = [];
+        columnData.forEach((item) => {
           numArr.push(item.serialNumber);
           indexArr.push(item.indexNum);
-        })
+        });
         serialNumber = Math.max(...numArr);
         indexNum = Math.max(...indexArr);
       }
       let obj = {
-        indexNum:indexNum+1,//排序号为了删除
-        serialNumber:serialNumber+1,//数据的序号
-        isEdit:true,//用于标识是否可编辑
-        isAdd:true,//用于标识添加
-        dbEleCode:'',//公共元数据
-        celementCode:'',//字段编码
-        userEleCode:'',//服务名称
-        eleName:'',//中文简称
-        accuracy:null,//数据进度
-        length:null,//数据长度
-        type:'',//数据类型
-        unit: "N",//要素单位
-        isManager: false,//是否管理字段
-        isPrimaryKey: false,//是否主键
-        isShow: false,//是否显示
-        isUpdate: false,//是否可改
-        isNull: false,//是否可空
+        indexNum: indexNum + 1, //排序号为了删除
+        serialNumber: serialNumber + 1, //数据的序号
+        isEdit: true, //用于标识是否可编辑
+        isAdd: true, //用于标识添加
+        dbEleCode: "", //公共元数据
+        celementCode: "", //字段编码
+        userEleCode: "", //服务名称
+        eleName: "", //中文简称
+        accuracy: null, //数据进度
+        length: null, //数据长度
+        type: "", //数据类型
+        unit: "N", //要素单位
+        isManager: false, //是否管理字段
+        isPrimaryKey: false, //是否主键
+        isShow: false, //是否显示
+        isUpdate: false, //是否可改
+        isNull: false, //是否可空
         tableId: this.tableInfo.id,
-      }
+      };
       if (this.tableType == "E-Kshow") {
         obj.isKvK = true;
       } else if (this.tableType == "E-Eshow") {
@@ -906,20 +980,20 @@ export default {
       this.columnForm.columnData.push(obj);
     },
     //编辑字段-所有
-    columnEdit(){
+    columnEdit() {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择要编辑的数据！",
           type: "error",
         });
       } else {
-        this.selColumnData.forEach(item=>{
+        this.selColumnData.forEach((item) => {
           item.isEdit = true;
-        })
+        });
       }
     },
     //删除字段-选中
-    columnDelete(){
+    columnDelete() {
       if (this.selColumnData.length == 0) {
         this.$message({
           message: "请选择一条数据！",
@@ -937,15 +1011,15 @@ export default {
             // 未提交数据
             let indexNotArr = [];
             // 已提交的数据
-            let isNotAdd = selectArr.filter(item=>{
-              if(item.isAdd==true){
+            let isNotAdd = selectArr.filter((item) => {
+              if (item.isAdd == true) {
                 indexNotArr.push(item.indexNum);
-              }else{
+              } else {
                 return item;
               }
             });
             // 存在已提交数据删除
-            if(isNotAdd.length>0){
+            if (isNotAdd.length > 0) {
               let ids = [];
               isNotAdd.forEach((element) => {
                 ids.push(element.id);
@@ -964,17 +1038,18 @@ export default {
               });
             }
             // 选中的数据只有未提交数据
-            else{
+            else {
               // 获得所有数据的index
-              let indexAllArr = [],newColumnData = [];
-              this.columnForm.columnData.forEach(item=>{
+              let indexAllArr = [],
+                newColumnData = [];
+              this.columnForm.columnData.forEach((item) => {
                 indexAllArr.push(item.indexNum);
               });
-              
-              indexNotArr.forEach(item=>{
-                if(indexAllArr.includes(item)){
-                  this.columnForm.columnData.forEach(columnItem=>{
-                    if(columnItem.indexNum!==item){
+
+              indexNotArr.forEach((item) => {
+                if (indexAllArr.includes(item)) {
+                  this.columnForm.columnData.forEach((columnItem) => {
+                    if (columnItem.indexNum !== item) {
                       newColumnData.push(columnItem);
                     }
                   });
@@ -1134,58 +1209,58 @@ export default {
       this.exportInnerVisible = true;
     },
     //批量保存
-    columnSaveFun(formName){
-      this.$refs[formName].validate(valid => {
+    columnSaveFun(formName) {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.columnForm.columnData);
           let columnData = this.columnForm.columnData;
           let oldColumnData = this.oldColumnData;
           let editColumnArr = [];
           //1 对比id一样，其他key是否一样，取出有变化的行
-          columnData.forEach(item=>{
-            oldColumnData.forEach(oldItem=>{
-              if(item.id===oldItem.id){
-                if(JSON.stringify(item)!==JSON.stringify(oldItem)){
+          columnData.forEach((item) => {
+            oldColumnData.forEach((oldItem) => {
+              if (item.id === oldItem.id) {
+                if (JSON.stringify(item) !== JSON.stringify(oldItem)) {
                   editColumnArr.push(item);
                 }
               }
             });
           });
           //2 获取新增的数据
-          columnData.forEach(item=>{
-            if(item.isAdd===true){
+          columnData.forEach((item) => {
+            if (item.isAdd === true) {
               editColumnArr.push(item);
             }
           });
-          if(editColumnArr.length>0){
-            saveTableCloumn({tableColumnList:editColumnArr}).then((res) => {
+          if (editColumnArr.length > 0) {
+            saveTableCloumn({ tableColumnList: editColumnArr }).then((res) => {
               if (res.code == 200) {
                 this.$message({
-                  type:'success',
-                  message:'新增成功'
-                })
+                  type: "success",
+                  message: "新增成功",
+                });
                 //刷新表格
                 this.getCodeTable();
               }
             });
-          }else{
+          } else {
             this.$message({
-              type:'info',
-              message:'没有需要保存的数据'
+              type: "info",
+              message: "没有需要保存的数据",
             });
           }
           console.log(editColumnArr);
         } else {
           this.$message({
-            type:'error',
-            message:'待保存数据中存在，不符合规则的值'
+            type: "error",
+            message: "待保存数据中存在，不符合规则的值",
           });
           return false;
         }
       });
     },
     //刷新
-    columnRefresh(){
+    columnRefresh() {
       this.getCodeTable();
     },
     columnCopy() {
@@ -1196,27 +1271,23 @@ export default {
         });
       } else {
         //获取选中的已保存的
-        let isSaveColumnArr = this.selColumnData.filter(item=>{
-          if('id' in item){
+        let isSaveColumnArr = this.selColumnData.filter((item) => {
+          if ("id" in item) {
             return item;
           }
         });
-        if(isSaveColumnArr.length==0){
+        if (isSaveColumnArr.length == 0) {
           this.$message({
             message: "请选择一条已保存数据！",
             type: "error",
           });
-        }else{
-          sessionStorage.setItem(
-            "copyColumn",
-            JSON.stringify(isSaveColumnArr)
-          );
+        } else {
+          sessionStorage.setItem("copyColumn", JSON.stringify(isSaveColumnArr));
           this.$message({
             message: `复制成功，已复制${isSaveColumnArr.length}条数据`,
             type: "success",
           });
         }
-        
       }
     },
     columnPaste() {
@@ -1229,7 +1300,11 @@ export default {
       }
       this.repeatIndex = 0;
       let pasteArry = JSON.parse(sessionStorage.getItem("copyColumn"));
-      pasteArry = this.array_diff(pasteArry, this.columnForm.columnData, "paste");
+      pasteArry = this.array_diff(
+        pasteArry,
+        this.columnForm.columnData,
+        "paste"
+      );
       let msg = "";
       if (this.repeatIndex > 0) msg = "去重(" + this.repeatIndex + ")条，";
       if (pasteArry.length == 0) {
@@ -1345,7 +1420,7 @@ export default {
           (response) => {
             if (response.code == 200) {
               this.$message({ message: "操作成功", type: "success" });
-             
+
               this.getCodeTable();
             } else {
               this.$message({
@@ -1375,17 +1450,17 @@ export default {
         let length = this.selColumnData.length;
         let publicRows = this.selColumnData;
         //获取选中的已保存的
-        let isSaveColumnArr = this.selColumnData.filter(item=>{
-          if('id' in item){
+        let isSaveColumnArr = this.selColumnData.filter((item) => {
+          if ("id" in item) {
             return item;
           }
         });
-        if(isSaveColumnArr.length==0){
+        if (isSaveColumnArr.length == 0) {
           this.$message({
             message: "请选择一条已保存数据！",
             type: "error",
           });
-        }else{
+        } else {
           isSaveColumnArr.forEach((element) => {
             var switchObj = Object.assign({}, element);
             var firstChar = element.celementCode.substr(0, 1);
@@ -1413,23 +1488,25 @@ export default {
             cancelButtonText: "取消",
             type: "warning",
           })
-          .then(() => {
-            tableColumnSaveList({ tableColumnList: publicRows }).then((res) => {
-              if (res.code == 200) {
-                this.$message({
-                  message: "操作成功！",
-                  type: "success",
-                });
-                this.getCodeTable();
-              } else {
-                this.$message({
-                  message: res.msg,
-                  type: "error",
-                });
-              }
-            });
-          })
-          .catch(() => {});
+            .then(() => {
+              tableColumnSaveList({ tableColumnList: publicRows }).then(
+                (res) => {
+                  if (res.code == 200) {
+                    this.$message({
+                      message: "操作成功！",
+                      type: "success",
+                    });
+                    this.getCodeTable();
+                  } else {
+                    this.$message({
+                      message: res.msg,
+                      type: "error",
+                    });
+                  }
+                }
+              );
+            })
+            .catch(() => {});
         }
       }
     },
@@ -1443,12 +1520,12 @@ export default {
         return;
       }
       //获取选中的已保存的
-      let isSaveColumnArr = this.selColumnData.filter(item=>{
-        if('id' in item){
+      let isSaveColumnArr = this.selColumnData.filter((item) => {
+        if ("id" in item) {
           return item;
         }
       });
-      if(isSaveColumnArr.length==0){
+      if (isSaveColumnArr.length == 0) {
         this.$message({
           message: "请选择一条已保存数据！",
           type: "error",
@@ -1730,7 +1807,7 @@ export default {
         flag = "true";
       }
       let resData = this.tableInfo.columns;
-      resData.forEach((item,index)=>{
+      resData.forEach((item, index) => {
         item.isEdit = false;
         item.isAdd = false;
         item.indexNum = index;
@@ -1749,18 +1826,18 @@ export default {
     margin-top: 10px;
     height: 500px !important;
   }
-  .columnTable{
-    .cell{
+  .columnTable {
+    .cell {
       padding-left: 0px;
       padding-right: 0px;
     }
-    .el-radio{
+    .el-radio {
       margin-right: 5px;
     }
-    .el-radio__label{
+    .el-radio__label {
       padding-left: 5px;
     }
-    .el-form-item{
+    .el-form-item {
       margin-bottom: 15px;
     }
   }

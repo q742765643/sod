@@ -138,7 +138,7 @@ public class MetaClearServiceImpl extends BaseService<MetaClearEntity> implement
     public void getDataBase(MetaClearEntity metaClearEntity){
         SchemaDto schemaDto = schemaService.getDotById(metaClearEntity.getDatabaseId());
         String parentId= schemaDto.getDatabase().getId();
-        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getSchemaNameCn();
         metaClearEntity.setDatabaseName(databaseName);
         metaClearEntity.setParentId(parentId);
         metaClearEntity.setDatabaseType(schemaDto.getDatabase().getDatabaseType());

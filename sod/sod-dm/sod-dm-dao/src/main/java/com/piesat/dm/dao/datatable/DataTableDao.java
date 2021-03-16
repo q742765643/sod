@@ -2,9 +2,13 @@ package com.piesat.dm.dao.datatable;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +87,7 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      * @return
      */
     @Query(value =
-            "SELECT DISTINCT a.*,c.DICT_LABEL,d.DATABASE_NAME,e.DATABASE_NAME DATABASE_NAME_P FROM T_SOD_DATA_TABLE_INFO a " +
+            "SELECT DISTINCT a.*,c.DICT_LABEL,d.SCHEMA_NAME_CN DATABASE_NAME,e.DATABASE_NAME DATABASE_NAME_P FROM T_SOD_DATA_TABLE_INFO a " +
                     "LEFT JOIN T_SOD_DICT_DATA c ON a.STORAGE_TYPE = c.dict_value " +
                     "LEFT JOIN T_SOD_DATACLASS_TABLE b ON a.id=b.TABLE_ID OR a.id=b.SUB_TABLE_ID " +
                     "LEFT JOIN T_SOD_DATABASE d ON a.database_id = d.id " +
@@ -106,7 +110,7 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      * @return
      */
     @Query(value =
-            "SELECT DISTINCT A.*,C.DATABASE_NAME,B.DATABASE_NAME SCHEMA_NAME,D.DICT_LABEL,E.SUB_TABLE_ID " +
+            "SELECT DISTINCT A.*,C.DATABASE_NAME,B.SCHEMA_NAME_CN SCHEMA_NAME,D.DICT_LABEL,E.SUB_TABLE_ID " +
             "FROM T_SOD_DATA_TABLE_INFO A " +
             "LEFT JOIN T_SOD_DATA_TABLE_FOREIGNKEY E ON E.TABLE_ID = A.ID " +
             "LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID " +
@@ -130,4 +134,27 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
     @Query(value = "SELECT DISTINCT TABLE_NAME,DATABASE_ID FROM T_SOD_DATA_TABLE_INFO a " +
             " LEFT JOIN T_SOD_DATACLASS_TABLE b ON a.id=b.TABLE_ID OR a.id=b.SUB_TABLE_ID  WHERE b.data_class_id = ?1 ", nativeQuery = true)
     List<Map<String, Object>> getByClassId(String dataClassId);
+
+    /**
+     * 逻辑删除
+     * @param tableId
+     * @return
+     */
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update DataTableInfoEntity set delFlag = :delFlag  where id = :tableId")
+    int tombstone(@Param("tableId") String tableId, @Param("delFlag") String delFlag);
+
+    /**
+     * 根据删除标识查询
+     * @param delFlag
+     * @return
+     */
+    @Query(value = "SELECT DISTINCT A.*,C.DATABASE_NAME,B.SCHEMA_NAME_CN SCHEMA_NAME,D.DICT_LABEL FROM " +
+            "T_SOD_DATA_TABLE_INFO A " +
+            "LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID " +
+            "LEFT JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID " +
+            "LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE WHERE DEL_FLAG = ?1 ", nativeQuery = true)
+    List<Map<String, Object>> findByDelFlag(String delFlag);
+
 }

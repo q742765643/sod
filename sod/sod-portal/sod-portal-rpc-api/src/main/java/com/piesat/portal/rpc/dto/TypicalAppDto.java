@@ -22,6 +22,11 @@ public class TypicalAppDto extends BaseDto {
     private String appName;
 
     /**
+     * 省级
+     */
+    private String province;
+
+    /**
      * 所属机构
      */
     private String orgName;
@@ -40,7 +45,7 @@ public class TypicalAppDto extends BaseDto {
     /**
      * 序号
      */
-    private String serialNumber;
+    private Integer serialNumber;
 
     /**
      * 是否显示

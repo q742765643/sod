@@ -100,7 +100,7 @@ public class MetaRecoverLogServiceImpl extends BaseService<MetaRecoverLogEntity>
     public void getDataBase(MetaRecoverLogEntity metaRecoverLogEntity){
         SchemaDto schemaDto = schemaService.getDotById(metaRecoverLogEntity.getDatabaseId());
         String parentId= schemaDto.getDatabase().getId();
-        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getDatabaseName();
+        String databaseName= schemaDto.getDatabase().getDatabaseName()+"_"+ schemaDto.getSchemaNameCn();
         metaRecoverLogEntity.setDatabaseName(databaseName);
         metaRecoverLogEntity.setParentId(parentId);
         metaRecoverLogEntity.setDatabaseType(schemaDto.getDatabase().getDatabaseType());

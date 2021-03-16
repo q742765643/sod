@@ -95,7 +95,7 @@ public interface DataTableService {
      * @param pageForm
      * @return
      */
-    PageBean getPageTableInfo(PageForm<Map<String, String>> pageForm);
+    PageBean getPageTableInfo(PageForm<Map<String, Object>> pageForm);
 
     /**
      * 单表数据量
@@ -124,4 +124,17 @@ public interface DataTableService {
      * @return
      */
     List<Map<String, Object>> findAllETables();
+
+    /**
+     * 逻辑删除
+     * @param tableId
+     * @return
+     */
+    int tombstone(String tableId, String delFlag);
+
+    /**
+     * 查询回收站数据
+     * @return
+     */
+    PageBean getRecycle(PageForm<Map<String, Object>> pageForm);
 }

@@ -2,6 +2,8 @@ package com.piesat.dm.rpc.service.dataclass;
 
 import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONArray;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
@@ -230,12 +232,12 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public JSONArray getDatabaseClass() {
         List<SchemaEntity> databaseList = this.schemaDao.findByDatabase_UserDisplayControl(1);
         List<Map<String, Object>> list = this.mybatisQueryMapper.getDatabaseTree();
-        for (SchemaEntity db : databaseList) {
-            if (!db.getStopUse()) {
-                List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTree(db.getId());
-                list.addAll(dataList);
-            }
-        }
+//        for (SchemaEntity db : databaseList) {
+//            if (!db.getStopUse()) {
+//                List<Map<String, Object>> dataList = this.mybatisQueryMapper.getDatabaseClassTree(db.getId());
+//                list.addAll(dataList);
+//            }
+//        }
         List l = new ArrayList();
         for (Map<String, Object> m : list) {
             TreeLevel tl = new TreeLevel();
@@ -649,9 +651,9 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public ResultT haveClassByDataId(String dataId) {
         List<DataClassEntity> dataClassEntities = this.dataClassDao.findByDDataId(dataId);
-        if (dataClassEntities!=null && !dataClassEntities.isEmpty()) {
+        if (dataClassEntities != null && !dataClassEntities.isEmpty()) {
             List<DataClassLogicDto> dataLogicDto = this.dataLogicService.findByDataClassId(dataClassEntities.get(0).getDataClassId());
-            if (dataLogicDto!=null && !dataLogicDto.isEmpty()) {
+            if (dataLogicDto != null && !dataLogicDto.isEmpty()) {
                 return ResultT.success(true);
             }
         }
@@ -699,5 +701,19 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public List<Map<String, Object>> getTableInfo(String dataclassId) {
         return this.dataClassDao.getTableInfo(dataclassId);
+    }
+
+    @Override
+    public PageBean getPageDataclassInfo(PageForm<Map<String, Object>> pageForm) {
+//        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+        List<Map<String, Object>> lists = mybatisQueryMapper.getPageDataclassInfo(pageForm.getT());
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
+        return pageBean;
+    }
+
+    @Override
+    public int tombstone(String dataClassId, String delFlag) {
+        return this.dataClassDao.tombstone(dataClassId, delFlag);
     }
 }
