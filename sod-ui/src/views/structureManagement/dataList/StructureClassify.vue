@@ -5,18 +5,21 @@
     style="width: 250px"
   >
     <el-tabs :tab-position="tabPosition" @tab-click="handleTabClick">
-      <el-tab-pane label="资料分类树"></el-tab-pane>
       <el-tab-pane
-        label="数据标签分类树"
-        v-if="tableStructureManageContral"
+        label="资料分类树"
+        v-if="tableDataRadio == '资料'"
       ></el-tab-pane>
       <el-tab-pane
         label="数据库分类树"
-        v-if="tableStructureManageContral"
+        v-if="tableStructureManageContral && tableDataRadio == '数据表'"
+      ></el-tab-pane>
+      <el-tab-pane
+        label="标签分类树"
+        v-if="tableStructureManageContral && tableDataRadio == '资料'"
       ></el-tab-pane>
       <el-tab-pane
         label="公共元数据结构树"
-        v-if="tableStructureManageContral"
+        v-if="tableStructureManageContral && tableDataRadio == '资料'"
       ></el-tab-pane>
     </el-tabs>
     <div class="classifyTree">
@@ -107,9 +110,7 @@
           >
             <span
               class="el-tree-node__label"
-              v-if="
-                whichTree == '数据标签分类树' || whichTree == '数据库分类树'
-              "
+              v-if="whichTree == '标签分类树' || whichTree == '数据库分类树'"
             >
               <i :class="data.icon"></i>
               <span>{{ node.label }}</span>
@@ -134,7 +135,7 @@ import {
 } from "@/api/structureManagement/dataList/StructureClassify";
 import { delByClass, enable } from "@/api/structureManagement/dataList/index";
 export default {
-  props: { treeIdOfDR: String },
+  props: { treeIdOfDR: String, tableDataRadio: String },
   data() {
     return {
       tableStructureManageContral: false,
@@ -201,7 +202,7 @@ export default {
         await dataClassAll().then((response) => {
           this.treeData = response.data;
         });
-      } else if (whichTree == "数据标签分类树") {
+      } else if (whichTree == "标签分类树") {
         this.publicTreeTextActive = true;
         await logicClass().then((response) => {
           this.treeData = response.data;
@@ -229,7 +230,7 @@ export default {
     },
 
     //左侧分类点击
-    handleTabClick(tab, event) {
+    handleTabClick(tab) {
       this.defaultExpandedKeys = null;
       this.sourceTreeText = "";
       this.sourceTreeOp = false;
@@ -278,11 +279,17 @@ export default {
       this.editNodeId = data.id;
 
       let treeIds = [];
+      let that = this;
       this.myTreedata.forEach((single) => {
-        if (single.disabled) {
+        if (that.tableDataRadio == "资料") {
+          if (single.disabled) {
+            treeIds.push(single.id);
+          }
+        } else {
           treeIds.push(single.id);
         }
       });
+
       if (this.publicActive == true) {
         this.checkedNodeArr.style = "showPublicMain";
         this.checkedNodeArr.id = data.id;

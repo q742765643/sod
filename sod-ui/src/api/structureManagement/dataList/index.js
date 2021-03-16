@@ -1,13 +1,22 @@
 import request from '@/utils/request'
 const baseUrl = process.env.VUE_APP_DM;
-// 查询表格
-export function getListBYIn(query) {
+// 查询表格 资料纬度
+export function getPageDataclassInfo(query) {
   return request({
-    url: baseUrl + '/dm/dataClass/getListBYIn',
+    url: baseUrl + '/dm/dataClass/getPageDataclassInfo',
     method: 'get',
     params: query
   })
 }
+// 查询表格 数据表纬度
+export function getPageTableInfo(query) {
+  return request({
+    url: baseUrl + '/dm/dataTable/getPageTableInfo',
+    method: 'get',
+    params: query
+  })
+}
+
 // 根据公共元数据树查询
 export function getLogicByDdataId(query) {
   return request({
@@ -184,4 +193,30 @@ export function findAllETables() {
   })
 }
 
+//查询资料被申请权限
+export function findAuthorityList(query) {
+  return request({
+    url: baseUrl + '/dm/resourceApply/findAuthorityList',
+    method: 'get',
+    params: query
+  })
+}
 
+
+//查询回收站
+export function getRecycle(query) {
+  return request({
+    url: baseUrl + '/dm/dataTable/getRecycle',
+    method: 'get',
+    params: query
+  })
+}
+
+//数据表纬度删除
+export function tombstone(data) {
+  return request({
+    url: baseUrl + '/dm/dataTable/tombstone',
+    method: 'post',
+    data: data
+  })
+}
