@@ -1898,8 +1898,4 @@
             AND C.ID = #{map.databasePid}
         </if>
     </select>
-
-
-    databasePid
-    databaseId
 </mapper>
