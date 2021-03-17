@@ -898,9 +898,9 @@
                dt.table_name,
                da.user_id,
                da.create_time    as "apply_time",
-               sdb.database_name as "schema_name",
+               sdb.schema_name as "schema_name",
                sdb.schema_name   as "schema_id",
-               sdd.SCHEMA_NAME_CN   database_name,
+               sdd.database_name   database_name,
                sdd.id            as "database_define_id",
                sdc.class_name,
                tsu.web_username     user_name
@@ -1521,20 +1521,22 @@
         select
         t1.data_class_id as "dataClassId",t4.id as "databaseId",
         t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.SCHEMA_NAME_CN ||'】' as "dataName" ,
-        t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl",t5.table_name as "tableName"
+        t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl",t5.table_name as "tableName",
+        t6.class_name as "className",t4.database_name as "databaseName",t3.SCHEMA_NAME_CN as "schemaNameCn",t1.class_name as "dataNameSm"
         from
         t_sod_data_class t1
         inner join T_SOD_DATACLASS_TABLE t2 on t1. data_class_id = t2.data_class_id
         inner join T_SOD_DATA_TABLE_INFO t5 on t2.table_id = t5.id or t2.sub_table_id = t5.id
         inner join t_sod_database t3 on t5.database_id = t3.id
         inner join t_sod_database_define t4 on t3.database_define_id = t4.id and t4.user_display_control !=2
+        left join t_sod_data_class t6 on substr(t1.data_class_id,0,1) = t6.data_class_id
         <if test="userId != null and userId != ''">
             where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
         </if>
         group by
         t1.data_class_id,t4.id,
-        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
-        t3.schema_name,t3.id,t1.is_access,t5.table_name
+        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.schema_name_cn ||'】',
+        t3.schema_name,t3.id,t1.is_access,t5.table_name,t6.class_name,t4.database_name,t3.schema_name_cn,t1.class_name
         order by
         dataName asc
     </select>
