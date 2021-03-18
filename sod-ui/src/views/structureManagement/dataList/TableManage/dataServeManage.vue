@@ -122,7 +122,7 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="6" v-if="!this.rowData.MYDISABLED">
             <el-form-item label>
               <el-button type="primary" size="small" @click="addBase"
                 >保存</el-button
@@ -132,7 +132,7 @@
         </el-row>
       </el-form>
     </fieldset>
-    <el-row class="areaTop">
+    <el-row class="areaTop" v-if="!this.rowData.MYDISABLED">
       <el-button type="primary" icon="el-icon-plus" size="small" @click="add"
         >新增</el-button
       >
@@ -503,7 +503,7 @@ import {
   dataserverconfigget,
   addList,
   delByIds,
-} from "@/api/structureManagement/dataList/StructureManageTable";
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { getAllLevel } from "@/api/GridDataDictionaryManagement/levelManagement";
 
 export default {
@@ -998,10 +998,7 @@ export default {
   .fieldsetBase {
     margin-top: 20px;
     margin-bottom: 20px;
-    .el-row {
-      display: flex;
-      flex-wrap: wrap;
-    }
+
     .el-input-number--small {
       width: 100%;
     }

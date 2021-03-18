@@ -101,13 +101,10 @@
         <el-button size="mini" type="primary" @click="searchFun('search')"
           >查询</el-button
         >
-        <el-button
-          size="mini"
-          type="primary"
-          @click="showMaterialSingle('新增资料')"
+        <el-button size="mini" type="primary" @click="searchFun('search')"
           >数据注册</el-button
         >
-        <el-button size="mini" type="primary" @click="handleTableMethods('add')"
+        <el-button size="mini" type="primary" @click="searchFun('search')"
           >数据表注册</el-button
         >
         <!-- 资料的时候不显示回收站 -->
@@ -156,15 +153,11 @@
             :span-method="objectSpanMethod"
           >
             <!-- 资料纬度 start -->
-            <el-table-column width="140" label="资料名称" prop="CLASS_NAME">
-              <template slot-scope="scope">
-                <el-link
-                  type="primary"
-                  @click="showMaterialSingle('查看资料', scope.row)"
-                  >{{ scope.row.CLASS_NAME }}</el-link
-                >
-              </template>
-            </el-table-column>
+            <el-table-column
+              width="140"
+              label="资料名称"
+              prop="CLASS_NAME"
+            ></el-table-column>
             <el-table-column
               width="140"
               sortable
@@ -186,6 +179,52 @@
               <el-table-column label="专题库" prop="SCHEMA_NAME_CN">
               </el-table-column>
             </el-table-column>
+            <!-- 资料纬度 end -->
+            <!-- 数据表纬度 start -->
+            <el-table-column
+              label="数据表名称"
+              prop="TABLE_NAME"
+              width="160"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="数据库"
+              prop="DATABASE_NAME"
+              width="140"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="专题库"
+              prop="SCHEMA_NAME_CN"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+            </el-table-column>
+            <el-table-column
+              label="关联资料"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
+              <el-table-column
+                width="140"
+                label="资料名称"
+                prop="CLASS_NAME"
+              ></el-table-column>
+              <el-table-column
+                width="140"
+                sortable
+                label="四级编码"
+                prop="D_DATA_ID"
+                v-if="tableStructureManageContral"
+              ></el-table-column>
+              <el-table-column
+                width="140"
+                sortable
+                label="存储编码"
+                prop="DATA_CLASS_ID"
+              ></el-table-column>
+            </el-table-column>
+            <!-- 数据表纬度 end -->
             <el-table-column label="数据权限" width="360">
               <el-table-column label="数据归属" prop="">
                 <template slot-scope="scope">
@@ -196,6 +235,7 @@
                 </template>
               </el-table-column>
               <el-table-column label="权限管理" prop="">
+                <!-- 权限管理 存储只有查看 -->
                 <template slot-scope="scope">
                   <el-button
                     type="text"
@@ -293,7 +333,11 @@
                 >
               </template>
             </el-table-column>
-            <el-table-column label="资料操作" width="200px">
+            <el-table-column
+              label="资料操作"
+              width="200px"
+              v-if="searchObj.tableDataRadio == '资料'"
+            >
               <template slot-scope="scope">
                 <div style="text-align: left; padding-left: 10px">
                   <el-button
@@ -303,6 +347,13 @@
                     @click="showMaterialSingle('编辑资料', scope.row)"
                     >编辑资料</el-button
                   >
+                  <!-- <el-button
+                    type="text"
+                    size="mini"
+                    icon="el-icon-tickets"
+                    @click="showBaseInfo(scope.row)"
+                    >基础信息</el-button
+                  > -->
                   <el-button
                     type="text"
                     size="mini"
@@ -310,6 +361,21 @@
                     @click="deleteMaterialSingle(scope.row)"
                     >删除</el-button
                   >
+                  <!-- 解码配置，区域信息，数据服务存在任意一个，显示服务信息按钮 -->
+                  <!-- <el-button
+                    type="text"
+                    size="mini"
+                    icon="el-icon-notebook-2"
+                    @click="showServeManage(scope.row)"
+                    v-if="
+                      scope.row.STORAGE_TYPE &&
+                      (storage[scope.row.STORAGE_TYPE].dc ||
+                        storage[scope.row.STORAGE_TYPE].rg ||
+                        storage[scope.row.STORAGE_TYPE].ds ||
+                        storage[scope.row.STORAGE_TYPE].pl)
+                    "
+                    >服务信息</el-button
+                  > -->
                 </div>
               </template>
             </el-table-column>
@@ -325,60 +391,45 @@
             ref="singleTable"
             :span-method="objectSpanMethod"
           >
-            <el-table-column label="数据表名称" prop="TABLE_NAME" width="160">
-              <template slot-scope="scope">
-                <span>{{ scope.row.TABLE_NAME }}</span>
-              </template>
+            <el-table-column
+              label="数据表名称"
+              prop="TABLE_NAME"
+              width="160"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
             </el-table-column>
-            <el-table-column label="数据库" prop="DATABASE_NAME" width="140">
+            <el-table-column
+              label="数据库"
+              prop="DATABASE_NAME"
+              width="140"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
             </el-table-column>
-            <el-table-column label="专题库" prop="SCHEMA_NAME_CN">
+            <el-table-column
+              label="专题库"
+              prop="SCHEMA_NAME_CN"
+              v-if="searchObj.tableDataRadio == '数据表'"
+            >
             </el-table-column>
             <el-table-column label="关联资料">
-              <el-table-column width="140" label="资料名称" prop="CLASS_NAME">
-                <template slot-scope="scope">
-                  <el-link
-                    @click="showMaterialSingle('查看资料', scope.row)"
-                    type="primary"
-                    v-for="(item, index) in scope.row.CLASS_NAME"
-                    :key="index"
-                    >{{ item }}</el-link
-                  >
-                </template>
-              </el-table-column>
+              <el-table-column
+                width="140"
+                label="资料名称"
+                prop="CLASS_NAME"
+              ></el-table-column>
               <el-table-column
                 width="140"
                 sortable
                 label="四级编码"
                 prop="D_DATA_ID"
                 v-if="tableStructureManageContral"
-              >
-                <template slot-scope="scope">
-                  <p
-                    type="primary"
-                    v-for="(item, index) in scope.row.D_DATA_ID"
-                    :key="index"
-                  >
-                    {{ item }}
-                  </p>
-                </template>
-              </el-table-column>
+              ></el-table-column>
               <el-table-column
                 width="140"
                 sortable
                 label="存储编码"
                 prop="DATA_CLASS_ID"
-              >
-                <template slot-scope="scope">
-                  <p
-                    type="primary"
-                    v-for="(item, index) in scope.row.DATA_CLASS_ID"
-                    :key="index"
-                  >
-                    {{ item }}
-                  </p>
-                </template>
-              </el-table-column>
+              ></el-table-column>
             </el-table-column>
             <el-table-column label="数据权限" width="360">
               <el-table-column label="数据归属" prop="">
@@ -389,7 +440,9 @@
                   <span v-else>{{ scope.row.NICK_NAME }}</span>
                 </template>
               </el-table-column>
+              <!-- <el-table-column label="申请状态" prop=""> </el-table-column> portal才有-->
               <el-table-column label="权限管理" prop="">
+                <!-- 权限管理 存储只有查看 -->
                 <template slot-scope="scope">
                   <el-button
                     type="text"
@@ -524,28 +577,13 @@
     >
       <StructureMaterialSingle
         v-if="materialSingleVisible"
-        ref="StructureMaterialSingleRef"
         :isSourceTree="isSourceTree"
         :editNodeId="editNodeId"
         :editMaterial="editMaterial"
         :editTableName="editTableName"
-        :isFooterShow="isFooterShow"
         @addOrEditSuccess="addOrEditSuccess"
         @closeMaterialDialog="closeMaterialDialog"
-      />
-    </el-dialog>
-    <!-- 表新增编辑 -->
-    <el-dialog
-      :close-on-click-modal="false"
-      :title="dialogMsgTitle"
-      :visible.sync="tableVisible"
-      width="700px"
-      v-dialogDrag
-    >
-      <handleTable
-        v-if="tableVisible"
-        :handleObj="handleMsgObj"
-        @cancelHandle="handleTableDialog"
+        ref="myHandleChildren"
       />
     </el-dialog>
     <!-- 表结构管理 -->
@@ -563,7 +601,6 @@
         ref="scrollDiv"
         v-if="structureManageVisible"
         v-bind:parentRowData="rowData"
-        :tableBaseInfo="tableBaseInfo"
       />
     </el-dialog>
 
@@ -651,8 +688,6 @@ import PublicDatumPage from "@/views/structureManagement/dataList/PublicDatumPag
 import handleSQL from "@/views/structureManagement/dataList/handleSQL";
 //关联表信息--弹出层
 import linkTableInfo from "@/views/structureManagement/dataList/linkTableInfo";
-//表新增编辑
-import handleTable from "@/views/structureManagement/dataList/handleTable";
 import {
   getPageDataclassInfo,
   getPageTableInfo,
@@ -673,14 +708,9 @@ export default {
     handleSQL,
     linkTableInfo,
     handleBaseMsg,
-    handleTable,
   },
   data() {
     return {
-      handleMsgObj: {},
-      dialogMsgTitle: "",
-      tableVisible: false,
-      tableBaseInfo: {},
       powerTitle: "",
       powerTableData: [],
       showPowerDialog: false,
@@ -800,7 +830,6 @@ export default {
       // treeUrl: interfaceObj.TableStructure_dataTypeTree, //区分刷新那颗树
       whichTree: "资料分类树", //区分刷新那颗树
       treeRefreshData: {},
-      isFooterShow: true, //资料是否显示footer
     };
   },
   async created() {
@@ -854,25 +883,6 @@ export default {
     };
   },
   methods: {
-    handleTableDialog(info) {
-      if (info) {
-        this.structureManageTitle = "";
-        this.structureManageVisible = true;
-        this.rowData = info;
-        this.tableBaseInfo = info;
-      }
-      this.tableVisible = false;
-    },
-    // 新增/编辑
-    handleTableMethods(info) {
-      if (info == "add") {
-        this.handleMsgObj = {};
-        this.dialogMsgTitle = "新增";
-      } else {
-        this.dialogMsgTitle = "编辑";
-      }
-      this.tableVisible = true;
-    },
     //查看权限
     showPower(row) {
       findAuthorityList({
@@ -962,16 +972,13 @@ export default {
         this.editMaterial = "";
         this.editTableName = "";
         this.isSourceTree = false;
-      } else if (operateType === "编辑资料" || operateType === "查看资料") {
+      } else if (operateType === "编辑资料") {
         this.currentRow = [];
         this.currentRow.push(scopeRow);
         this.materialSingleTitle = operateType;
         this.editMaterial = this.currentRow[0].DATA_CLASS_ID;
         this.editTableName = this.currentRow[0].TABLE_NAME;
         this.isSourceTree = false;
-        if (operateType === "查看资料") {
-          this.isFooterShow = false;
-        }
         // 获取详情
       }
       this.materialSingleVisible = true;
@@ -1093,12 +1100,6 @@ export default {
       }
       this.materialSingleVisible = false;
     },
-    // 存储结构
-    handledDBMethods(row) {
-      this.rowData = row;
-      this.structureManageTitle = row.TABLE_NAME;
-      this.structureManageVisible = true;
-    },
     handleClose() {
       this.showPowerDialog = false;
       this.baseMsgEditDialog = false;
@@ -1123,7 +1124,7 @@ export default {
         };
       }
       if (this.searchObj.tableDataRadio == "资料") {
-        if (columnIndex === 1 || columnIndex === 9) {
+        if (columnIndex === 1 || columnIndex === 10) {
           const _row = this.spanArr[rowIndex];
           const _col = _row > 0 ? 1 : 0;
           return {
@@ -1133,13 +1134,8 @@ export default {
         }
       }
 
-      /*     if (this.searchObj.tableDataRadio == "数据表") {
-        if (
-          columnIndex === 6 ||
-          columnIndex === 7 ||
-          columnIndex === 8 ||
-          columnIndex === 9
-        ) {
+      if (this.searchObj.tableDataRadio == "数据表") {
+        if (columnIndex === 6 || columnIndex === 7 || columnIndex === 8) {
           const _row = this.spanArr[rowIndex];
           const _col = _row > 0 ? 1 : 0;
           return {
@@ -1147,7 +1143,7 @@ export default {
             colspan: _col,
           };
         }
-      } */
+      }
     },
     // 判断哪些需要合并
     rowspanMethods() {
@@ -1184,7 +1180,7 @@ export default {
           }
         }
       });
-      // console.log(this.spanArr);
+      console.log(this.spanArr);
     },
   },
 };

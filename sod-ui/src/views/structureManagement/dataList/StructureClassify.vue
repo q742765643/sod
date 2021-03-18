@@ -24,7 +24,7 @@
     </el-tabs>
     <div class="classifyTree">
       <!-- 资料分类树操作 -->
-      <!-- <el-button-group class="sourceTreeTopOp" v-show="sourceTreeOp">
+      <el-button-group class="sourceTreeTopOp" v-show="sourceTreeOp">
         <el-button
           type="primary"
           size="mini"
@@ -50,7 +50,7 @@
           icon="el-icon-search"
           @click="sourceTopSearch"
         ></el-button>
-      </el-button-group> -->
+      </el-button-group>
       <!-- 资料分类树/数据库用途分类树/数据库分类树/公共元数据库结构树 查询 -->
       <div class="usedTreeOp">
         <el-input

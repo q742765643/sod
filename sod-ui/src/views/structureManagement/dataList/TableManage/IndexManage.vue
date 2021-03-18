@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <el-button-group style="padding: 8px">
+    <el-button-group style="padding: 8px" v-if="!this.rowData.MYDISABLED">
       <el-button
         type="primary"
         size="small"
@@ -107,9 +107,9 @@ import {
   delTableIndex,
   getDictByType,
   tableIndexSave,
-} from "@/api/structureManagement/dataList/StructureManageTable";
+} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 export default {
-  props: { tableInfo: Object },
+  props: { tableInfo: Object, rowData: Object },
   data() {
     const nameValidate = (rule, value, callback) => {
       if (!value) {
@@ -195,7 +195,7 @@ export default {
       if (this.indexItemSel.length != 1) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning",
+          type: "error",
         });
       } else {
         this.getDictByTypeMethods("table_index_type");
@@ -243,7 +243,7 @@ export default {
       if (this.indexItemSel.length != 1) {
         this.$message({
           message: "请选择一条数据！",
-          type: "warning",
+          type: "error",
         });
       } else {
         this.$confirm(
