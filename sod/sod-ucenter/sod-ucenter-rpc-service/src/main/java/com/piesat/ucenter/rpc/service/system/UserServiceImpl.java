@@ -405,8 +405,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                     JSONObject jsonObject1 = applyData.getJSONObject(i);
                     String databaseId = jsonObject1.getString("databaseId");
                     String dataClassId = jsonObject1.getString("dataClassId");
-                    dar.setDatabaseId(databaseId);
-                    dar.setDataClassId(dataClassId);
+//                    dar.setDatabaseId(databaseId);
+//                    dar.setDataClassId(dataClassId);
                     dar.setApplyAuthority(1);
                     dar.setCreateTime(new Date());
                     list.add(dar);
@@ -537,8 +537,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                         JSONObject jsonObject1 = applyData.getJSONObject(i);
                         String databaseId = jsonObject1.getString("databaseId");
                         String dataClassId = jsonObject1.getString("dataClassId");
-                        dar.setDatabaseId(databaseId);
-                        dar.setDataClassId(dataClassId);
+//                        dar.setDatabaseId(databaseId);
+//                        dar.setDataClassId(dataClassId);
                         dar.setApplyAuthority(1);
                         dar.setCreateTime(new Date());
                         list.add(dar);
@@ -603,8 +603,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
         specificationBuilder.add("userType", SpecificationOperator.Operator.eq.name(), "11");
         if (StringUtils.isNotNullString(userName)) {
-            specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(), userName);
-            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(), userName);
+            specificationBuilder.add("userName", SpecificationOperator.Operator.eq.name(), userName);
+//            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(), userName);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         List<UserEntity> all = this.getAll(specificationBuilder.generateSpecification(), sort);

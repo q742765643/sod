@@ -1830,7 +1830,7 @@ public class ImportData {
                     if (StringUtils.isNotEmpty(cause)) {
                         dataAuthorityRecordEntity.setCause(cause);
                     }
-                    dataAuthorityRecordEntity.setDataClassId(data_class_id);
+//                    dataAuthorityRecordEntity.setDataClassId(data_class_id);
                     if (StringUtils.isNotEmpty(database_id)) {
                         String database_id_new = "";
                         sql = "select * from DMIN_DB_PHYSICS_DEFINE where database_id='" + database_id + "'";
@@ -1846,11 +1846,11 @@ public class ImportData {
                             } else {
                                 List<SchemaEntity> defineId = schemaDao.findByDatabaseClassifyAndSchemaNameCnAndSchemaNameAndDatabaseId(database_classify, special_database_name, database_schema_name, parent_id);
                                 database_id_new = defineId.get(0).getId();
-                                dataAuthorityRecordEntity.setQtdbId(defineId.get(0).getTdbId());
+//                                dataAuthorityRecordEntity.setQtdbId(defineId.get(0).getTdbId());
                             }
                         }
                         if (StringUtils.isNotEmpty(database_id_new)) {
-                            dataAuthorityRecordEntity.setDatabaseId(database_id_new);
+//                            dataAuthorityRecordEntity.setDatabaseId(database_id_new);
                         }
                     }
                     dataAuthorityApplyEntity.getDataAuthorityRecordList().add(dataAuthorityRecordEntity);

@@ -23,6 +23,7 @@ import com.piesat.dm.dao.datatable.*;
 import com.piesat.dm.entity.dataclass.DataClassAndTableEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.datatable.*;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.database.SchemaService;
@@ -72,6 +73,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     private DatabaseInfo databaseInfo;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private MybatisPageMapper mybatisPageMapper;
     @Autowired
     private DataLogicDao dataLogicDao;
     @Autowired
@@ -453,7 +456,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     public PageBean getPageTableInfo(PageForm<Map<String, Object>> pageForm) {
 //        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
-        List<Map<String, Object>> lists = mybatisQueryMapper.getPageTableInfo(pageForm.getT());
+        List<Map<String, Object>> lists = mybatisPageMapper.getPageTableInfo(pageForm.getT());
         List<Map<String, Object>> new_list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         String tableName = "";
@@ -461,31 +464,31 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         List<String> classNames = new ArrayList<>();
         List<String> dataIds = new ArrayList<>();
         List<String> dataClassIds = new ArrayList<>();
-        for (int i = 0; i < lists.size(); i++) {
-            Map<String, Object> m = lists.get(i);
+        for (int i = 0; i <= lists.size(); i++) {
+            Map<String, Object> m = i < lists.size() ? lists.get(i) : new HashMap<>();
             String table_name = String.valueOf(m.get("TABLE_NAME"));
             String database_id = String.valueOf(m.get("DATABASE_ID"));
-            classNames.add(String.valueOf(m.get("CLASS_NAME")));
-            dataIds.add(String.valueOf(m.get("D_DATA_ID")));
-            dataClassIds.add(String.valueOf(m.get("DATA_CLASS_ID")));
-            if (!tableName.equals(table_name) || !databaseId.equals(database_id) || i == (lists.size() - 1)) {
-                if (map.isEmpty()) {
-                    map = m;
-                }
+
+            Boolean noSame = !tableName.equals(table_name) || !databaseId.equals(database_id);
+            if (i != 0 && noSame) {
                 map.put("CLASS_NAME", classNames);
                 map.put("D_DATA_ID", dataIds);
                 map.put("DATA_CLASS_ID", dataClassIds);
                 new_list.add(map);
-                map = new HashMap<>();
                 classNames = new ArrayList<>();
                 dataIds = new ArrayList<>();
                 dataClassIds = new ArrayList<>();
             }
+            classNames.add(String.valueOf(m.get("CLASS_NAME")));
+            dataIds.add(String.valueOf(m.get("D_DATA_ID")));
+            dataClassIds.add(String.valueOf(m.get("DATA_CLASS_ID")));
+            tableName = table_name;
+            databaseId = database_id;
+            map = m;
         }
 
-
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(new_list);
-        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), new_list);
         return pageBean;
     }
 

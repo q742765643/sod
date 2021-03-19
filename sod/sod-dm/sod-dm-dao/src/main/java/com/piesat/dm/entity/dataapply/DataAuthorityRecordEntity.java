@@ -14,7 +14,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Data
-@Table(name = "T_SOD_DATA_AUTHORITY_RECORD")
+@Table(name = "T_SOD_DATA_AUTHORITY_APPLY")
 public class DataAuthorityRecordEntity extends BaseEntity {
 
     /**
@@ -23,17 +23,12 @@ public class DataAuthorityRecordEntity extends BaseEntity {
     @Column(name = "apply_id", length = 50)
     private String applyId;
 
-    /**
-     * 存储编码
-     */
-    @Column(name = "data_class_id", length = 30)
-    private String dataClassId;
 
     /**
-     * 物理库id
+     * 表id
      */
-    @Column(name = "database_id", length = 50)
-    private String databaseId;
+    @Column(name = "table_id", length = 30)
+    private String tableId;
 
     /**
      * 申请权限
@@ -55,12 +50,5 @@ public class DataAuthorityRecordEntity extends BaseEntity {
      */
     @Column(name = "cause", length = 50)
     private String cause;
-
-    /**
-     * 引用id
-     * 专题库引用资料记录引用专题库id
-     */
-    @Column(name = "qtdb_id", length = 50)
-    private String qtdbId;
 
 }

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.dm.mapper.MybatisPageMapper">
+
+    <!--查询存储结构概览-->
+    <select id="selectStorageConfigurationPageList" parameterType="java.util.Map" resultType="java.util.Map">
+        select
+        f.META_DATA_NAME,f.CLASS_NAME,b.TABLE_NAME,
+        ee.DATABASE_NAME,a.DATA_CLASS_ID,b.STORAGE_TYPE,b.DATABASE_ID,
+        f.D_DATA_ID,e.SCHEMA_NAME_CN as SPECIAL_DATABASE_NAME,ee.DATABASE_TYPE,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = ee.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = ee.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = ee.id) BACKUP_ST,
+        h.STORAGE_DEFINE_IDENTIFIER,h.SYNC_IDENTIFIER,h.CLEAN_IDENTIFIER,h.MOVE_IDENTIFIER,
+        h.BACKUP_IDENTIFIER,h.ARCHIVING_IDENTIFIER,h.SYNC_ID,h.CLEAR_ID,h.MOVE_ID,h.BACKUP_ID,b.ID,a.ID
+        LOGIC_ID,GG.DICT_LABEL
+        FROM t_sod_data_class f
+        INNER JOIN T_SOD_DATACLASS_TABLE a ON a.DATA_CLASS_ID = f.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DATA_TABLE_INFO b ON a.table_id = b.id
+        LEFT JOIN t_sod_database e ON b.DATABASE_ID = e.id
+        LEFT JOIN t_sod_database_define ee ON e.database_define_id = ee.id
+        INNER JOIN T_SOD_ADVANCED_CONFIG h ON h.table_id=b.id
+        LEFT JOIN T_SOD_DATA_CLASS_LABEL G ON G.DATA_CLASS_ID = a.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DICT_DATA HH ON (G.LABEL_KEY = HH.DICT_VALUE AND HH.dict_type = 'dataclass_label')
+        LEFT JOIN T_SOD_DICT_DATA GG ON (b.STORAGE_TYPE = GG.DICT_VALUE AND GG.dict_type = 'sys_storage_type')
+        <where>
+            f.type = 2
+            <if test="map.database_name != null and map.database_name  != ''">
+                AND ee.database_name like '%${map.database_name}%'
+            </if>
+            <if test="map.special_database_name != null and map.special_database_name  != ''">
+                AND e.database_name like '%${map.special_database_name}%'
+            </if>
+            <!-- 结构树 -->
+            <if test="map.class_name != null and map.class_name  != ''">
+                AND f.class_name like '%${map.class_name}%'
+            </if>
+            <if test="map.parent_id != null and map.parent_id  != ''">
+                AND f.data_class_id like '%${map.parent_id}%'
+            </if>
+            <!-- 表 -->
+            <if test="map.table_name != null and map.table_name != ''">
+                AND upper(b.table_name) like upper('%${map.table_name}%')
+            </if>
+            <!-- 存储编码 -->
+            <if test="map.data_class_id != null and map.data_class_id != ''">
+                AND upper(a.data_class_id) like upper('%${map.data_class_id}%')
+            </if>
+            <!-- 四级编码 -->
+            <if test="map.d_data_id != null and map.d_data_id  != ''">
+                AND upper(f.d_data_id) like upper('%${map.d_data_id}%')
+            </if>
+            <!-- 标签 -->
+            <if test="map.label_name != null and map.label_name  != ''">
+                AND HH.DICT_LABEL like '%${map.label_name}%'
+            </if>
+
+        </where>
+    </select>
+
+    <!--存储字段检索-->
+    <select id="storageFieldList" parameterType="java.util.Map" resultType="java.util.Map">
+        select g.*, f.CLASS_NAME,f.D_DATA_ID, b.TABLE_NAME,a.id LOGIC_ID,a.DATA_CLASS_ID,
+        b.STORAGE_TYPE,b.DATABASE_ID,e.SCHEMA_NAME_CN SPECIAL_DATABASE_NAME,
+        ee.DATABASE_NAME,ee.DATABASE_TYPE
+        from t_sod_data_class f
+        left join T_SOD_DATACLASS_TABLE a on (a.DATA_CLASS_ID = f.DATA_CLASS_ID AND f.type = 2 )
+        left join T_SOD_DATA_TABLE_INFO b on (a.table_id = b.id or a.sub_table_id = b.id)
+        left join t_sod_database e on b.DATABASE_ID = e.id
+        left join t_sod_database_define ee on e.database_define_id = ee.id
+        left join t_sod_data_table_column g on b.id = g.table_id
+        <where>
+            <!-- 结构树 -->
+            <if test="map.class_name != null and map.class_name  != ''">
+                AND f.class_name like '${map.class_name}%'
+            </if>
+            <!-- 表 -->
+            <if test="map.table_name != null and map.table_name != ''">
+                AND upper(b.table_name) like upper('%${map.table_name}%')
+            </if>
+            <!-- 字段查询条件 -->
+            <if test="map.c_element_code != null and map.c_element_code != ''">
+                AND upper(g.c_element_code) like upper('%${map.c_element_code}%')
+            </if>
+            <if test="map.db_ele_code != null and map.db_ele_code != ''">
+                AND upper(g.db_ele_code) like upper('%${map.db_ele_code}%')
+            </if>
+            <if test="map.user_ele_code != null and map.user_ele_code != ''">
+                AND upper(g.user_ele_code) like upper('%${map.user_ele_code}%')
+            </if>
+            <if test="map.ele_name != null and map.ele_name != ''">
+                AND g.ele_name like '%${map.ele_name}%'
+            </if>
+            <if test="map.type != null and map.type != ''">
+                AND upper(g.type) like upper('%${map.type}%')
+            </if>
+            <if test="map.accuracy != null and map.accuracy != ''">
+                AND upper(g.accuracy) like upper('%${map.accuracy}%')
+            </if>
+        </where>
+    </select>
+
+
+    <!--新增注册资料-->
+    <select id="selectNewdataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.id,a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.DATABASE_ID,
+        a.TABLE_NAME,a.DATA_FREQ,a.FREUSE_FIELD,a.IS_PUBLISH,a.MEMO,a.USER_ID,a.DATA_ORIGIN,a.EXAMINER,a.EXAMINE_STATUS,
+        a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,a.CREATE_TIME,
+        b.c_datumtype as type_name,c.logic_name,d.WEB_USERNAME,cc.c_datum_code type_pcode,cc.c_datumtype
+        type_pname,d.DEPT_NAME,d.PHONENUMBER,f.*
+        from t_sod_newdata_apply a
+        left join TAB_OMIN_CM_CC_DATUMTYPEINFO b on a.d_data_id = b.c_datum_code
+        left join TAB_OMIN_CM_CC_DATUMTYPEINFO cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
+        left join t_sod_logic_define c on a.logic_id = c.logic_flag
+        left join T_SOD_USER d on a.user_id = d.user_name and user_type='11'
+        left join T_SOD_DATACLASS_TABLE e on a.data_class_id = e.data_class_id
+        left join T_SOD_ADVANCED_CONFIG f on e.table_id=f.table_id
+        <where>
+            <if test="map.status != null and map.status  != ''">
+                a.examine_status = #{map.status}
+            </if>
+            <if test="map.dataType != null and map.dataType != ''">
+                AND SUBSTR(b.C_DATUM_CODE,1,1) = #{map.dataType}
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <!--新增注册资料-->
+    <select id="selectDataApplyPageList" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.id,a.D_DATA_ID,a.DATA_SERVICE_ID,a.DATA_CLASS_ID, a.LOGIC_ID LOGIC_FLAG,e.DATABASE_ID,
+        dbf.DATABASE_NAME,dbf.DATABASE_TYPE,
+        a.TABLE_NAME,a.DATA_FREQ,a.FREUSE_FIELD,a.IS_PUBLISH,a.MEMO,a.USER_ID,a.DATA_ORIGIN,a.EXAMINER,a.EXAMINE_STATUS,
+        a.EXAMINE_TIME,a.REMARK,a.DATA_PROP,a.CREATE_TIME,bbb.ID as R_LOGIC_ID,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = dbf.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = dbf.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = dbf.id) BACKUP_ST,
+        b.C_DATUMTYPE as TYPE_NAME,c.LOGIC_NAME,d.WEB_USERNAME,cc.C_DATUM_CODE TYPE_PCODE,cc.C_DATUMTYPE TYPE_PNAME,
+        d.DEPT_NAME,d.PHONENUMBER,f.storage_define_identifier,f.sync_identifier,f.clean_identifier,f.move_identifier,f.backup_identifier,f.archiving_identifier,
+        f.sync_id,f.clear_id,f.move_id,f.backup_id,bbb.id class_logic_id,e.STORAGE_TYPE,aaa.CLASS_NAME
+        from t_sod_newdata_apply a
+        left join t_sod_data_class aaa on a.DATA_CLASS_ID = aaa.DATA_CLASS_ID
+        left join T_SOD_DATACLASS_TABLE bbb on bbb.DATA_CLASS_ID = aaa.DATA_CLASS_ID
+        left join T_SOD_DATA_TABLE_INFO e on bbb.table_id = e.id
+        left join t_sod_database db on e.DATABASE_ID = db.id
+        left join t_sod_database_define dbf on db.database_define_id = dbf.id
+        left join TAB_OMIN_CM_CC_DATUMTYPEINFO b on a.d_data_id = b.c_datum_code
+        left join TAB_OMIN_CM_CC_DATUMTYPEINFO cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
+        left join t_sod_logic_define c on a.logic_id = c.logic_flag
+        left join T_SOD_USER d on a.user_id = d.user_name and user_type='11'
+        left join T_SOD_ADVANCED_CONFIG f on bbb.table_id=f.table_id
+        <where>
+            <if test="map.status != null and map.status  != ''">
+                a.examine_status = #{map.status}
+            </if>
+            <if test="map.dataType != null and map.dataType != ''">
+                AND SUBSTR(b.C_DATUM_CODE,1,1) = #{map.dataType}
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+
+    <select id="onLineList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT BB.DATA_CLASS_ID DATA_CLASS_ID,EE.D_DATA_ID D_DATA_ID,EE.CLASS_NAME,
+        min(BEGIN_TIME) BEGIN_TIME,max(END_TIME) END_TIME,max(RECORD_COUNT) RECORD_COUNT,EE.IF_STOP_USE FROM
+        usr_sod.T_SOD_TABLEDATA_STATISTICS AA INNER JOIN
+        (SELECT C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID,MAX(STATISTIC_TIME) STATISTIC_TIME FROM
+        usr_sod.T_SOD_TABLEDATA_STATISTICS A
+        LEFT JOIN usr_sod.T_SOD_DATA_TABLE_INFO B ON A.TABLE_ID = B.ID
+        LEFT JOIN usr_sod.T_SOD_DATACLASS_TABLE C ON B.ID = C.TABLE_ID
+        WHERE C.DATA_CLASS_ID IS NOT NULL
+        GROUP BY C.DATA_CLASS_ID,B.DATABASE_ID,A.TABLE_ID order by C.DATA_CLASS_ID) BB
+        on AA.DATABASE_ID = BB.DATABASE_ID and AA.STATISTIC_TIME = BB.STATISTIC_TIME and AA.TABLE_ID = BB.TABLE_ID
+        INNER JOIN usr_sod.T_SOD_DATABASE CC on AA.DATABASE_ID = CC.ID
+        INNER JOIN usr_sod.T_SOD_DATABASE_DEFINE DD on CC.DATABASE_DEFINE_ID = DD.ID
+        INNER JOIN usr_sod.T_SOD_DATA_CLASS EE on BB.DATA_CLASS_ID = EE.DATA_CLASS_ID
+        <where>
+            <if test="map.class_name != null and map.class_name != ''">
+                EE.CLASS_NAME like '%${map.class_name}%'
+            </if>
+            <if test="map.d_data_id != null and map.d_data_id != ''">
+                AND EE.D_DATA_ID like '%${map.d_data_id}%'
+            </if>
+        </where>
+        group by BB.DATA_CLASS_ID,EE.D_DATA_ID,EE.IF_STOP_USE,EE.CLASS_NAME
+    </select>
+
+    <select id="getDatabaseSpecialReadWriteList" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT DISTINCT
+        a.sdb_id,a.database_id,a.data_class_id,a.apply_authority,a.empower_authority,a.examine_status,a.failure_reason,
+        b.d_data_id,b.class_name,c.class_name type_name,d.table_name,f.database_name
+        FROM t_sod_database_special_read_write a
+        INNER JOIN t_sod_data_class b ON a.data_class_id = b.data_class_id
+        INNER JOIN (SELECT class_name,d_data_id,data_class_id FROM t_sod_data_class where LENGTH(d_data_id)=1) c ON
+        SUBSTR(b.d_data_id,0,1)= c.d_data_id and SUBSTR(b.d_data_id,0,1)= c.data_class_id
+        INNER JOIN T_SOD_DATACLASS_TABLE g ON a.data_class_id = g.data_class_id
+        INNER JOIN T_SOD_DATA_TABLE_INFO d ON g.table_id = d.id or g.sub_table_id = d.id
+        LEFT JOIN t_sod_database e ON a.database_id = e.id
+        LEFT JOIN t_sod_database_define f ON e.DATABASE_DEFINE_ID = f.id
+        WHERE a.sdb_id = #{map.sdbId} and a.data_type = #{map.dataType}
+        <if test="map.typeName != null and map.typeName != ''">
+            and c.class_name like '%${map.typeName}%'
+        </if>
+        <if test="map.dataName != null and map.dataName != ''">
+            and b.class_name like '%${map.dataName}%'
+        </if>
+        <if test="map.tableName != null and map.tableName != ''">
+            and d.table_name like '%${map.tableName}%'
+        </if>
+        <if test="map.applyAuthority != null and map.applyAuthority != ''">
+            and a.apply_authority = ${map.applyAuthority}
+        </if>
+        <if test="map.examineStatus != null and map.examineStatus != ''">
+            and a.examine_status = ${map.examineStatus}
+        </if>
+        order by a.data_class_id
+    </select>
+
+
+    <select id="getAreaByPage" resultType="GridAreaEntity" parameterType="java.util.Map">
+        select distinct a.id,a.area_id areaId,concat( concat( concat(b.AREA_DESC,'('),a.AREA_REGION_DESC),')')
+        areaRegionDesc,a.data_service_id dataServiceId,a.version
+        from T_SOD_GRID_AREA a
+        left join (select * from T_SOD_GRID_AREA_DEFINE ) b on a.area_id = b.area_id
+        and a.AREA_REGION_DESC =
+        concat(concat(concat(concat(concat(concat(concat(concat('起止纬度：[',START_LAT),','),END_LAT),'];起止经度：['),START_LON),','),END_LON),']')
+        <where>
+            <if test="map.dataServiceId != null and map.dataServiceId != ''">
+                a.DATA_SERVICE_ID = #{map.dataServiceId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getPageTableInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT DISTINCT A.TABLE_NAME,E.DICT_LABEL,D.SCHEMA_NAME_CN,F.DATABASE_NAME,
+        FG.ID, FG.NICK_NAME, A.DATABASE_ID, A.STORAGE_TYPE,
+        C.CLASS_NAME, C.D_DATA_ID, C.DATA_CLASS_ID, D.DATABASE_CLASSIFY,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = F.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = F.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = F.id) BACKUP_ST,
+        H.STORAGE_DEFINE_IDENTIFIER,H.SYNC_IDENTIFIER,H.CLEAN_IDENTIFIER,H.MOVE_IDENTIFIER,
+        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID,A.ID TABLE_ID
+        FROM T_SOD_DATA_TABLE_INFO A
+        LEFT JOIN T_SOD_DICT_DATA E ON A.STORAGE_TYPE = E.dict_value
+        LEFT JOIN T_SOD_DATACLASS_TABLE B ON A.ID = B.TABLE_ID
+        LEFT JOIN T_SOD_DATA_CLASS C ON B.DATA_CLASS_ID = C.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DATABASE D ON A.DATABASE_ID = D.ID
+        LEFT JOIN T_SOD_DATABASE_DEFINE F ON D.DATABASE_DEFINE_ID = F.ID
+        LEFT JOIN T_SOD_DATABASE_SPECIAL FS ON D."TDB_ID" = FS."ID"
+        LEFT JOIN T_SOD_USER FG ON FS."USER_ID" = FG."WEB_USERID"
+        LEFT JOIN T_SOD_ADVANCED_CONFIG H ON H.TABLE_ID=A.ID
+        LEFT JOIN T_SOD_DATA_CLASS_LABEL G ON G.DATA_CLASS_ID = C.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DICT_DATA HH ON (G.LABEL_KEY = HH.DICT_VALUE AND HH.DICT_TYPE = 'dataclass_label')
+        <where>
+            A.table_type != 'K' AND (A.DEL_FLAG <![CDATA[ <> ]]> 2 OR A.DEL_FLAG IS NULL)
+            AND (C.DEL_FLAG <![CDATA[ <> ]]> 2 OR C.DEL_FLAG IS NULL)
+            <if test="map.classIds!=null and map.classIds.size()>0">
+                AND D.ID in
+                <foreach collection="map.classIds" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="map.tableNameCn != null and map.tableNameCn  != ''">
+                AND A.NAME_CN LIKE '%${map.tableNameCn}%'
+            </if>
+            <if test="map.tableName != null and map.tableName  != ''">
+                AND A.TABLE_NAME LIKE '%${map.tableName}%'
+            </if>
+            <if test="map.databaseId != null and map.databaseId  != ''">
+                AND A.DATABASE_ID = #{map.databaseId}
+            </if>
+            <if test="map.databasePid != null and map.databasePid  != ''">
+                AND D.DATABASE_DEFINE_ID = #{map.databasePid}
+            </if>
+            <if test="map.className != null and map.className  != ''">
+                AND C.CLASS_NAME LIKE '%${map.className}%'
+            </if>
+            <if test="map.classId != null and map.classId  != ''">
+                AND C.DATA_CLASS_ID LIKE '%${map.classId}%'
+            </if>
+            <if test="map.dataId != null and map.dataId  != ''">
+                AND C.D_DATA_ID LIKE '%${map.dataId}%'
+            </if>
+        </where>
+        ORDER BY A.TABLE_NAME,A.DATABASE_ID,A.STORAGE_TYPE
+    </select>
+
+    <select id="getPageDataclassInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT DISTINCT A.CLASS_NAME, A.D_DATA_ID, A.DATA_CLASS_ID, C.TABLE_NAME,C.DATABASE_ID , E.DATABASE_NAME,
+        D.DATABASE_CLASSIFY,
+        D.SCHEMA_NAME_CN, G.ID, G.NICK_NAME, C.STORAGE_TYPE,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = F.id) MOVE_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = F.id) CLEAR_ST,
+        (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = F.id) BACKUP_ST,
+        H.STORAGE_DEFINE_IDENTIFIER,H.SYNC_IDENTIFIER,H.CLEAN_IDENTIFIER,H.MOVE_IDENTIFIER,
+        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID,C.ID TABLE_ID
+        FROM T_SOD_DATA_CLASS A
+        LEFT JOIN T_SOD_DATACLASS_TABLE B ON A."DATA_CLASS_ID" = B."DATA_CLASS_ID"
+        LEFT JOIN T_SOD_DATA_TABLE_INFO C ON B."TABLE_ID" = C."ID"
+        LEFT JOIN T_SOD_DATABASE D ON C."DATABASE_ID" = D."ID"
+        LEFT JOIN T_SOD_DATABASE_DEFINE E ON D."DATABASE_DEFINE_ID" = E."ID"
+        LEFT JOIN T_SOD_DATABASE_SPECIAL F ON D."TDB_ID" = F."ID"
+        LEFT JOIN T_SOD_USER G ON F."USER_ID" = G."WEB_USERID"
+        LEFT JOIN T_SOD_ADVANCED_CONFIG H ON C."ID" = H."TABLE_ID"
+        <where>
+            A."TYPE" = 2 AND (A.DEL_FLAG <![CDATA[ <> ]]> 2 OR A.DEL_FLAG IS NULL)
+            AND (C.DEL_FLAG <![CDATA[ <> ]]> 2 OR C.DEL_FLAG IS NULL)
+            <if test="map.classIds!=null and map.classIds.size()>0">
+                AND A.DATA_CLASS_ID in
+                <foreach collection="map.classIds" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="map.className != null and map.className  != ''">
+                AND A.CLASS_NAME LIKE '%${map.className}%'
+            </if>
+            <if test="map.dataId != null and map.dataId  != ''">
+                AND A.D_DATA_ID LIKE '%${map.dataId}%'
+            </if>
+            <if test="map.dataClassId != null and map.dataClassId  != ''">
+                AND A.DATA_CLASS_ID LIKE '%${map.dataClassId}%'
+            </if>
+            <if test="map.databaseName != null and map.databaseName  != ''">
+                AND E.DATABASE_NAME LIKE '%${map.databaseName}%'
+            </if>
+            <if test="map.schemaNameCn != null and map.schemaNameCn  != ''">
+                AND E.SCHEMA_NAME_CN LIKE '%${map.schemaNameCn}%'
+            </if>
+            <if test="map.databaseId != null and map.databaseId  != ''">
+                AND D.ID = #{map.databaseId}
+            </if>
+            <if test="map.databasePid != null and map.databasePid  != ''">
+                AND E.ID = #{map.databasePid}
+            </if>
+            <if test="map.tableName != null and map.tableName  != ''">
+                AND C.TABLE_NAME LIKE '%${map.tableName}%'
+            </if>
+        </where>
+        ORDER BY A.DATA_CLASS_ID,C.DATABASE_ID,C.STORAGE_TYPE
+    </select>
+
+    <select id="getPageAuthorityDataApplyFlow" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT A.*,B.NICK_NAME FROM T_SOD_DATA_AUTHORITY_APPLY_FLOW A LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
+        <where>
+            <if test="map.userId != null and map.userId != ''">
+                A.USER_ID = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <select id="pageApplyData" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT A.*,A.ID TABLE_ID,B.NICK_NAME,B.APP_NAME,D.SCHEMA_NAME,D.SCHEMA_NAME_CN,E.DATABASE_NAME
+            FROM T_SOD_DATA_TABLE_APPLY A
+            LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
+            LEFT JOIN T_SOD_DATABASE D ON A."DATABASE_ID" = D."ID"
+            LEFT JOIN T_SOD_DATABASE_DEFINE E ON D."DATABASE_DEFINE_ID" = E."ID"
+        <where>
+            <if test="map.dta.status != null and map.dta.status != ''">
+                A.STATUS = #{map.dta.status}
+            </if>
+            <if test="map.dta.tableName != null and map.dta.tableName  != ''">
+                AND A.TABLE_NAME LIKE '%${map.dta.tableName}%'
+            </if>
+            <if test="map.dta.databaseId != null and map.dta.databaseId  != ''">
+                AND A.DATABASE_ID = #{map.dta.databaseId}
+            </if>
+            <if test="map.dta.databasePid != null and map.dta.databasePid  != ''">
+                AND D.DATABASE_DEFINE_ID = #{map.dta.databasePid}
+            </if>
+            <if test="map.dta.appName != null and map.dta.appName  != ''">
+                AND B.APP_NAME LIKE '%${map.dta.appName}%'
+            </if>
+        </where>
+    </select>
+
+</mapper>

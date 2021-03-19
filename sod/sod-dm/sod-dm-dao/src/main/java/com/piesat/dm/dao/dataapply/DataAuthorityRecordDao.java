@@ -15,14 +15,10 @@ import java.util.List;
  */
 @Repository
 public interface DataAuthorityRecordDao extends BaseDao<DataAuthorityRecordEntity> {
-    List<DataAuthorityRecordEntity> findByApplyIdAndDataClassId(String applyId, String dataClassId);
-
-    List<DataAuthorityRecordEntity> findByApplyIdAndDataClassIdAndDatabaseId(String applyId, String dataClassId,String databaseId);
-
-    List<DataAuthorityRecordEntity> findByDataClassIdAndAuthorize(String dataClassId,Integer authorize);
 
     @Query(value="select distinct applyId from DataAuthorityRecordEntity")
     List<String> findAllApplyId();
 
-    void deleteByDataClassId(String dataclassId);
+    List<DataAuthorityRecordEntity> findByApplyId(String applyId);
+
 }

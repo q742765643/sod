@@ -17,5 +17,5 @@ public interface DefineMapper {
      * @param defineEntity
      * @return
      */
-    public List<DefineEntity> selectDefineList(DefineEntity defineEntity);
+    List<DefineEntity> selectDefineList(DefineEntity defineEntity);
 }

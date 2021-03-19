@@ -15,14 +15,21 @@ import java.util.Set;
  */
 @Entity
 @Data
-@Table(name = "T_SOD_DATA_AUTHORITY_APPLY")
+@Table(name = "T_SOD_DATA_AUTHORITY_APPLY_FLOW")
 public class DataAuthorityApplyEntity extends BaseEntity {
+
+    /**
+     * 申请用户id
+     */
+    @Column(name = "flow_id")
+    private String flowId;
 
     /**
      * 申请用户id
      */
     @Column(name = "user_id", length = 50)
     private String userId;
+
 
     /**
      * 审核状态

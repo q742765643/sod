@@ -60,7 +60,7 @@
 		select
 			count(*)
 		from
-			T_SOD_DATA_AUTHORITY_APPLY
+			T_SOD_DATA_AUTHORITY_APPLY_FLOW
 		where
 			audit_status = '02'
 	</select>
@@ -69,7 +69,7 @@
 		select
 			count(*)
 		from
-			T_SOD_DATA_AUTHORITY_APPLY
+			T_SOD_DATA_AUTHORITY_APPLY_FLOW
 		where
 			audit_status != '02'
 	</select>

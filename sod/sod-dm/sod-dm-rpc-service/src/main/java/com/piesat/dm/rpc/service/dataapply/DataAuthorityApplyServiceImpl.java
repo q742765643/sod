@@ -1,5 +1,7 @@
 package com.piesat.dm.rpc.service.dataapply;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.grpc.annotation.GrpcHthtClient;
 import com.piesat.common.jpa.BaseDao;
@@ -21,6 +23,8 @@ import com.piesat.dm.entity.ReadAuthorityEntity;
 import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
 import com.piesat.dm.entity.dataapply.DataAuthorityRecordEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
+import com.piesat.dm.mapper.MybatisModifyMapper;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
@@ -73,6 +77,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
+    private MybatisModifyMapper mybatisModifyMapper;
+    @Autowired
+    private MybatisPageMapper mybatisPageMapper;
+    @Autowired
     private SchemaService schemaService;
     @Autowired
     private DataAuthorityRecordDao dataAuthorityRecordDao;
@@ -106,78 +114,11 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    public PageBean selectPageList(PageForm<DataAuthorityApplyDto> pageForm) {
-        UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
-        DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(pageForm.getT());
-
-        DataAuthorityApplyDto dataAuthorityApplyDto = pageForm.getT();
-        SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
-        if (StringUtils.isNotNullString(dataAuthorityApplyDto.getAuditStatus())) {
-            specificationBuilder.add("auditStatus", SpecificationOperator.Operator.eq.name(), dataAuthorityApplyDto.getAuditStatus());
-        }
-        if (StringUtils.isNotNullString(dataAuthorityApplyDto.getUserName())) {
-            //调用接口 根据用户名查询用户id
-            List<String> userId = new ArrayList<String>();
-            userId.add("noUseId");
-            List<UserEntity> userEntities = userDao.findByWebUsernameLike("%" + pageForm.getT().getUserName() + "%");
-            if (userEntities != null && userEntities.size() > 0) {
-                for (UserEntity userEntity : userEntities) {
-                    userId.add(userEntity.getUserName());
-                }
-            }
-            specificationBuilder.add("userId", SpecificationOperator.Operator.in.name(), userId);
-        }
-        if (StringUtils.isNotNullString((String) dataAuthorityApplyEntity.getParamt().get("beginTime"))) {
-            specificationBuilder.add("createTime", SpecificationOperator.Operator.ges.name(), (String) dataAuthorityApplyEntity.getParamt().get("beginTime"));
-        }
-        if (StringUtils.isNotNullString((String) dataAuthorityApplyEntity.getParamt().get("endTime"))) {
-            specificationBuilder.add("createTime", SpecificationOperator.Operator.les.name(), (String) dataAuthorityApplyEntity.getParamt().get("endTime"));
-        }
-        List<String> allApplyId = this.dataAuthorityRecordDao.findAllApplyId();
-        if (allApplyId == null || allApplyId.size() == 0) {
-            return null;
-        }
-        specificationBuilder.add("id", SpecificationOperator.Operator.in.name(), allApplyId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "auditStatus", "createTime");
-        PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
-        List<DataAuthorityApplyEntity> dataAuthorityApplyEntities = (List<DataAuthorityApplyEntity>) pageBean.getPageData();
-
-        //调用接口获取所有的用户信息
-
-        List<DataAuthorityApplyDto> dataAuthorityApplyDtos = dataAuthorityApplyMapper.toDto(dataAuthorityApplyEntities);
-
-        //调用接口获取所有的用户信息
-        List<UserEntity> userEntities = userDao.findByUserType("11");
-        //循环遍历
-        for (DataAuthorityApplyDto authorityApply : dataAuthorityApplyDtos) {
-
-            //若所申请资料全部审核了，将这条申请记录修改为“已审核”
-            List<DataAuthorityRecordDto> dataAuthorityRecordList = authorityApply.getDataAuthorityRecordList();
-            int num = 0;
-            if (StringUtils.isNotNullString(authorityApply.getAuditStatus()) && !"02".equals(authorityApply.getAuditStatus())) {
-                for (DataAuthorityRecordDto authorityRecord : dataAuthorityRecordList) {
-                    if (authorityRecord.getAuthorize() != null) {
-                        num++;
-                        if (num == dataAuthorityRecordList.size()) {
-                            //authorityApply.setAuditStatus("02");
-                            //authorityApply = this.saveNotNull(authorityApply);
-                            this.mybatisQueryMapper.updateDataAuthorityApply(authorityApply.getId(), "02", loginUser.getUserName(), new Date());
-                        }
-                    }
-                }
-            }
-
-            //遍历所有用户信息找到每条记录对应的用户信息
-            for (UserEntity userEntity : userEntities) {
-                if (userEntity.getUserName().equals(authorityApply.getUserId())) {
-                    authorityApply.setUserName(userEntity.getWebUsername());
-                    authorityApply.setTelephone(userEntity.getPhonenumber());
-                    authorityApply.setDepartment(userEntity.getDeptName());
-                }
-            }
-        }
-
-        pageBean.setPageData(dataAuthorityApplyDtos);
+    public PageBean selectPageList(PageForm<Map<String, String>> pageForm) {
+        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
+        List<Map<String,Object>> lists = this.mybatisPageMapper.getPageAuthorityDataApplyFlow(pageForm.getT());
+        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
+        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
         return pageBean;
     }
 
@@ -255,7 +196,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         List<String> databaseIds = Arrays.asList(examineDatabaseId.split(Constants.COMMA));
         //为每个数据表进行授权
         for (DataAuthorityRecordDto dataAuthorityRecordDto : dataAuthorityRecordList) {
-            SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+            DataTableInfoEntity dataTableInfo = this.dataTableDao.findById(dataAuthorityRecordDto.getTableId()).orElse(null);
+            SchemaDto schemaDto = schemaService.getDotById(dataTableInfo.getDatabaseId());
             if (!databaseIds.contains(schemaDto.getDatabase().getId())) {
                 r.setErrorMessage(String.format(ConstantsMsg.MSG3, schemaDto.getDatabase().getDatabaseName()));
                 continue;
@@ -265,7 +207,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             }
             ConnectVo coreInfo = schemaDto.getConnectVo();
             DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
-            AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
+            AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfo.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
 
             coreInfo.build(r)
                     .grantTable(a, r)
@@ -288,7 +230,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
         List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
 
-        SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+        DataTableInfoEntity dataTableInfo = this.dataTableDao.findById(dataAuthorityRecordDto.getTableId()).orElse(null);
+
+        SchemaDto schemaDto = schemaService.getDotById(dataTableInfo.getDatabaseId());
 
         if (!databaseIds.contains(schemaDto.getDatabase().getId())) {
             return ResultT.failed(String.format(ConstantsMsg.MSG3, schemaDto.getDatabase().getDatabaseName()));
@@ -299,7 +243,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         }
         ConnectVo coreInfo = schemaDto.getConnectVo();
         DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
-        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
+        AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfo.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
 
         coreInfo.build(r)
                 .grantTable(a, r)
@@ -324,15 +268,17 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         //循环
         for (DataAuthorityRecordDto dataAuthorityRecordDto : dataAuthorityRecordList) {
 
-            if (dataAuthorityRecordDto.getAuthorize() != null && dataAuthorityRecordDto.getAuthorize().intValue() == 1) {//已授权资料，撤销授权
+            if (dataAuthorityRecordDto.getAuthorize() != null && dataAuthorityRecordDto.getAuthorize().intValue() == 1) {//已授权资料，撤销
+                // 授权
+                DataTableInfoEntity dataTableInfo = this.dataTableDao.findById(dataAuthorityRecordDto.getTableId()).orElse(null);
                 //获取物理库信息
-                SchemaDto schemaDto = schemaService.getDotById(dataAuthorityRecordDto.getDatabaseId());
+                SchemaDto schemaDto = schemaService.getDotById(dataTableInfo.getDatabaseId());
                 if (StringUtils.isEmpty(dataAuthorityRecordDto.getTableName())) {
                     continue;
                 }
                 ConnectVo coreInfo = schemaDto.getConnectVo();
                 DbaEnum dbaEnum = dataAuthorityRecordDto.getApplyAuthority() == 1 ? DbaEnum.READ : DbaEnum.WRITE;
-                AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataAuthorityRecordDto.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
+                AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), dataTableInfo.getTableName(), databaseUserDto.getDatabaseUpId(), dbaEnum);
                 coreInfo.build(r)
                         .revokeTable(a, r)
                         .close();
@@ -358,23 +304,23 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateRecordByApplyIdAndClassId(String apply_id, String data_class_id, Integer authorize, String cause) {
-        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities =
-                dataAuthorityRecordDao.findByApplyIdAndDataClassId(apply_id, data_class_id);
+        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = null;
+//                dataAuthorityRecordDao.findByApplyIdAndDataClassId(apply_id, data_class_id);
         if (dataAuthorityRecordEntities != null && dataAuthorityRecordEntities.size() > 0) {
             for (DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordEntities) {
                 //如果资料是专题库引用资料，审核专题库引用资料
-                if (StringUtils.isNotNullString(dataAuthorityRecordEntity.getQtdbId())) {
-                    List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos = databaseSpecialReadWriteService.findBySdbIdAndDataClassId(dataAuthorityRecordEntity.getQtdbId(), data_class_id);
-                    if (databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size() > 0) {
-                        for (DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteDtos) {
-                            if (StringUtils.isNotNullString(cause)) {
-                                databaseSpecialReadWriteDto.setFailureReason(cause);
-                            }
-                            databaseSpecialReadWriteDto.setExamineStatus(authorize);
-                            databaseSpecialReadWriteService.saveDto(databaseSpecialReadWriteDto);
-                        }
-                    }
-                }
+//                if (StringUtils.isNotNullString(dataAuthorityRecordEntity.getQtdbId())) {
+//                    List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos = databaseSpecialReadWriteService.findBySdbIdAndDataClassId(dataAuthorityRecordEntity.getQtdbId(), data_class_id);
+//                    if (databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size() > 0) {
+//                        for (DatabaseSpecialReadWriteDto databaseSpecialReadWriteDto : databaseSpecialReadWriteDtos) {
+//                            if (StringUtils.isNotNullString(cause)) {
+//                                databaseSpecialReadWriteDto.setFailureReason(cause);
+//                            }
+//                            databaseSpecialReadWriteDto.setExamineStatus(authorize);
+//                            databaseSpecialReadWriteService.saveDto(databaseSpecialReadWriteDto);
+//                        }
+//                    }
+//                }
 
                 //资料授权审核
                 mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordEntity.getId(), authorize, cause);
@@ -399,7 +345,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Transactional(rollbackFor = Exception.class)
     public void updateRecordByApplyIdAndClassIdAndDatabaseId(String apply_id, String data_class_id, String
             database_id, Integer authorize, String cause) {
-        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = dataAuthorityRecordDao.findByApplyIdAndDataClassIdAndDatabaseId(apply_id, data_class_id, database_id);
+        List<DataAuthorityRecordEntity> dataAuthorityRecordEntities = null;
+//                dataAuthorityRecordDao.findByApplyIdAndDataClassIdAndDatabaseId(apply_id, data_class_id, database_id);
         if (dataAuthorityRecordEntities != null && dataAuthorityRecordEntities.size() > 0) {
             for (DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordEntities) {
                 mybatisQueryMapper.updateDataAuthorityRecord(dataAuthorityRecordEntity.getId(), authorize, cause);
@@ -471,8 +418,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         paraMap.put("dataClassId", dataClassId);
         //删除前查询是否存在
         try {
-            mybatisQueryMapper.delDataAuthorityByApplyId(paraMap);
-            mybatisQueryMapper.clearUselessApply();
+            mybatisModifyMapper.delDataAuthorityByApplyId(paraMap);
+            mybatisModifyMapper.clearUselessApply();
             result.put("returnCode", "0");
             result.put("returnMessage", "删除成功。");
         } catch (Exception e) {
@@ -629,7 +576,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public void deleteByDataClassId(String dataclassId) {
-        this.dataAuthorityRecordDao.deleteByDataClassId(dataclassId);
+//        this.dataAuthorityRecordDao.deleteByDataClassId(dataclassId);
     }
 
     @Override

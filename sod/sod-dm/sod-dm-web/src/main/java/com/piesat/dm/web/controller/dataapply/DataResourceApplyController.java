@@ -45,9 +45,9 @@ public class DataResourceApplyController {
     @GetMapping("/findAuthorityList")
     @RequiresPermissions("dm:resourceApply:findAuthorityList")
     @ApiOperation(value = "查询资料被申请权限", notes = "查询资料被申请权限")
-    public ResultT<List<Map<String, Object>>> findAuthorityList(String dataclassId, String databaseId) {
+    public ResultT<List<Map<String, Object>>> findAuthorityList(String tableId) {
         ResultT<List<Map<String, Object>>> resultT = new ResultT<>();
-        List<Map<String, Object>> authorityList = this.dataResourceApplyService.findAuthorityList(dataclassId, databaseId);
+        List<Map<String, Object>> authorityList = this.dataResourceApplyService.findAuthorityList(tableId);
         resultT.setData(authorityList);
         return resultT;
     }
