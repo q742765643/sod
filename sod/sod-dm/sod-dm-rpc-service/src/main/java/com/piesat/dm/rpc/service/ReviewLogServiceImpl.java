@@ -59,6 +59,6 @@ public class ReviewLogServiceImpl extends BaseService<ReviewLogEntity> implement
 
     @Override
     public List<ReviewLogEntity> findByBindId(String bindId) {
-        return this.reviewLogDao.findByBindId(bindId);
+        return this.reviewLogDao.findByBindIdOrderByUpdateTimeAsc(bindId);
     }
 }

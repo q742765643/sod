@@ -19,5 +19,5 @@ public interface ReviewLogDao extends BaseDao<ReviewLogEntity> {
      * @param bindId
      * @return
      */
-    List<ReviewLogEntity> findByBindId(String bindId);
+    List<ReviewLogEntity> findByBindIdOrderByUpdateTimeAsc(String bindId);
 }

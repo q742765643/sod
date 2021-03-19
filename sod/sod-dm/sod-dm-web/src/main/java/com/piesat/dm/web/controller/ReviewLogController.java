@@ -42,6 +42,4 @@ public class ReviewLogController {
             return ResultT.failed(e.getMessage());
         }
     }
-
-
 }

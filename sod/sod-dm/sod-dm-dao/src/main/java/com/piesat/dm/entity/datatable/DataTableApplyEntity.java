@@ -3,9 +3,9 @@ package com.piesat.dm.entity.datatable;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author cwh
@@ -78,4 +78,13 @@ public class DataTableApplyEntity extends BaseEntity {
      */
     @Column(name = "remark", columnDefinition = "TEXT")
     private String remark;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name="table_id")
+    @OrderBy("serialNumber ASC")
+    private Set<TableColumnEntity> columns = new LinkedHashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name="table_id")
+    private Set<TableIndexEntity> tableIndexList = new LinkedHashSet<>();
 }

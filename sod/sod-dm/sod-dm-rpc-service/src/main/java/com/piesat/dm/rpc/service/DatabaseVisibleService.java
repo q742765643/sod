@@ -184,52 +184,53 @@ public class DatabaseVisibleService {
 
 
     public ResultT getTable(String bizUserId, String dataclassId) {
-        List<DataAuthorityRecordDto> dataAuthorityRecordList = new ArrayList<>();
-        List<DataAuthorityApplyDto> dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
-        List<DataClassDto> DataClassDtos = this.dataClassService.findByDataClassIdAndCreateBy(dataclassId, bizUserId);
-        for (int i = 0; i < DataClassDtos.size(); i++) {
-            DataClassDto dataClassDto = DataClassDtos.get(i);
-            List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
-            for (int j = 0; j < byDataClassId.size(); j++) {
-                DataClassAndTableEntity dataLogicEntity = byDataClassId.get(j);
-                DataTableInfoEntity dataTableInfo = this.dataTableDao.getOne(dataLogicEntity.getTableId());
-                DataAuthorityRecordDto d = new DataAuthorityRecordDto();
-                d.setDatabaseId(dataTableInfo.getDatabaseId());
-                d.setDataClassId(dataLogicEntity.getDataClassId());
-                dataAuthorityRecordList.add(d);
-            }
-        }
-        for (DataAuthorityApplyDto d : dataAuthorityApplyDto) {
-            dataAuthorityRecordList.addAll(d.getDataAuthorityRecordList());
-        }
-        DataClassDto byDataClassId = dataClassService.findByDataClassId(dataclassId);
-        JSONArray arr = new JSONArray();
-
-        for (DataAuthorityRecordDto d : dataAuthorityRecordList) {
-            if (d.getDataClassId().equals(dataclassId)) {
-                String databaseId = d.getDatabaseId();
-                SchemaDto dotById = schemaService.getDotById(databaseId);
-                List<DataClassAndTableEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDataClassId(d.getDataClassId());
-                for (DataClassAndTableEntity dl : byDatabaseIdAndDataClassId) {
-                    DataTableInfoDto dt = dataTableService.getDotById(dl.getTableId());
-                    JSONObject jo = new JSONObject();
-                    jo.put("TABLE_NAME", dotById.getSchemaName() + "." + dt.getTableName());
-                    jo.put("DATA_SERVICE_NAME", dt.getNameCn());
-                    jo.put("D_DATA_ID", byDataClassId.getDDataId());
-                    jo.put("STORAGE_TYPE", dt.getStorageType());
-                    JSONArray aaa = new JSONArray();
-                    JSONObject bbb = new JSONObject();
-                    bbb.put("SCHEMA_NAME", dotById.getSchemaName());
-                    bbb.put("DATABASE_ID", dotById.getDatabase().getId());
-                    bbb.put("DATABASE_NAME", dotById.getDatabase().getDatabaseName() + "(" + dotById.getSchemaNameCn() + ")");
-                    aaa.add(bbb);
-                    jo.put("DATABASE", aaa);
-                    arr.add(jo);
-                }
-
-            }
-        }
-        return ResultT.success(arr);
+//        List<DataAuthorityRecordDto> dataAuthorityRecordList = new ArrayList<>();
+//        List<DataAuthorityApplyDto> dataAuthorityApplyDto = this.dataAuthorityApplyService.findByUserId(bizUserId);
+//        List<DataClassDto> DataClassDtos = this.dataClassService.findByDataClassIdAndCreateBy(dataclassId, bizUserId);
+//        for (int i = 0; i < DataClassDtos.size(); i++) {
+//            DataClassDto dataClassDto = DataClassDtos.get(i);
+//            List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassDto.getDataClassId());
+//            for (int j = 0; j < byDataClassId.size(); j++) {
+//                DataClassAndTableEntity dataLogicEntity = byDataClassId.get(j);
+//                DataTableInfoEntity dataTableInfo = this.dataTableDao.getOne(dataLogicEntity.getTableId());
+//                DataAuthorityRecordDto d = new DataAuthorityRecordDto();
+//                d.setDatabaseId(dataTableInfo.getDatabaseId());
+//                d.setDataClassId(dataLogicEntity.getDataClassId());
+//                dataAuthorityRecordList.add(d);
+//            }
+//        }
+//        for (DataAuthorityApplyDto d : dataAuthorityApplyDto) {
+//            dataAuthorityRecordList.addAll(d.getDataAuthorityRecordList());
+//        }
+//        DataClassDto byDataClassId = dataClassService.findByDataClassId(dataclassId);
+//        JSONArray arr = new JSONArray();
+//
+//        for (DataAuthorityRecordDto d : dataAuthorityRecordList) {
+//            if (d.getDataClassId().equals(dataclassId)) {
+//                String databaseId = d.getDatabaseId();
+//                SchemaDto dotById = schemaService.getDotById(databaseId);
+//                List<DataClassAndTableEntity> byDatabaseIdAndDataClassId = dataLogicDao.findByDataClassId(d.getDataClassId());
+//                for (DataClassAndTableEntity dl : byDatabaseIdAndDataClassId) {
+//                    DataTableInfoDto dt = dataTableService.getDotById(dl.getTableId());
+//                    JSONObject jo = new JSONObject();
+//                    jo.put("TABLE_NAME", dotById.getSchemaName() + "." + dt.getTableName());
+//                    jo.put("DATA_SERVICE_NAME", dt.getNameCn());
+//                    jo.put("D_DATA_ID", byDataClassId.getDDataId());
+//                    jo.put("STORAGE_TYPE", dt.getStorageType());
+//                    JSONArray aaa = new JSONArray();
+//                    JSONObject bbb = new JSONObject();
+//                    bbb.put("SCHEMA_NAME", dotById.getSchemaName());
+//                    bbb.put("DATABASE_ID", dotById.getDatabase().getId());
+//                    bbb.put("DATABASE_NAME", dotById.getDatabase().getDatabaseName() + "(" + dotById.getSchemaNameCn() + ")");
+//                    aaa.add(bbb);
+//                    jo.put("DATABASE", aaa);
+//                    arr.add(jo);
+//                }
+//
+//            }
+//        }
+//        return ResultT.success(arr);
+        return null;
     }
 
     public ResultT getTableInfo(String tableName) {

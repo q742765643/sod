@@ -4,9 +4,14 @@ import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLabelDefDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableApplyDto;
+import com.piesat.util.ResultT;
 import com.piesat.util.constant.GrpcConstant;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 表申请
@@ -41,4 +46,19 @@ public interface DataTableApplyService {
      * @return
      */
     List<DataTableApplyDto> all();
+
+    /**
+     * 分页查询
+     * @param pageForm
+     * @return
+     */
+    PageBean selectPageList(PageForm<Map<String,Object>> pageForm);
+
+    /**
+     * 审核
+     * @param dataTableApplyDto
+     * @return
+     */
+    ResultT review(DataTableApplyDto dataTableApplyDto);
+
 }
