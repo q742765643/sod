@@ -351,10 +351,10 @@
 
     <select id="pageApplyData" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT A.*,A.ID TABLE_ID,B.NICK_NAME,B.APP_NAME,D.SCHEMA_NAME,D.SCHEMA_NAME_CN,E.DATABASE_NAME
-            FROM T_SOD_DATA_TABLE_APPLY A
-            LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
-            LEFT JOIN T_SOD_DATABASE D ON A."DATABASE_ID" = D."ID"
-            LEFT JOIN T_SOD_DATABASE_DEFINE E ON D."DATABASE_DEFINE_ID" = E."ID"
+        FROM T_SOD_DATA_TABLE_APPLY A
+        LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
+        LEFT JOIN T_SOD_DATABASE D ON A."DATABASE_ID" = D."ID"
+        LEFT JOIN T_SOD_DATABASE_DEFINE E ON D."DATABASE_DEFINE_ID" = E."ID"
         <where>
             <if test="map.dta.status != null and map.dta.status != ''">
                 A.STATUS = #{map.dta.status}
@@ -372,6 +372,35 @@
                 AND B.APP_NAME LIKE '%${map.dta.appName}%'
             </if>
         </where>
+    </select>
+
+    <!--用户申请的文件索引库的资料-->
+    <select id="getFileDirsInfo" resultType="java.util.Map" parameterType="java.util.Map">
+        select DISTINCT
+        sdc.class_name,
+        a.d_data_id,
+        sdn.dir_norm
+        from
+        T_SOD_DATA_CLASS a left join
+        T_SOD_DATACLASS_TABLE dl on a.data_class_id = dl.data_class_id
+        left join t_sod_dataclass_norm sdn on dl.data_class_id = sdn.id
+        left join T_SOD_DATA_TABLE_INFO dt on dt.id = dl.table_id or dt.id = dl.sub_table_id
+        left join t_sod_database sdb on dt.database_id = sdb.id
+        left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
+        left join t_sod_data_class sdc on substr(a.data_class_id, 1, 1) = sdc.data_class_id
+        <where>
+            sdd.id = 'FIDB'
+            <if test="map.className != null and map.className  != ''">
+               AND sdc.class_name LIKE '%${map.className}%'
+            </if>
+            <if test="map.dataId != null and map.dataId  != ''">
+                AND sdc.class_name LIKE '%${map.dataId}%'
+            </if>
+            <if test="map.pId != null and map.pId  != ''">
+                AND substr(a.data_class_id, 1, 1) = #{map.pId}
+            </if>
+        </where>
+
     </select>
 
 </mapper>

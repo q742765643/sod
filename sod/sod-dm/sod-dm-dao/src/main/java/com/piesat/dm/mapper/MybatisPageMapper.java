@@ -57,6 +57,13 @@ public interface MybatisPageMapper {
     List<Map<String, Object>> getPageDataclassInfo(@Param("map") Map<String, Object> map);
 
     /**
+     * 分页查询索引库目录
+     * @param map
+     * @return
+     */
+    List<Map<String, Object>> getFileDirsInfo(@Param("map") Map<String, String> map);
+
+    /**
      * 查询数据申请
      * @param map
      * @return

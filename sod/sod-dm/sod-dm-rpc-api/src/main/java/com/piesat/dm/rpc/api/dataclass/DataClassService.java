@@ -113,6 +113,13 @@ public interface DataClassService {
     PageBean getPageDataclassInfo(PageForm<Map<String, Object>> pageForm);
 
     /**
+     * 分页查询索引库目录
+     * @param pageForm
+     * @return
+     */
+    PageBean getFileDirsInfo(PageForm<Map<String, String>> pageForm);
+
+    /**
      * 逻辑删除
      * @param dataClassId
      * @return
