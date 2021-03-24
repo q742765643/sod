@@ -111,7 +111,7 @@
         from t_sod_newdata_apply a
         left join TAB_OMIN_CM_CC_DATUMTYPEINFO b on a.d_data_id = b.c_datum_code
         left join TAB_OMIN_CM_CC_DATUMTYPEINFO cc on SUBSTR(a.D_DATA_ID,1,1) = cc.c_datum_code
-        left join t_sod_logic_define c on a.logic_id = c.logic_flag
+        left join T_SOD_LOGIC_DEFINE c on a.logic_id = c.logic_flag
         left join T_SOD_USER d on a.user_id = d.user_name and user_type='11'
         left join T_SOD_DATACLASS_TABLE e on a.data_class_id = e.data_class_id
         left join T_SOD_ADVANCED_CONFIG f on e.table_id=f.table_id
@@ -359,7 +359,7 @@
     </select>
 
     <select id="getPageAuthorityDataApplyFlow" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT A.*,B.NICK_NAME,B.APP_NAME,B.DEPT_NAME,B.TUTOR_NAME,B.TUTOR_PHONE,B.PHONENUMBER,B.LEGAL_UNITS FROM
+        SELECT A.*,B.NICK_NAME,B.APP_NAME,B.DEPT_NAME,B.TUTOR_NAME,B.TUTOR_PHONE,B.PHONENUMBER,B.LEGAL_UNITS,B.BIZ_TYPE FROM
         T_SOD_DATA_AUTHORITY_APPLY_FLOW A LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
         <where>
             <if test="map.userId != null and map.userId != ''">

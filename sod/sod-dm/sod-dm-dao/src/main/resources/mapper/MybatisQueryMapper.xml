@@ -1301,10 +1301,6 @@
         <if test="userId != null and userId != ''">
             where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
         </if>
-        group by
-        t1.data_class_id,t4.id,
-        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
-        t3.schema_name,t3.id,t1.is_access,t5.table_name
         order by
         dataName asc
     </select>

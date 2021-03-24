@@ -389,7 +389,6 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataLogicDao.deleteByDataClassId(dataClassId);
         this.dataClassDao.deleteByDataClassId(dataClassId);
         this.databaseSpecialReadWriteService.deleteByDataClassId(dataClassId);
-        this.dataAuthorityApplyService.deleteByDataClassId(dataClassId);
         if (dataClass != null) {
             List<NewdataApplyDto> newDataApplyDtoList = this.newdataApplyService.findByDataClassIdAndUserId(dataClassId, dataClass.getCreateBy());
             if (newDataApplyDtoList != null) {

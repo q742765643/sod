@@ -575,8 +575,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    public void deleteByDataClassId(String dataclassId) {
-//        this.dataAuthorityRecordDao.deleteByDataClassId(dataclassId);
+    public void deleteByTableId(String tableId) {
+        this.dataAuthorityRecordDao.deleteByTableId(tableId);
     }
 
     @Override
