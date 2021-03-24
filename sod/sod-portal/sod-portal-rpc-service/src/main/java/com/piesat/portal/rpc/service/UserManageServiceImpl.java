@@ -1,13 +1,14 @@
 package com.piesat.portal.rpc.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.util.StringUtil;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
-import com.piesat.common.utils.IdUtils;
-import com.piesat.common.utils.MD5Util;
-import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.*;
+import com.piesat.common.utils.http.HttpClientUtil;
+import com.piesat.common.utils.http.HttpUtils;
 import com.piesat.portal.dao.UserManageDao;
 import com.piesat.portal.dao.UserRoleManageDao;
 import com.piesat.portal.entity.UserManageEntity;
@@ -22,15 +23,24 @@ import com.piesat.portal.rpc.mapstruct.UserManageMapstruct;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service("userManageService")
 public class UserManageServiceImpl extends BaseService<UserManageEntity> implements UserManageService {
+
+    @Value("${sysLevel.value:P}")
+    private String sysLevel;
+    @Value("${unifyAuthorize.url}")
+    private String uaUrl;
+    @Value("${unifyAuthorize.password}")
+    private String uaPassword;
 
     @Autowired
     private UserManageDao userManageDao;
@@ -74,22 +84,73 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         PageBean pageBean=this.getPage(specificationBuilder.generateSpecification(),pageForm,null);
         List<UserManageEntity> userManageEntities = (List<UserManageEntity>) pageBean.getPageData();
         List<UserManageDto> userManageDtos = userManageMapstruct.toDto(userManageEntities);
-        //查询部门信息
-        List<DepartManageDto> departManageDtos = departManageService.findAllDept();
-
-        if(userManageDtos != null && userManageDtos.size()>0 && departManageDtos != null && departManageDtos.size()>0){
-            for(UserManageDto userManage : userManageDtos){
-                for(DepartManageDto departManageDto : departManageDtos){
-                    if(departManageDto.getDeptunicode().equals(userManage.getDeptunicode())){
-                        userManage.setDeptName(departManageDto.getDeptname());
-                        break;
+        if("P".equals(sysLevel)){
+            //查询部门信息
+            List<DepartManageDto> departManageDtos = departManageService.findAllDept();
+            if(userManageDtos != null && userManageDtos.size()>0 && departManageDtos != null && departManageDtos.size()>0){
+                for(UserManageDto userManage : userManageDtos){
+                    for(DepartManageDto departManageDto : departManageDtos){
+                        if(departManageDto.getDeptunicode().equals(userManage.getDeptunicode())){
+                            userManage.setDeptName(departManageDto.getDeptname());
+                            break;
+                        }
+                    }
+                }
+            }
+        }else{
+            //查询用户详细信息
+            if(userManageDtos != null && userManageDtos.size()>0){
+                for(UserManageDto userManage : userManageDtos){
+                    if (StringUtils.isNotEmpty(uaUrl) && StringUtils.isNotEmpty(uaPassword)) {
+                        JSONObject jsonObject = getPortalUserInfo(userManage.getId());
+                        userManage.setPhone("");
+                        userManage.setPhone((String) jsonObject.get("mobile"));
+                        String namepath = (String) jsonObject.get("namepath");
+                        if(namepath != null && namepath.lastIndexOf("/") == namepath.length()-1){
+                            //eg:中国气象局/减灾司/
+                            namepath = namepath.substring(0,namepath.length()-1);
+                            namepath = namepath.substring(namepath.lastIndexOf("/")+1);
+                            userManage.setDeptName(namepath);
+                        }
                     }
                 }
             }
         }
+
         pageBean.setPageData(userManageDtos);
         return pageBean;
     }
+
+
+    public JSONObject getPortalUserInfo(String userId){
+        JSONObject resultJsonObject = new JSONObject();
+        try{
+            String url = uaUrl + "/userservice/getUserInfo/getUserByOAID";
+
+            String message = "client_id=CMADAAS&uid="+userId;
+            //生成签名
+            String hash = SM3Utils.Encode(message);
+            //组装json
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("client_id", "CMADAAS");
+            jsonObject.put("uid", userId);
+            jsonObject.put("signature", hash);
+            String jsonStr = jsonObject.toString();
+            //生成请求报文
+            String s1 = SM4Utils.encrypt(jsonStr,uaPassword);
+
+            HashMap<String, String> headers= new HashMap<String, String>();
+            headers.put("client_id","CMADAAS");
+            String result = HttpClientUtil.doPost(url,s1,headers);
+
+            String userInfo = SM4Utils.decrypt(result,uaPassword);
+            resultJsonObject = JSONObject.parseObject(userInfo);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return resultJsonObject;
+    }
+
 
     @Override
     public UserManageDto getDotById(String id) {

@@ -145,6 +145,11 @@ cloudDeploy:
   cloudName: multifort
   cloudPassword: Admin#11
 
+#统一认证平台
+unifyAuthorize:
+  url: http://10.40.25.45:8080
+  password: f969ba3a158e48de8dc1f5585d387b4f
+
 
 serverfile:
   dbfile: /space/cmadaas/sod/src/sod/file/upload/dbfile

@@ -114,5 +114,11 @@ public class UserManageDto extends BaseDto {
      */
     String openType;
 
+    /**
+     * 省局登录授权：0没授权   1已授权
+     * 已授权用户可以用用户名密码登录
+     */
+    String loginAutho;
+
     private String[] roleIds;
 }

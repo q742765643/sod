@@ -140,6 +140,13 @@ public class UserManageEntity extends BaseEntity {
     @Column(name="OPEN_TYPE")
     String openType;
 
+    /**
+     * 省局登录授权：0没授权   1已授权
+     * 已授权用户可以用用户名密码登录
+     */
+    @Column(name="LOGIN_AUTHO")
+    String loginAutho;
+
     /** 角色组 */
     @Transient
     private String[] roleIds;
