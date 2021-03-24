@@ -8,6 +8,7 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.dm.dao.datatable.GridAreaDao;
 import com.piesat.dm.entity.datatable.GridAreaEntity;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.datatable.GridAreaService;
 import com.piesat.dm.rpc.dto.datatable.GridAreaDto;
@@ -39,6 +40,8 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
     private GridAreaMapper gridAreaMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private MybatisPageMapper mybatisPageMapper;
 
     @Override
     public BaseDao<GridAreaEntity> getBaseDao() {
@@ -74,7 +77,7 @@ public class GridAreaServiceImpl extends BaseService<GridAreaEntity> implements 
     @Override
     public PageBean list(PageForm<Map<String,String>> pageForm, String dataServiceId) {
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        List<GridAreaEntity> lists = mybatisQueryMapper.getAreaByPage(pageForm.getT());
+        List<GridAreaEntity> lists = mybatisPageMapper.getAreaByPage(pageForm.getT());
 
         PageInfo<GridAreaEntity> pageInfo = new PageInfo<>(lists);
         //获取当前页数据

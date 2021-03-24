@@ -7,6 +7,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.dm.dao.AdvancedConfigDao;
 import com.piesat.dm.entity.AdvancedConfigEntity;
 import com.piesat.dm.mapper.MybatisModifyMapper;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
@@ -36,6 +37,8 @@ public class AdvancedConfigServiceImpl extends BaseService<AdvancedConfigEntity>
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
+    private MybatisPageMapper mybatisPageMapper;
+    @Autowired
     private MybatisModifyMapper mybatisModifyMapper;
     @Autowired
     private DataClassService dataClassService;
@@ -48,7 +51,7 @@ public class AdvancedConfigServiceImpl extends BaseService<AdvancedConfigEntity>
     @Override
     public PageBean selectPageList(PageForm<Map<String,String>> pageForm) {
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        List<Map<String,Object>> lists = mybatisQueryMapper.selectStorageConfigurationPageList(pageForm.getT());//自定义的接口
+        List<Map<String,Object>> lists = mybatisPageMapper.selectStorageConfigurationPageList(pageForm.getT());//自定义的接口
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
         //获取当前页数据
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
@@ -58,7 +61,7 @@ public class AdvancedConfigServiceImpl extends BaseService<AdvancedConfigEntity>
     @Override
     public PageBean storageFieldList(PageForm<Map<String,String>> pageForm) {
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        List<Map<String,Object>> lists = mybatisQueryMapper.storageFieldList(pageForm.getT());//自定义的接口
+        List<Map<String,Object>> lists = mybatisPageMapper.storageFieldList(pageForm.getT());//自定义的接口
         PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
         //获取当前页数据
         PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
@@ -75,7 +78,7 @@ public class AdvancedConfigServiceImpl extends BaseService<AdvancedConfigEntity>
     @Override
     public Map<String, Object> exportTable(Map<String, String> pMap) {
         Map<String, Object> resultMap = new HashMap<>();
-        List<Map<String,Object>> list = mybatisQueryMapper.selectStorageConfigurationPageList(pMap);
+        List<Map<String,Object>> list = mybatisPageMapper.selectStorageConfigurationPageList(pMap);
         ArrayList<String> headList = new ArrayList<>();
         headList.add("资料名称");
         headList.add("四级编码");

@@ -8,6 +8,7 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.dataclass.DataOnlineTimeDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.dataclass.DataOnlineTimeEntity;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataclass.DataOnlineTimeService;
 import com.piesat.dm.rpc.dto.dataclass.DataOnlineTimeDto;
@@ -43,6 +44,9 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
     private MybatisQueryMapper mybatisQueryMapper;
 
     @Autowired
+    private MybatisPageMapper mybatisPageMapper;
+
+    @Autowired
     private DataTableDao dataTableDao;
 
     @Autowired
@@ -73,7 +77,7 @@ public class DataOnlineTimeServiceImpl extends BaseService<DataOnlineTimeEntity>
         PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
 
         List<DataOnlineTimeEntity> dataOnlineTimeEntities = this.getAll();
-        List<Map<String,Object>> lists = mybatisQueryMapper.onLineList(pageForm.getT());
+        List<Map<String,Object>> lists = mybatisPageMapper.onLineList(pageForm.getT());
         for(int i=0; i<lists.size();i++){
             Map<String, Object> stringObjectMap = lists.get(i);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

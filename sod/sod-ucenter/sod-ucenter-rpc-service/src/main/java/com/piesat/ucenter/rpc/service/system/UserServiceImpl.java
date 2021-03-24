@@ -405,8 +405,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                     JSONObject jsonObject1 = applyData.getJSONObject(i);
                     String databaseId = jsonObject1.getString("databaseId");
                     String dataClassId = jsonObject1.getString("dataClassId");
-                    dar.setDatabaseId(databaseId);
-                    dar.setDataClassId(dataClassId);
+//                    dar.setDatabaseId(databaseId);
+//                    dar.setDataClassId(dataClassId);
                     dar.setApplyAuthority(1);
                     dar.setCreateTime(new Date());
                     list.add(dar);
@@ -537,8 +537,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                         JSONObject jsonObject1 = applyData.getJSONObject(i);
                         String databaseId = jsonObject1.getString("databaseId");
                         String dataClassId = jsonObject1.getString("dataClassId");
-                        dar.setDatabaseId(databaseId);
-                        dar.setDataClassId(dataClassId);
+//                        dar.setDatabaseId(databaseId);
+//                        dar.setDataClassId(dataClassId);
                         dar.setApplyAuthority(1);
                         dar.setCreateTime(new Date());
                         list.add(dar);

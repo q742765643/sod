@@ -44,7 +44,7 @@ public class DataResourceApplyServiceImpl extends BaseService<DataResourceApplyE
     }
 
     @Override
-    public List<Map<String, Object>> findAuthorityList(String dataclassId, String databaseId) {
-        return this.mybatisQueryMapper.findAuthorityList(dataclassId,databaseId);
+    public List<Map<String, Object>> findAuthorityList(String tableId) {
+        return this.mybatisQueryMapper.findAuthorityList(tableId);
     }
 }

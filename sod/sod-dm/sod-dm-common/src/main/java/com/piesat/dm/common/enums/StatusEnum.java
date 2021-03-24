@@ -21,11 +21,24 @@ public enum StatusEnum {
         this.status = status;
     }
 
-    public static StatusEnum match(Integer code) {
+    public static StatusEnum match(Object code) {
+        try {
+            if (code != null) {
+                for (StatusEnum item : StatusEnum.values()) {
+                    if (item.getCode().equals(Integer.valueOf(code.toString()))) {
+                        return item;
+                    }
+                }
+            }
+        }catch (Exception e){}
+        return null;
+    }
+
+    public static String matchStatus(Integer code) {
         if (code != null) {
             for (StatusEnum item : StatusEnum.values()) {
                 if (item.getCode().equals(code)) {
-                    return item;
+                    return item.getStatus();
                 }
             }
         }

@@ -3,6 +3,8 @@ package com.piesat.dm.rpc.dto.datatable;
 import com.piesat.util.BaseDto;
 import lombok.Data;
 
+import java.util.LinkedHashSet;
+
 /**
  * @author cwh
  * @date 2020年 12月01日 15:19:19
@@ -10,6 +12,8 @@ import lombok.Data;
 @Data
 public class DataTableApplyDto extends BaseDto {
     private String databaseId;
+
+    private String databasePid;
 
     /**
      * 表存储类型
@@ -47,7 +51,7 @@ public class DataTableApplyDto extends BaseDto {
     private String userId;
 
     /**
-     * 状态
+     * 状态(01：待审核，02，通过；03 拒绝)
      */
     private String status;
 
@@ -55,4 +59,15 @@ public class DataTableApplyDto extends BaseDto {
      * 描述
      */
     private String remark;
+
+    /**
+     * 审核意见
+     */
+    private String review;
+
+    private String appName;
+
+    private LinkedHashSet<TableColumnDto> columns;
+
+    private LinkedHashSet<TableIndexDto> tableIndexList;
 }

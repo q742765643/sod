@@ -5,6 +5,8 @@ import com.piesat.dm.entity.special.DatabaseSpecialAccessEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * mybatis修改Mapper
  *
@@ -18,4 +20,8 @@ public interface MybatisModifyMapper {
     void modifyDatabaseSpecialReadWrite(DatabaseSpecialReadWriteEntity databaseSpecialReadWriteEntity);
 
     void updateSpecialAccess(DatabaseSpecialAccessEntity databaseSpecialAccessEntity);
+
+    void clearUselessApply();
+
+    void delDataAuthorityByApplyId(Map<String, Object> paraMap);
 }

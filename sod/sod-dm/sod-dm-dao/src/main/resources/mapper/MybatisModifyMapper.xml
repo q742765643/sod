@@ -75,5 +75,23 @@
         </set>
         where  sdb_id = #{sdbId} and user_id = #{userId}
     </update>
+    <!-- 删除申请表中数据 -->
+    <delete id="clearUselessApply">
+        delete
+        from T_SOD_DATA_AUTHORITY_APPLY_FLOW a
+        where not exists(select 1 from T_SOD_DATA_AUTHORITY_APPLY b where a.id = b.apply_id)
+    </delete>
 
+
+    <!-- 根据id删除资料申请记录 -->
+    <delete id="delDataAuthorityByApplyId" parameterType="java.util.Map">
+        delete from T_SOD_DATA_AUTHORITY_APPLY
+        where apply_id = #{applyId}
+        <if test="dataBaseId != null and dataBaseId !=''">
+            and DATABASE_ID = #{dataBaseId}
+        </if>
+        <if test="dataClassId != null and dataClassId != ''">
+            and DATA_CLASS_ID = #{dataClassId}
+        </if>
+    </delete>
 </mapper>

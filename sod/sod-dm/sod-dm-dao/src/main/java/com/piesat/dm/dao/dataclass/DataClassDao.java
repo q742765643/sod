@@ -23,7 +23,7 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
 
     List<DataClassEntity> findByDataClassIdAndCreateBy(String dataclassId, String userId);
 
-    List<DataClassEntity> findByParentIdOrderByDataClassIdAsc(String parentId);
+    List<DataClassEntity> findByParentIdAndTypeOrderByDataClassIdAsc(String parentId,Integer type);
 
     List<DataClassEntity> findByParentIdOrderByDataClassIdDesc(String parentId);
 

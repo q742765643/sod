@@ -14,10 +14,14 @@ import java.util.List;
 @Data
 public class DataAuthorityApplyDto extends BaseDto {
 
+    private String flowId;
+
     /**
      * 申请用户id
      */
     private String userId;
+
+    private String appName;
 
     /**
      * 申请用户名
@@ -49,6 +53,8 @@ public class DataAuthorityApplyDto extends BaseDto {
      * 审核时间
      */
     private Date examineTime;
+
+    private String purpose;
 
     private List<DataAuthorityRecordDto> dataAuthorityRecordList;
 }
