@@ -104,13 +104,15 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
                     if (StringUtils.isNotEmpty(uaUrl) && StringUtils.isNotEmpty(uaPassword)) {
                         JSONObject jsonObject = getPortalUserInfo(userManage.getId());
                         userManage.setPhone("");
-                        userManage.setPhone((String) jsonObject.get("mobile"));
-                        String namepath = (String) jsonObject.get("namepath");
-                        if(namepath != null && namepath.lastIndexOf("/") == namepath.length()-1){
-                            //eg:中国气象局/减灾司/
-                            namepath = namepath.substring(0,namepath.length()-1);
-                            namepath = namepath.substring(namepath.lastIndexOf("/")+1);
-                            userManage.setDeptName(namepath);
+                        if(jsonObject != null){
+                            userManage.setPhone((String) jsonObject.get("mobile"));
+                            String namepath = (String) jsonObject.get("namepath");
+                            if(namepath != null && namepath.lastIndexOf("/") == namepath.length()-1){
+                                //eg:中国气象局/减灾司/
+                                namepath = namepath.substring(0,namepath.length()-1);
+                                namepath = namepath.substring(namepath.lastIndexOf("/")+1);
+                                userManage.setDeptName(namepath);
+                            }
                         }
                     }
                 }
