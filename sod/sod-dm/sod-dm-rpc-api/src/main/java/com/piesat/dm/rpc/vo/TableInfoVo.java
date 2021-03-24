@@ -24,6 +24,8 @@ public class TableInfoVo {
     private String className;
     private String classId;
     private String dataId;
+    private String userId;
+    private String onlyMy;
     public Map<String,Object> getMap(){
        return BeanMap.create(this);
     }

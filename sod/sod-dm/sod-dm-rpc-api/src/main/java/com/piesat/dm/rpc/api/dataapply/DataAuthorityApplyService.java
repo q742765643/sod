@@ -21,7 +21,7 @@ import java.util.Map;
 @GrpcHthtService(server = GrpcConstant.DM_SERVER, serialization = SerializeType.PROTOSTUFF)
 public interface DataAuthorityApplyService {
 
-    PageBean selectPageList(PageForm<DataAuthorityApplyDto> pageForm);
+    PageBean selectPageList(PageForm<Map<String, String>> pageForm);
 
     DataAuthorityApplyDto saveDto(DataAuthorityApplyDto dataAuthorityApplyDto);
 

@@ -8,6 +8,7 @@ import com.piesat.dm.rpc.api.dataclass.DataClassLabelService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.dataclass.DataClassUserService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.dto.ConsistencyCheckDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.service.GrpcService;
 import com.piesat.dm.rpc.vo.DataclassVo;
@@ -23,10 +24,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 资料分类
@@ -378,5 +376,23 @@ public class DataClassController {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @GetMapping("/fileDirsList")
+    @ApiOperation(value = "索引库目录条件分页查询", notes = "索引库目录条件分页查询")
+    public ResultT<PageBean> getFileDirsInfo(@RequestParam(value = "className", defaultValue = "") String className,
+                                             @RequestParam(value = "dataId", defaultValue = "") String dataId,
+                                             @RequestParam(value = "pId", defaultValue = "") String pId,
+                                             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        ResultT<PageBean> resultT = new ResultT<>();
+        Map<String,String> m = new HashMap<>();
+        m.put("className",className);
+        m.put("dataId",dataId);
+        m.put("pId",pId);
+        PageForm<Map<String,String>> pageForm = new PageForm<>(pageNum, pageSize, m);
+        PageBean pageBean = this.dataClassService.getFileDirsInfo(pageForm);
+        resultT.setData(pageBean);
+        return resultT;
     }
 }

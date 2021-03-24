@@ -22,6 +22,7 @@ import com.piesat.dm.dao.datatable.TableIndexDao;
 import com.piesat.dm.entity.database.SchemaEntity;
 import com.piesat.dm.entity.dataclass.DataClassBaseInfoEntity;
 import com.piesat.dm.entity.dataclass.DataClassEntity;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.AdvancedConfigService;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
@@ -77,6 +78,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DataLogicService dataLogicService;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private MybatisPageMapper mybatisPageMapper;
     @Autowired
     private TableColumnDao tableColumnDao;
     @Autowired
@@ -489,7 +492,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public List<DataClassDto> findAllCategory() {
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdAsc("0");
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdAsc("0",1);
         return this.dataClassMapper.toDto(dataClassIdAsc);
     }
 
@@ -706,7 +709,15 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     @Override
     public PageBean getPageDataclassInfo(PageForm<Map<String, Object>> pageForm) {
 //        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
-        List<Map<String, Object>> lists = mybatisQueryMapper.getPageDataclassInfo(pageForm.getT());
+        List<Map<String, Object>> lists = mybatisPageMapper.getPageDataclassInfo(pageForm.getT());
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
+        return pageBean;
+    }
+
+    @Override
+    public PageBean getFileDirsInfo(PageForm<Map<String, String>> pageForm) {
+        List<Map<String, Object>> lists = mybatisPageMapper.getFileDirsInfo(pageForm.getT());
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
         return pageBean;

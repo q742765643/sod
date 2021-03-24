@@ -16,14 +16,9 @@ public class DataAuthorityRecordDto extends BaseDto {
     private String applyId;
 
     /**
-     * 存储编码
+     * 表id
      */
-    private String dataClassId;
-
-    /**
-     * 物理库id
-     */
-    private String databaseId;
+    private String tableId;
 
     /**
      * 申请权限
@@ -42,12 +37,6 @@ public class DataAuthorityRecordDto extends BaseDto {
      * 当授权为2时需填写拒绝原因
      */
     private String cause;
-
-    /**
-     * 引用id
-     * 专题库引用资料记录引用专题库id
-     */
-    private String qtdbId;
 
 
     private String typeName;

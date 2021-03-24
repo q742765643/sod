@@ -240,7 +240,8 @@
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = F.id) CLEAR_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = F.id) BACKUP_ST,
         H.STORAGE_DEFINE_IDENTIFIER,H.SYNC_IDENTIFIER,H.CLEAN_IDENTIFIER,H.MOVE_IDENTIFIER,
-        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID,A.ID TABLE_ID
+        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID,A.ID TABLE_ID,
+        AG.APPLY_AUTHORITY,AG.AUTHORIZE,AG.ID AUTHORITY_ID
         FROM T_SOD_DATA_TABLE_INFO A
         LEFT JOIN T_SOD_DICT_DATA E ON A.STORAGE_TYPE = E.dict_value
         LEFT JOIN T_SOD_DATACLASS_TABLE B ON A.ID = B.TABLE_ID
@@ -252,6 +253,7 @@
         LEFT JOIN T_SOD_ADVANCED_CONFIG H ON H.TABLE_ID=A.ID
         LEFT JOIN T_SOD_DATA_CLASS_LABEL G ON G.DATA_CLASS_ID = C.DATA_CLASS_ID
         LEFT JOIN T_SOD_DICT_DATA HH ON (G.LABEL_KEY = HH.DICT_VALUE AND HH.DICT_TYPE = 'dataclass_label')
+        LEFT JOIN T_SOD_DATA_AUTHORITY_APPLY AG ON A.ID = AG.TABLE_ID
         <where>
             A.table_type != 'K' AND (A.DEL_FLAG <![CDATA[ <> ]]> 2 OR A.DEL_FLAG IS NULL)
             AND (C.DEL_FLAG <![CDATA[ <> ]]> 2 OR C.DEL_FLAG IS NULL)
@@ -282,19 +284,27 @@
             <if test="map.dataId != null and map.dataId  != ''">
                 AND C.D_DATA_ID LIKE '%${map.dataId}%'
             </if>
+            <if test="map.onlyMy == '1'">
+                AND A.USER_ID = #{map.userId}
+            </if>
+            <if test="map.userId != null and map.userId  != '' and map.onlyMy  == '0'">
+                AND (A.USER_ID = #{map.userId} OR EXISTS
+                (SELECT TABLE_ID FROM T_SOD_DATA_AUTHORITY_APPLY WHERE TABLE_ID = A.ID AND USER_ID = #{map.userId}))
+            </if>
         </where>
         ORDER BY A.TABLE_NAME,A.DATABASE_ID,A.STORAGE_TYPE
     </select>
 
     <select id="getPageDataclassInfo" parameterType="java.util.Map" resultType="java.util.Map">
         SELECT DISTINCT A.CLASS_NAME, A.D_DATA_ID, A.DATA_CLASS_ID, C.TABLE_NAME,C.DATABASE_ID , E.DATABASE_NAME,
-        D.DATABASE_CLASSIFY,
+        D.DATABASE_CLASSIFY,C.USER_ID,
         D.SCHEMA_NAME_CN, G.ID, G.NICK_NAME, C.STORAGE_TYPE,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'move_database' AND dict_value = F.id) MOVE_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'clear_database' AND dict_value = F.id) CLEAR_ST,
         (SELECT 1 from t_sod_dict_data WHERE dict_type = 'backup_database' AND dict_value = F.id) BACKUP_ST,
         H.STORAGE_DEFINE_IDENTIFIER,H.SYNC_IDENTIFIER,H.CLEAN_IDENTIFIER,H.MOVE_IDENTIFIER,
-        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID,C.ID TABLE_ID
+        H.BACKUP_IDENTIFIER,H.ARCHIVING_IDENTIFIER,H.SYNC_ID,H.CLEAR_ID,H.MOVE_ID,H.BACKUP_ID,H.ID,C.ID TABLE_ID,
+        G.APPLY_AUTHORITY,G.AUTHORIZE,G.ID AUTHORITY_ID
         FROM T_SOD_DATA_CLASS A
         LEFT JOIN T_SOD_DATACLASS_TABLE B ON A."DATA_CLASS_ID" = B."DATA_CLASS_ID"
         LEFT JOIN T_SOD_DATA_TABLE_INFO C ON B."TABLE_ID" = C."ID"
@@ -303,6 +313,7 @@
         LEFT JOIN T_SOD_DATABASE_SPECIAL F ON D."TDB_ID" = F."ID"
         LEFT JOIN T_SOD_USER G ON F."USER_ID" = G."WEB_USERID"
         LEFT JOIN T_SOD_ADVANCED_CONFIG H ON C."ID" = H."TABLE_ID"
+        LEFT JOIN T_SOD_DATA_AUTHORITY_APPLY G ON C.ID = G.TABLE_ID
         <where>
             A."TYPE" = 2 AND (A.DEL_FLAG <![CDATA[ <> ]]> 2 OR A.DEL_FLAG IS NULL)
             AND (C.DEL_FLAG <![CDATA[ <> ]]> 2 OR C.DEL_FLAG IS NULL)
@@ -336,12 +347,20 @@
             <if test="map.tableName != null and map.tableName  != ''">
                 AND C.TABLE_NAME LIKE '%${map.tableName}%'
             </if>
+            <if test="map.onlyMy == '1'">
+                  AND C.USER_ID = #{map.userId}
+            </if>
+            <if test="map.userId != null and map.userId  != '' and map.onlyMy  == '0'">
+                AND (C.USER_ID = #{map.userId} OR EXISTS
+                (SELECT TABLE_ID FROM T_SOD_DATA_AUTHORITY_APPLY WHERE TABLE_ID = C.ID AND USER_ID = #{map.userId}))
+            </if>
         </where>
         ORDER BY A.DATA_CLASS_ID,C.DATABASE_ID,C.STORAGE_TYPE
     </select>
 
     <select id="getPageAuthorityDataApplyFlow" parameterType="java.util.Map" resultType="java.util.Map">
-        SELECT A.*,B.NICK_NAME FROM T_SOD_DATA_AUTHORITY_APPLY_FLOW A LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
+        SELECT A.*,B.NICK_NAME,B.APP_NAME,B.DEPT_NAME,B.TUTOR_NAME,B.TUTOR_PHONE,B.PHONENUMBER,B.LEGAL_UNITS FROM
+        T_SOD_DATA_AUTHORITY_APPLY_FLOW A LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
         <where>
             <if test="map.userId != null and map.userId != ''">
                 A.USER_ID = #{userId}
@@ -391,7 +410,7 @@
         <where>
             sdd.id = 'FIDB'
             <if test="map.className != null and map.className  != ''">
-               AND sdc.class_name LIKE '%${map.className}%'
+                AND sdc.class_name LIKE '%${map.className}%'
             </if>
             <if test="map.dataId != null and map.dataId  != ''">
                 AND sdc.class_name LIKE '%${map.dataId}%'

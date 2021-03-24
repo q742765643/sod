@@ -10,6 +10,7 @@ import com.piesat.dm.dao.dataapply.NewdataApplyDao;
 import com.piesat.dm.dao.dataapply.NewdataTableColumnDao;
 import com.piesat.dm.entity.dataapply.NewdataApplyEntity;
 import com.piesat.dm.entity.dataapply.NewdataTableColumnEntity;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.*;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
@@ -76,6 +77,8 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
     @Autowired
+    private MybatisPageMapper mybatisPageMapper;
+    @Autowired
     private NewdataTableColumnDao newdataTableColumnDao;
     @Autowired
     private NewdataTableColumnMapper newdataTableColumnMapper;
@@ -94,9 +97,9 @@ public class NewdataApplyServiceImpl extends BaseService<NewdataApplyEntity> imp
         Object status = pageForm.getT().get("status");
         List<Map<String,Object>> lists = null;
         if (status.equals(1)){
-            lists = mybatisQueryMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
+            lists = mybatisPageMapper.selectNewdataApplyPageList(pageForm.getT());//自定义的接口
         }else {
-            lists = mybatisQueryMapper.selectDataApplyPageList(pageForm.getT());//自定义的接口
+            lists = mybatisPageMapper.selectDataApplyPageList(pageForm.getT());//自定义的接口
             for (Map<String,Object> m:lists ) {
                 m.put("LOGIC_ID",m.get("R_LOGIC_ID"));
             }

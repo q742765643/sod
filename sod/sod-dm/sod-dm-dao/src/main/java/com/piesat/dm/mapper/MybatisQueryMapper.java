@@ -28,10 +28,6 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getDataLogicByDatabaseId(String databaseId);
 
-    List<Map<String, Object>> selectStorageConfigurationPageList(@Param("map") Map<String, String> map);
-
-    List<Map<String, Object>> storageFieldList(@Param("map") Map<String, String> map);
-
     void updateStorageConfigurationStatus(@Param("id") String id, @Param("column") String column, @Param("value") String value);
 
     List<Map<String, Object>> findStorageConfigurationByDataClassId(@Param("dataClassId") String dataClassId);
@@ -47,20 +43,12 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId") String databaseId, @Param("tableName") String tableName);
 
 
-    List<Map<String, Object>> selectNewdataApplyPageList(@Param("map") Map<String, Object> map);
-    List<Map<String, Object>> selectDataApplyPageList(@Param("map") Map<String, Object> map);
 
     List<Map<String, Object>> queryNewdataApplyByApplyId(@Param("id") String id);
 
     List<Map<String, Object>> querySpecialByUserIdAndUseStatus(@Param("userId")String userId, @Param("useStatus")String useStatus);
 
-    /**
-     * 在线时间检索条件分页查询
-     *
-     * @param map
-     * @return
-     */
-    List<Map<String, Object>> onLineList(@Param("map") Map<String, String> map);
+
 
     List<Map<String, Object>> getLogicClassTree();
 
@@ -148,21 +136,13 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> findByUserIdAndDatabaseDefineId2(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
 
     List<Map<String, Object>> getSqlList(@Param("databaseId") String databaseId, @Param("dataClassIds") String dataClassIds);
-	/**
-     * 查询专题库资料列表
-     * @param map
-     * @return
-     */
-    List<Map<String, Object>> getDatabaseSpecialReadWriteList(@Param("map")Map<String,Object> map);
+
     List<Map<String, Object>> queryTableBylogics(List<String> logics);
 
     List<Map<String, Object>> getGroupConcat(List<String> logics);
 
     List<Map<String, Object>> getDataAuthorityList(Map<String, Object> paraMap);
 
-    void delDataAuthorityByApplyId(Map<String, Object> paraMap);
-
-    void clearUselessApply();
 
     List<Map<String, Object>> getDataCategory();
 
@@ -227,8 +207,6 @@ public interface MybatisQueryMapper {
 
     List<Map<String,Object>>  getByDatabaseDefineId(@Param("id")String id);
 
-    List<GridAreaEntity> getAreaByPage(@Param("map") Map<String, String> map);
-
     List<Map<String,Object>>  getApplyedRecodeFileDataInfo(@Param("userId") String userId);
 
     List<Map<String,Object>> findAllOnlineInfo();
@@ -237,27 +215,15 @@ public interface MybatisQueryMapper {
 
     List<Map<String,Object>> onLineTimeByClassId(@Param("dataClassId")String dataClassId);
 
-    /**
-     * 分页条件查询表信息
-     * @param map
-     * @return
-     */
-    List<Map<String, Object>> getPageTableInfo(@Param("map") Map<String, Object> map);
 
-    /**
-     * 分页条件查询资料信息
-     * @param map
-     * @return
-     */
-    List<Map<String, Object>> getPageDataclassInfo(@Param("map") Map<String, Object> map);
+
 
     /**
      * 查询资料被申请权限
-     * @param dataclassId
-     * @param databaseId
+     * @param tableId
      * @return
      */
-    List<Map<String, Object>> findAuthorityList(@Param("dataclassId")String dataclassId,@Param("databaseId")String databaseId);
+    List<Map<String, Object>> findAuthorityList(@Param("tableId")String tableId);
 
     /**
      * 查询回收站

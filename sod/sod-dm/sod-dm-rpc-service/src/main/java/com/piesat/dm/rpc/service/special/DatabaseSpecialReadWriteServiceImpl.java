@@ -7,6 +7,7 @@ import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.dao.special.DatabaseSpecialReadWriteDao;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
+import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialReadWriteService;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
@@ -32,6 +33,8 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     private DatabaseSpecialReadWriteMapper databaseSpecialReadWriteMapper;
     @Autowired
     private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private MybatisPageMapper mybatisPageMapper;
     @Autowired
     private DatabaseSpecialServiceImpl databaseSpecialServiceImpl;
 
@@ -66,7 +69,7 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
                     paramMap.put("examineStatus", 1);
                 }
             }
-            List<Map<String, Object>> dataList = mybatisQueryMapper.getDatabaseSpecialReadWriteList(paramMap);
+            List<Map<String, Object>> dataList = mybatisPageMapper.getDatabaseSpecialReadWriteList(paramMap);
             if (dataList != null && dataList.size() > 0) {
                 for (Map<String, Object> map : dataList) {
                     DatabaseSpecialReadWriteDto dto = new DatabaseSpecialReadWriteDto();
@@ -157,20 +160,20 @@ public class DatabaseSpecialReadWriteServiceImpl extends BaseService<DatabaseSpe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteRecords(List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteDtos) {
-        if (databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size() > 0) {
-            for (int i = 0; i < databaseSpecialReadWriteDtos.size(); i++) {
-                Map<String, String> dataMap = new HashMap<String, String>();
-                dataMap.put("tdbId", databaseSpecialReadWriteDtos.get(i).getSdbId());
-                dataMap.put("dataClassId", databaseSpecialReadWriteDtos.get(i).getDataClassId());
-                dataMap.put("databaseId", databaseSpecialReadWriteDtos.get(i).getDatabaseId());
-                dataMap.put("userId", databaseSpecialReadWriteDtos.get(i).getUserId());
-                //撤销权限
-                databaseSpecialServiceImpl.cancelAuthority(dataMap.get("userId"), dataMap.get("databaseId"), dataMap.get("dataClassId"), null);
-                // 下面将删除该条记录。
-                mybatisQueryMapper.deleteRecordByTdbId(dataMap);
-                mybatisQueryMapper.deleteDataAuthor(dataMap);
-            }
-        }
+//        if (databaseSpecialReadWriteDtos != null && databaseSpecialReadWriteDtos.size() > 0) {
+//            for (int i = 0; i < databaseSpecialReadWriteDtos.size(); i++) {
+//                Map<String, String> dataMap = new HashMap<String, String>();
+//                dataMap.put("tdbId", databaseSpecialReadWriteDtos.get(i).getSdbId());
+//                dataMap.put("dataClassId", databaseSpecialReadWriteDtos.get(i).getDataClassId());
+//                dataMap.put("databaseId", databaseSpecialReadWriteDtos.get(i).getDatabaseId());
+//                dataMap.put("userId", databaseSpecialReadWriteDtos.get(i).getUserId());
+//                //撤销权限
+//                databaseSpecialServiceImpl.cancelAuthority(dataMap.get("userId"), dataMap.get("databaseId"), dataMap.get("dataClassId"), null);
+//                // 下面将删除该条记录。
+//                mybatisQueryMapper.deleteRecordByTdbId(dataMap);
+//                mybatisQueryMapper.deleteDataAuthor(dataMap);
+//            }
+//        }
 
 
     }

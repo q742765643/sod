@@ -1,6 +1,8 @@
 package com.piesat.dm.rpc.api.dataapply;
 
 import com.piesat.dm.rpc.dto.dataapply.DataResourceApplyDto;
+import com.piesat.util.page.PageBean;
+import com.piesat.util.page.PageForm;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -15,6 +17,6 @@ public interface DataResourceApplyService {
 
     DataResourceApplyDto saveDto(DataResourceApplyDto dataResourceApplyDto);
 
-    List<Map<String, Object>> findAuthorityList(String dataclassId, String databaseId);
+    List<Map<String, Object>> findAuthorityList(String tableId);
 
 }
