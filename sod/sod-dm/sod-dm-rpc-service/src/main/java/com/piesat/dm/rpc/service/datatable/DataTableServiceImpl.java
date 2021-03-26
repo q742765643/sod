@@ -25,6 +25,7 @@ import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.datatable.*;
 import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
+import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
 import com.piesat.dm.rpc.api.dataapply.NewdataApplyService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
@@ -91,6 +92,8 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     private SchemaService schemaService;
     @Autowired
     private TableForeignKeyMapper tableForeignKeyMapper;
+    @Autowired
+    private DataAuthorityApplyService dataAuthorityApplyService;
 
     @Override
     public BaseDao<DataTableInfoEntity> getBaseDao() {
@@ -148,6 +151,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         this.tableColumnDao.deleteByTableId(id);
         this.tableIndexDao.deleteByTableId(id);
         this.tableForeignKeyDao.deleteByTableId(id);
+        this.dataAuthorityApplyService.deleteByTableId(id);
         this.delete(id);
     }
 
