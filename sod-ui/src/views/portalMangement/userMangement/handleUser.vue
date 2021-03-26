@@ -24,13 +24,7 @@
           :disabled="handleDis"
         />
       </el-form-item>
-      <el-form-item prop="post" label="职位:">
-        <!--<el-input
-          clearable
-          size="small"
-          v-model="msgFormDialog.post"
-          :disabled="handleDis"
-        />-->
+      <el-form-item prop="post" label="职位:" v-show="msgFormDialog.sysLevel">
         <el-select v-model="msgFormDialog.post" :disabled="handleDis">
           <el-option label="全部" value></el-option>
           <el-option label="科员" value="1"></el-option>
@@ -44,13 +38,17 @@
           <el-option label="正省" value="9"></el-option>
         </el-select>
       </el-form-item>
+      <el-form-item prop="post" label="职位:" v-show="!msgFormDialog.sysLevel">
+        <el-select v-model="msgFormDialog.post" :disabled="handleDis">
+          <el-option label="全部" value></el-option>
+          <el-option label="局级" value="01"></el-option>
+          <el-option label="司级" value="02"></el-option>
+          <el-option label="处级" value="03"></el-option>
+          <el-option label="科级" value="04"></el-option>
+          <el-option label="普通职员" value="05"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item prop="jobTitle" label="职称:">
-        <!--<el-input
-          clearable
-          size="small"
-          v-model="msgFormDialog.jobTitle"
-          :disabled="handleDis"
-        />-->
         <el-select v-model="msgFormDialog.jobTitle" :disabled="handleDis">
           <el-option label="全部" value></el-option>
           <el-option label="正高（一级）" value="1"></el-option>
@@ -83,7 +81,7 @@
           :disabled="handleDis"
         />
       </el-form-item>
-      <el-form-item prop="serialNumber" label="用户状态:">
+      <el-form-item prop="serialNumber" label="用户状态:" v-show="msgFormDialog.sysLevel">
         <el-select v-model="msgFormDialog.ischeck" :disabled="handleDis">
           <el-option label="全部" value></el-option>
           <el-option label="未审核" value="0"></el-option>

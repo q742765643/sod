@@ -147,7 +147,7 @@ cloudDeploy:
 
 #统一认证平台
 unifyAuthorize:
-  url: http://10.40.25.45:8080
+  url: http://10.40.25.44:8080
   password: f969ba3a158e48de8dc1f5585d387b4f
 
 

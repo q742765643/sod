@@ -104,13 +104,17 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
                     if (StringUtils.isNotEmpty(uaUrl) && StringUtils.isNotEmpty(uaPassword)) {
                         JSONObject jsonObject = getPortalUserInfo(userManage.getId());
                         userManage.setPhone("");
-                        if(jsonObject != null){
+                        if(jsonObject != null && jsonObject.size()>0){
                             userManage.setPhone((String) jsonObject.get("mobile"));
+                            userManage.setLoginName((String) jsonObject.get("Username"));
+                            userManage.setEmail((String) jsonObject.get("Email"));
+                            userManage.setPost((String) jsonObject.get("positionLevel"));
+                            userManage.setFixedphone((String) jsonObject.get("officePhone"));
                             String namepath = (String) jsonObject.get("namepath");
                             if(namepath != null && namepath.lastIndexOf("/") == namepath.length()-1){
                                 //eg:中国气象局/减灾司/
                                 namepath = namepath.substring(0,namepath.length()-1);
-                                namepath = namepath.substring(namepath.lastIndexOf("/")+1);
+                                //namepath = namepath.substring(namepath.lastIndexOf("/")+1);
                                 userManage.setDeptName(namepath);
                             }
                         }
@@ -144,9 +148,10 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
             HashMap<String, String> headers= new HashMap<String, String>();
             headers.put("client_id","CMADAAS");
             String result = HttpClientUtil.doPost(url,s1,headers);
-
-            String userInfo = SM4Utils.decrypt(result,uaPassword);
-            resultJsonObject = JSONObject.parseObject(userInfo);
+            if(!"Index: 0, Size: 0".equals(result)){
+                String userInfo = SM4Utils.decrypt(result,uaPassword);
+                resultJsonObject = JSONObject.parseObject(userInfo);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -158,16 +163,38 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
     public UserManageDto getDotById(String id) {
         UserManageEntity userManageEntity = this.getById(id);
         UserManageDto userManageDto = this.userManageMapstruct.toDto(userManageEntity);
-        String deptunicode = userManageDto.getDeptunicode();
-        List<DepartManageDto> departManageDtos = departManageService.findByDeptunicode(deptunicode);
-        if(departManageDtos != null && departManageDtos.size()>0){
-            String deptName = "";
-            deptName = getAllDeptName(deptName,departManageDtos.get(0));
-            userManageDto.setDeptName(deptName);
+        if("P".equals(sysLevel)){
+            String deptunicode = userManageDto.getDeptunicode();
+            List<DepartManageDto> departManageDtos = departManageService.findByDeptunicode(deptunicode);
+            if(departManageDtos != null && departManageDtos.size()>0){
+                String deptName = "";
+                deptName = getAllDeptName(deptName,departManageDtos.get(0));
+                userManageDto.setDeptName(deptName);
+            }
+            //获取用户角色
+            List<String> roles = roleManageMapper.selectRoleListByUserId(id);
+            userManageDto.setRoleIds(roles.toArray(new String[roles.size()]));
+        }else{
+            if (StringUtils.isNotEmpty(uaUrl) && StringUtils.isNotEmpty(uaPassword)) {
+                JSONObject jsonObject = getPortalUserInfo(id);
+                userManageDto.setPhone("");
+                if(jsonObject != null && jsonObject.size()>0){
+                    userManageDto.setPhone((String) jsonObject.get("mobile"));
+                    userManageDto.setLoginName((String) jsonObject.get("Username"));
+                    userManageDto.setEmail((String) jsonObject.get("Email"));
+                    userManageDto.setPost((String) jsonObject.get("positionLevel"));
+                    userManageDto.setFixedphone((String) jsonObject.get("officePhone"));
+                    String namepath = (String) jsonObject.get("namepath");
+
+                    if(namepath != null && namepath.lastIndexOf("/") == namepath.length()-1){
+                        //eg:中国气象局/减灾司/
+                        namepath = namepath.substring(0,namepath.length()-1);
+                        //namepath = namepath.substring(namepath.lastIndexOf("/")+1);
+                        userManageDto.setDeptName(namepath);
+                    }
+                }
+            }
         }
-        //获取用户角色
-        List<String> roles = roleManageMapper.selectRoleListByUserId(id);
-        userManageDto.setRoleIds(roles.toArray(new String[roles.size()]));
         return userManageDto;
     }
 
