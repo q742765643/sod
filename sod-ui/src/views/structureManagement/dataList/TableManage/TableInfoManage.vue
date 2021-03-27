@@ -35,7 +35,7 @@
               <el-option
                 v-for="(citem, cindex) in specialList"
                 :key="cindex"
-                :label="citem.databaseName"
+                :label="citem.schemaNameCn"
                 :value="citem.id"
               ></el-option>
             </el-select>
@@ -343,8 +343,8 @@ export default {
       this.DatabaseDefineList = res.data;
     });
     if (this.tableBaseInfo.databasePid) {
+      await this.handleFindSpec(this.tableBaseInfo.databasePid);
       this.tableBaseForm = this.tableBaseInfo;
-      this.handleFindSpec(this.tableBaseForm.databasePid);
     }
   },
   mounted() {
@@ -356,8 +356,8 @@ export default {
   },
   methods: {
     //切换数据库查询专题库
-    handleFindSpec(val) {
-      findByDatabaseDefineId({ id: val }).then((res) => {
+    async handleFindSpec(val) {
+      await findByDatabaseDefineId({ id: val }).then((res) => {
         this.specialList = res.data;
       });
     },
@@ -426,12 +426,12 @@ export default {
       this.Info = JSON.parse(JSON.stringify(val));
       console.log(this.Info);
       if (!this.tableBaseForm.databasePid) {
+        this.handleFindSpec(this.Info.databasePid);
         this.tableBaseForm = {
           databasePid: this.Info.databasePid,
           databaseId: this.Info.databaseId,
           storageType: this.Info.storageType,
         };
-        this.handleFindSpec(this.tableBaseForm.databasePid);
         console.log(this.tableBaseForm);
       }
       existTable({

@@ -963,6 +963,12 @@ export default {
         this.editTableName = "";
         this.isSourceTree = false;
       } else if (operateType === "编辑资料" || operateType === "查看资料") {
+        /*
+         :isSourceTree="isSourceTree"
+        :editNodeId="editNodeId"
+        :editMaterial="editMaterial"
+        :editTableName="editTableName"
+        :isFooterShow="isFooterShow"*/
         this.currentRow = [];
         this.currentRow.push(scopeRow);
         this.materialSingleTitle = operateType;

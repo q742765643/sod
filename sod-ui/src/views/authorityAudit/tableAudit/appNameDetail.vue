@@ -60,6 +60,7 @@
 </template>
 
 <script>
+import { getBizUserByName } from "@/api/authorityAudit/tableAudit";
 export default {
   props: {
     handleObj: {
@@ -72,12 +73,14 @@ export default {
     };
   },
   created() {
-    this.msgFormDialog = this.handleObj;
-    if (this.msgFormDialog.bizType == "biz") {
-      this.msgFormDialog.mytype = "业务用户";
-    } else {
-      this.msgFormDialog.mytype = "开发用户";
-    }
+    getBizUserByName({ userName: this.handleObj.USER_ID }).then((response) => {
+      this.msgFormDialog = response.data[0];
+      if (this.msgFormDialog.bizType == "biz") {
+        this.msgFormDialog.mytype = "业务用户";
+      } else {
+        this.msgFormDialog.mytype = "开发用户";
+      }
+    });
   },
   mounted() {},
   methods: {},

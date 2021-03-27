@@ -107,7 +107,7 @@
             <el-link
               :underline="false"
               type="primary"
-              @click="showAppNameDetail(scope.row.USER_ID)"
+              @click="showAppNameDetail(scope.row)"
               >{{ scope.row.APP_NAME }}</el-link
             >
           </template>
@@ -378,12 +378,10 @@ export default {
       });
     },
     //应用名称
-    showAppNameDetail(val) {
-      getBizUserByName({ userName: val }).then((response) => {
-        this.handleObj = response.data[0];
-        this.dialogTitle = "应用详情";
-        this.appNameDetailVis = true;
-      });
+    showAppNameDetail(row) {
+      this.handleObj = row;
+      this.dialogTitle = "应用详情";
+      this.appNameDetailVis = true;
     },
     //追溯
     showHistory(val) {

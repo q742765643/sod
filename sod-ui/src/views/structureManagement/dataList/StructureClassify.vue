@@ -275,6 +275,7 @@ export default {
       this.defaultExpandedKeys = data;
       this.myTreedata = [];
       this.checkedNodeArr = {};
+      console.log(data);
       this.resetData(data);
       this.editNodeId = data.id;
 
