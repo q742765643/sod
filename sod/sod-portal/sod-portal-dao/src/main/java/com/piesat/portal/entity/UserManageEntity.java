@@ -3,10 +3,7 @@ package com.piesat.portal.entity;
 import com.piesat.common.jpa.entity.BaseEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -143,4 +140,14 @@ public class UserManageEntity extends BaseEntity {
     @Column(name="OPEN_TYPE")
     String openType;
 
+    /**
+     * 省局登录授权：0没授权   1已授权
+     * 已授权用户可以用用户名密码登录
+     */
+    @Column(name="LOGIN_AUTHO")
+    String loginAutho;
+
+    /** 角色组 */
+    @Transient
+    private String[] roleIds;
 }

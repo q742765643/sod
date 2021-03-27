@@ -622,9 +622,9 @@
           and b.data_class_id = e.data_class_id
           and b.sdb_id = #{sdbId}
           and d.id not in (select dar.table_id
-                                      from T_SOD_DATA_AUTHORITY_APPLY_FLOW daa
-                                               left join T_SOD_DATA_AUTHORITY_APPLY dar
-                                                         on daa.id = dar.apply_id and daa.user_id = #{user_id})
+                           from T_SOD_DATA_AUTHORITY_APPLY_FLOW daa
+                                    left join T_SOD_DATA_AUTHORITY_APPLY dar
+                                              on daa.id = dar.apply_id and daa.user_id = #{user_id})
     </select>
 
     <!--根据用户ID从创建申请表取得其他用户创建并且没有被该用户引用的所有专题库信息-->
@@ -1138,18 +1138,18 @@
         </trim>
     </delete>
     <delete id="deleteDataAuthor" parameterType="java.util.Map">
-<!--        delete from T_SOD_DATA_APPLY-->
-<!--        <trim prefix="where" prefixOverrides="and | or">-->
-<!--            <if test="tdbId != null and tdbId !=''">-->
-<!--                and QTDB_ID=#{tdbId}-->
-<!--            </if>-->
-<!--            <if test="dataClassId != null and dataClassId !=''">-->
-<!--                and DATA_CLASS_ID=#{dataClassId}-->
-<!--            </if>-->
-<!--            <if test="databaseId != null and databaseId !=''">-->
-<!--                and DATABASE_ID=#{databaseId}-->
-<!--            </if>-->
-<!--        </trim>-->
+        <!--        delete from T_SOD_DATA_APPLY-->
+        <!--        <trim prefix="where" prefixOverrides="and | or">-->
+        <!--            <if test="tdbId != null and tdbId !=''">-->
+        <!--                and QTDB_ID=#{tdbId}-->
+        <!--            </if>-->
+        <!--            <if test="dataClassId != null and dataClassId !=''">-->
+        <!--                and DATA_CLASS_ID=#{dataClassId}-->
+        <!--            </if>-->
+        <!--            <if test="databaseId != null and databaseId !=''">-->
+        <!--                and DATABASE_ID=#{databaseId}-->
+        <!--            </if>-->
+        <!--        </trim>-->
     </delete>
     <!-- 专题库删除节点的同时 更新节点下的资料为未分类 -->
     <update id="delTreeUpdateTypeId" parameterType="java.util.Map">
@@ -1301,10 +1301,6 @@
         <if test="userId != null and userId != ''">
             where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
         </if>
-        group by
-        t1.data_class_id,t4.id,
-        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.database_name ||'】',
-        t3.schema_name,t3.id,t1.is_access,t5.table_name
         order by
         dataName asc
     </select>
@@ -1537,9 +1533,9 @@
     <select id="getRecycle" resultType="java.util.Map" parameterType="java.util.Map">
         SELECT DISTINCT A.ID TABLE_ID,A.TABLE_TYPE,A.TABLE_NAME,A.DATABASE_ID, C.DATABASE_NAME, B.SCHEMA_NAME_CN, B.SCHEMA_NAME, D.DICT_LABEL
         FROM T_SOD_DATA_TABLE_INFO A
-                 LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID
-                 LEFT JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID
-                 LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE
+        LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID
+        LEFT JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID
+        LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE
         WHERE DEL_FLAG = '2'
         <if test="map.tableName != null and map.tableName  != ''">
             AND A.TABLE_NAME LIKE '%${map.tableName}%'

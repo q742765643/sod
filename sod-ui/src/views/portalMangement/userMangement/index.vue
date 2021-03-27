@@ -5,16 +5,16 @@
       <el-form-item prop="userName" label="用户姓名:">
         <el-input clearable size="small" v-model="queryParams.userName" placeholder="请输入用户姓名" />
       </el-form-item>
-      <el-form-item prop="loginName" label="登录名:">
+      <el-form-item prop="loginName" label="登录名:"  v-show="sysLevel">
         <el-input clearable size="small" v-model="queryParams.loginName" placeholder="请输入登录名" />
       </el-form-item>
-      <el-form-item prop="userLevel" label="用户级别:">
+      <!--<el-form-item prop="userLevel" label="用户级别:">
         <el-select v-model="queryParams.userLevel" size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
           <el-option label="国家级" value="01"></el-option>
           <el-option label="非国家级" value="02"></el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item prop="ischeck" label="用户状态:" v-show="sysLevel">
         <el-select v-model="queryParams.ischeck" size="small" style="width: 140px">
           <el-option label="全部" value></el-option>
@@ -43,15 +43,15 @@
       ref="multipleTable"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="index" label="序号" width="80" :index="table_index"></el-table-column>
-      <el-table-column prop="loginName" label="登录名" width="120"></el-table-column>
-      <el-table-column prop="userName" label="用户姓名" width="120"></el-table-column>
-      <el-table-column prop="userLevel" label="用户级别" width="120">
+      <el-table-column type="index" label="序号" width="100" :index="table_index"></el-table-column>
+      <el-table-column prop="loginName" label="登录名" width="160"></el-table-column>
+      <el-table-column prop="userName" label="用户姓名" width="160"></el-table-column>
+      <!--<el-table-column prop="userLevel" label="用户级别" width="120">
         <template slot-scope="scope">
           <span v-if="scope.row.userLevel=='01'">国家级</span>
           <span v-if="scope.row.userLevel=='02'">非国家级</span>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column prop="deptName" label="部门"></el-table-column>
       <el-table-column prop="email" label="邮箱地址"></el-table-column>
       <el-table-column prop="phone" label="电话号码"></el-table-column>
@@ -60,14 +60,14 @@
           <span>{{ parseTime(scope.row.lastLoginTime) }}</span>
         </template>
       </el-table-column>-->
-      <el-table-column prop="ischeck" label="状态" v-show="sysLevel">
+      <el-table-column prop="ischeck" label="状态" v-if='sysLevel'>
         <template slot-scope="scope">
           <span v-if="scope.row.ischeck=='0'">未审核</span>
           <span v-if="scope.row.ischeck=='1'">已审核</span>
           <span v-if="scope.row.ischeck=='2'">已驳回</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="320">
+      <el-table-column label="操作" width="360">
         <template slot-scope="scope">
           <el-button
             icon="el-icon-tickets"
@@ -89,6 +89,13 @@
             @click="refreshPassword(scope.row)"
             v-show="sysLevel"
           >重置密码</el-button>
+          <el-button
+            icon="el-icon-user"
+            size="mini"
+            type="text"
+            @click="editRole(scope.row)"
+            v-show="sysLevel"
+          >角色</el-button>
           <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)" v-show="sysLevel">删除</el-button>
         </template>
       </el-table-column>
@@ -117,12 +124,49 @@
         ref="myDialog"
       ></handleUser>
     </el-dialog>
+
+    <!-- 角色弹窗-->
+    <el-dialog
+      width="400px"
+      :close-on-click-modal="false"
+      :title="dialogTitle"
+      :visible.sync="roleDialog"
+      v-dialogDrag
+      top="5vh"
+    >
+      <el-form :rules="rules" ref="roleForm" :model="roleFormParams">
+        <el-form-item label="选择角色:" prop="roleIds">
+          <el-select
+            style="width: 80%"
+            clearable
+            v-model.trim="roleFormParams.roleIds"
+            placeholder="请选择"
+            multiple
+            filterable
+          >
+            <el-option
+              v-for="item in roleOptions"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm('roleForm')"
+        >确 定</el-button
+        >
+        <el-button @click="cancelRoleDialog('roleForm')">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { queryDataPage, delById, editById,resetPwd,getSysLevel } from "@/api/portalMangement/userMangement";
+import { queryDataPage, delById, editById,resetPwd,getSysLevel,getById,editUserRole } from "@/api/portalMangement/userMangement";
 import handleUser from "@/views/portalMangement/userMangement/handleUser";
+import {findAllRole} from "@/api/portalMangement/roleManagement";
 
 export default {
   components: {
@@ -148,6 +192,18 @@ export default {
       dialogTitle: "",
       msgFormDialog: false,
       handleObj: {},
+      //设置角色
+      roleDialog:false,
+      roleFormParams:{
+        id:"",
+        roleIds:[]
+      },
+      roleOptions:[],
+      rules: {
+        roleIds: [
+          { required: true, message: "请选择", trigger: "change" },
+        ],
+      },
       //国家局false 省局true
       sysLevel:true,
     };
@@ -164,6 +220,7 @@ export default {
       }
     });
     this.getList();
+    this.getRoles();
   },
   methods: {
     // table自增定义方法
@@ -190,6 +247,7 @@ export default {
         this.dialogTitle = "新增";
         this.handleObj = {};
       }
+      this.handleObj.sysLevel = this.sysLevel;
       this.msgFormDialog = true;
     },
     auditRow(row) {
@@ -266,6 +324,14 @@ export default {
         })
         .catch(() => {});
     },
+    editRole(row){
+      debugger
+      getById({ id: row.id }).then((res) => {
+        this.roleFormParams.id = res.data.id;
+        this.roleFormParams.roleIds = res.data.roleIds;
+      });
+      this.roleDialog = true;
+    },
     deleteRow(row) {
       this.$confirm("确认要删除" + row.userName + "吗?", "温馨提示", {
         confirmButtonText: "确定",
@@ -333,6 +399,37 @@ export default {
         this.getList();
       }
     },
+    cancelRoleDialog(){
+      this.roleDialog = false;
+    },
+    getRoles(){
+      findAllRole().then((response) => {
+        this.roleOptions = response.data;
+        console.log(this.roleOptions);
+      });
+    },
+    submitForm(formName){
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          editUserRole(this.roleFormParams).then(response => {
+            if (response.code === 200) {
+              this.$message({
+                type: "success",
+                message: "选择角色成功",
+              });
+              this.$emit("cancelRoleDialog");
+            } else {
+              this.$message({
+                type: "error",
+                message: "选择角色失败",
+              });
+              this.$emit("cancelRoleDialog");
+            }
+          });
+        }
+      });
+
+    }
   },
 };
 </script>

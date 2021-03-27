@@ -23,6 +23,8 @@ public class DataclassVo {
     private String databaseId;
     private String databasePid;
     private String tableName;
+    private String userId;
+    private String onlyMy;
     public Map<String,Object> getMap(){
        return BeanMap.create(this);
     }

@@ -389,7 +389,6 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
         this.dataLogicDao.deleteByDataClassId(dataClassId);
         this.dataClassDao.deleteByDataClassId(dataClassId);
         this.databaseSpecialReadWriteService.deleteByDataClassId(dataClassId);
-        this.dataAuthorityApplyService.deleteByDataClassId(dataClassId);
         if (dataClass != null) {
             List<NewdataApplyDto> newDataApplyDtoList = this.newdataApplyService.findByDataClassIdAndUserId(dataClassId, dataClass.getCreateBy());
             if (newDataApplyDtoList != null) {
@@ -492,7 +491,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     public List<DataClassDto> findAllCategory() {
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdOrderByDataClassIdAsc("0");
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdAsc("0",1);
         return this.dataClassMapper.toDto(dataClassIdAsc);
     }
 
@@ -710,6 +709,14 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     public PageBean getPageDataclassInfo(PageForm<Map<String, Object>> pageForm) {
 //        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
         List<Map<String, Object>> lists = mybatisPageMapper.getPageDataclassInfo(pageForm.getT());
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
+        return pageBean;
+    }
+
+    @Override
+    public PageBean getFileDirsInfo(PageForm<Map<String, String>> pageForm) {
+        List<Map<String, Object>> lists = mybatisPageMapper.getFileDirsInfo(pageForm.getT());
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
         PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
         return pageBean;

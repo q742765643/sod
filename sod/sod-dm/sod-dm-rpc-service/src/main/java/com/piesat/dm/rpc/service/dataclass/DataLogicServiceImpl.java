@@ -134,13 +134,11 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
         List<DataClassLogicDto > dataClassLogicDtos = this.dataLogicMapper.toDto(byDataClassId);
         if (dataClassLogicDtos != null && !dataClassLogicDtos.isEmpty()) {
             dataClassLogicDtos = dataClassLogicDtos.stream().map(e -> {
-                try {
-                    String tableId = e.getTableId();
-                    String databaseId = this.dataTableService.getDotById(tableId).getDatabaseId();
-                    SchemaDto dotById = this.schemaService.getDotById(databaseId);
-                    e.setDatabaseId(databaseId);
-                    e.setDatabasePid(dotById.getDatabase().getId());
-                }catch (Exception ex){}
+                String tableId = e.getTableId();
+                String databaseId = this.dataTableService.getDotById(tableId).getDatabaseId();
+                SchemaDto dotById = this.schemaService.getDotById(databaseId);
+                e.setDatabaseId(databaseId);
+                e.setDatabasePid(dotById.getDatabase().getId());
                 return e;
             }).collect(Collectors.toList());
         }

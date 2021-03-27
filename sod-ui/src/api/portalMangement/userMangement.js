@@ -36,6 +36,14 @@ export function editById(data) {
     data: data
   })
 }
+// 修改用户角色
+export function editUserRole(data) {
+  return request({
+    url: baseUrl + '/portal/userManage/editUserRole',
+    method: 'put',
+    data: data
+  })
+}
 // 重置密码
 export function resetPwd(data) {
   return request({

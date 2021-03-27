@@ -73,6 +73,13 @@ public class DataTableApplyEntity extends BaseEntity {
     @Column(name = "status")
     private String status;
 
+
+    /**
+     * 审核意见
+     */
+    @Column(name = "review")
+    private String review;
+
     /**
      * 描述
      */

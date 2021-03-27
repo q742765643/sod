@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.AESUtil;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.core.action.exc.abs.ExcAbs;
@@ -279,7 +280,13 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String id = map.get("id");
         String databaseup_desc = map.get("databaseup_desc");
         String database_ids = map.get("database_ids");
-        String databaseup_password = map.get("databaseup_password");
+        //String databaseup_password = map.get("databaseup_password");
+        String databaseup_password = "";
+        //查业务账户密码
+        UserEntity userEntity = userDao.findByUserName(databaseup_id);
+        if (userEntity != null) {
+            databaseup_password = AESUtil.aesDecrypt(userEntity.getPassword()).trim();
+        }
         String data = map.get("data");
         String picurl2 = map.get("picurl2");//修改前的申请材料，是否删除
         String pdfPath = map.get("pdfPath");

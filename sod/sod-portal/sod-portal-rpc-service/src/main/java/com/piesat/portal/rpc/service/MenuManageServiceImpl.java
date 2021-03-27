@@ -68,6 +68,11 @@ public class MenuManageServiceImpl extends BaseService<MenuManageEntity> impleme
         this.delete(menuId);
     }
 
+    @Override
+    public List<String> selectMenuListByRoleId(String roleId) {
+        return menuManageMapper.selectMenuListByRoleId(roleId);
+    }
+
     public List<PortalTreeSelect> buildMenuTreeSelect(List<MenuManageDto> menus)
     {
         List<MenuManageDto> menuTrees = buildMenuTree(menus);

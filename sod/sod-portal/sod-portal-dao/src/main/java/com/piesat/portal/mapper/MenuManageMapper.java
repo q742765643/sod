@@ -9,4 +9,6 @@ import java.util.List;
 public interface MenuManageMapper {
 
     public List<MenuManageEntity> selectMenuList(MenuManageEntity menu);
+
+    List<String> selectMenuListByRoleId(String roleId);
 }

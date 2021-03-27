@@ -1,12 +1,12 @@
 <template>
   <el-main class="PartKeyManage">
     <fieldset>
-      <legend>{{ rowData.tableName }}</legend>
+      <legend>{{ rowData.database_name }}</legend>
       <el-form :model="editData" label-width="120px" size="small">
-        <el-col :span="5">
-          <el-form-item label="分区键">
+        <el-col :span="9">
+          <el-form-item label="分库键">
             <el-select
-              v-model.trim="editData.partitions"
+              v-model.trim="editData.database_key"
               :disabled="!isEdit"
               placeholder="请选择"
               style="width: 100%"
@@ -21,30 +21,25 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="5">
-          <el-form-item label="分区纬度">
-            <el-input-number v-model="editData.partDimension"></el-input-number>
-          </el-form-item>
-        </el-col>
-        <el-col :span="5">
-          <el-form-item label="分区单位">
+        <el-col :span="9">
+          <el-form-item label="分表键">
             <el-select
-              v-model.trim="editData.partUnit"
+              v-model.trim="editData.table_key"
               :disabled="!isEdit"
               placeholder="请选择"
               style="width: 100%"
             >
+              <el-option value label="无"></el-option>
               <el-option
-                v-for="item in partUnitList"
+                v-for="item in columnData"
                 :key="item.dbEleCode"
-                :label="item.dictLabel"
-                :value="item.dictValue"
+                :label="item.dbEleCode + '[' + item.eleName + ']'"
+                :value="item.dbEleCode"
               ></el-option>
             </el-select>
           </el-form-item>
         </el-col>
-
-        <el-col :span="5" v-if="!this.rowData.MYDISABLED">
+        <el-col :span="6">
           <el-form-item>
             <el-button
               v-if="!isEdit"
@@ -68,35 +63,32 @@
 
 <script>
 import {
-  shardingGet,
+  getByTableId,
+  findByTableId,
   shardingSaves,
-} from "@/api/structureManagement/materialManage/StructureManageTable";
+} from "@/api/structureManagement/dataList/StructureManageTable";
 export default {
   name: "partKeyManage",
   props: { rowData: Object, tableInfo: Object },
   data() {
     return {
-      partUnitList: [],
       columnData: [],
-      editData: {
-        id: this.rowData.TABLE_ID,
-        partDimension: "",
-        partUnit: "",
-        partitions: "",
-      },
+      editData: { database_key: "", table_key: "" },
       isEdit: false,
     };
   },
   methods: {
     // 获取分库分表键的值
-    async getShared() {
-      let id =
-        this.rowData.TABLE_ID == undefined
-          ? this.tableInfo.id
-          : this.rowData.TABLE_ID;
-      await shardingGet({ id: id }).then((response) => {
-        if (response.data) {
-          this.editData = response.data;
+    getShared() {
+      getByTableId({ id: this.tableInfo.id }).then((response) => {
+        if (response.code == 200) {
+          let data = response.data;
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].shardingType === 0)
+              //分库键
+              this.editData.database_key = data[i].columnName;
+            else this.editData.table_key = data[i].columnName;
+          }
         }
       });
     },
@@ -107,7 +99,22 @@ export default {
     },
     // 保存
     addKey() {
-      shardingSaves(this.editData).then((response) => {
+      let arry = [
+        // 分库
+        {
+          columnName: this.editData.database_key,
+          shardingType: "0",
+          tableId: this.tableInfo.id,
+        },
+        // 分表
+        {
+          columnName: this.editData.table_key,
+          shardingType: "1",
+          tableId: this.tableInfo.id,
+        },
+      ];
+      console.log(arry);
+      shardingSaves({ shardingList: arry }).then((response) => {
         if (response.code == 200) {
           this.$message({
             type: "success",
@@ -123,11 +130,7 @@ export default {
       });
     },
   },
-  async mounted() {
-    await this.getDicts("part_unit").then((response) => {
-      this.partUnitList = response.data;
-    });
-  },
+  mounted() {},
   watch: {
     tableInfo(val) {
       this.tableInfo = val;

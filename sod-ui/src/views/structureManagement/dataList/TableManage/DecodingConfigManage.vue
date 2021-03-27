@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <el-button-group style="padding: 8px" v-if="!this.rowData.MYDISABLED">
+    <el-button-group style="padding: 8px">
       <el-button
         type="primary"
         icon="el-icon-s-claim"
@@ -40,6 +40,7 @@
         type="index"
         label="序号"
         :index="table_index"
+        width="55"
       ></el-table-column>
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column label="处理编码" prop="dataDpcId"></el-table-column>
@@ -245,7 +246,7 @@ import {
   getById,
   saveList,
   deleteList,
-} from "@/api/structureManagement/tableStructureManage/DecodingConfigManage";
+} from "@/api/structureManagement/dataList/DecodingConfigManage";
 import { gridEleDecodeDefineAll } from "@/api/GridDataDictionaryManagement/GRIBdefine";
 export default {
   name: "DecodingConfigManage",

@@ -122,24 +122,6 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-    <!-- 表结构管理 -->
-    <el-dialog
-      :close-on-click-modal="false"
-      :title="`表结构管理(${structureManageTitle})`"
-      :visible.sync="structureManageVisible"
-      width="100%"
-      :fullscreen="true"
-      :before-close="closeStructureManage"
-      top="0"
-      class="scrollDialog"
-    >
-      <StructureManageTable
-        ref="scrollDiv"
-        v-if="structureManageVisible"
-        v-bind:parentRowData="rowData"
-        :tableBaseInfo="tableBaseInfo"
-      />
-    </el-dialog>
   </div>
 </template>
 
@@ -149,12 +131,7 @@ import {
   findByDatabaseDefineId,
   tombstone,
 } from "@/api/structureManagement/dataList/index";
-//表结构管理--弹出层
-import StructureManageTable from "@/views/structureManagement/dataList/TableManage/StructureManageTable";
 export default {
-  components: {
-    StructureManageTable,
-  },
   data() {
     return {
       queryParams: {
@@ -165,24 +142,13 @@ export default {
       DatabaseDefineList: [],
       specialList: [],
       total: 0,
-
-      structureManageVisible: false, //表结构管理弹出层
-      structureManageTitle: "", //表结构管理弹出层title
-      rowData: {},
-      tableBaseInfo: {},
     };
   },
   created() {
     this.getList();
   },
   methods: {
-    viewCell(row) {
-      this.rowData = row;
-      this.rowData.MYDISABLED = true; //查看去掉按钮
-      console.log(this.rowData);
-      this.structureManageTitle = row.TABLE_NAME;
-      this.structureManageVisible = true;
-    },
+    viewCell() {},
 
     deleteCell(row) {
       this.$confirm("是否删除数据表" + row.TABLE_NAME, "温馨提示", {
@@ -243,10 +209,7 @@ export default {
         this.total = response.data.totalCount;
       });
     },
-    // 关闭
-    closeStructureManage() {
-      this.structureManageVisible = false;
-    },
+
     // table自增定义方法
     table_index(index) {
       return (

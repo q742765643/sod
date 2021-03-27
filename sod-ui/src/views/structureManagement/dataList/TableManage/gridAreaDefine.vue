@@ -1,7 +1,7 @@
 <template>
   <el-main class="gridEreaDefine">
     <!-- <legend>{{rowData.database_name}}</legend> -->
-    <el-row class="areaTop" v-if="!this.rowData.MYDISABLED">
+    <el-row class="areaTop">
       <el-button type="primary" size="small" @click="add">新增</el-button>
       <el-button type="primary" size="small" @click="deleteArea"
         >删除</el-button
@@ -47,7 +47,7 @@
           ></el-option>
         </el-select>
       </el-col>
-      <el-col :span="4" v-if="!this.rowData.MYDISABLED">
+      <el-col :span="4">
         <el-button type="primary" size="small" @click="save">确认</el-button>
         <el-button type="primary" size="small" @click="cel">取消</el-button>
       </el-col>
@@ -88,7 +88,7 @@ import {
   findByDataServiceId,
   allArea,
   gridareaDel,
-} from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+} from "@/api/structureManagement/dataList/StructureManageTable";
 export default {
   name: "gridEreaDefine",
   props: { rowData: Object },

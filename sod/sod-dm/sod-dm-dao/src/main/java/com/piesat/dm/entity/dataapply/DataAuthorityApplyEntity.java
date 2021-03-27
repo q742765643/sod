@@ -50,6 +50,11 @@ public class DataAuthorityApplyEntity extends BaseEntity {
     @Column(name = "examine_time")
     private Date examineTime;
 
+    /**
+     * 用途
+     */
+    @Column(name = "purpose")
+    private String purpose;
 
     @OneToMany(cascade = CascadeType.ALL,  fetch = FetchType.EAGER)
     @JoinColumn(name="apply_id")

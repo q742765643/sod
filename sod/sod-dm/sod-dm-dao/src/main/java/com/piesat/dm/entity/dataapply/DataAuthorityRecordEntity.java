@@ -27,7 +27,7 @@ public class DataAuthorityRecordEntity extends BaseEntity {
     /**
      * 表id
      */
-    @Column(name = "table_id", length = 30)
+    @Column(name = "table_id")
     private String tableId;
 
     /**

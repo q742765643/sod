@@ -69,7 +69,11 @@ public interface DataAuthorityApplyService {
 
     List<DataAuthorityApplyDto> findByUserId(String userId);
 
-    void deleteByDataClassId(String dataclassId);
+    /**
+     * 根据表id删除
+     * @param tableId
+     */
+    void deleteByTableId(String tableId);
 
     void deleteByUserId(String userId);
 }

@@ -1,236 +1,22 @@
 <template>
   <div class="scrollMain">
-    <div class="el-alert el-alert--error is-light" v-show="!tipsFlag">
-      <div class="el-alert__content">物理库还未创建此表</div>
-      <el-button
-        size="small"
-        @click="showSQLManage"
-        type="primary"
-        icon="el-icon-first-aid-kit"
-        plain
-        >创建物理表</el-button
-      >
-    </div>
     <el-scrollbar wrap-class="scrollbar-wrapper">
-      <el-container class="structureManageTable">
-        <el-main id="box">
-          <el-form
-            v-if="
-              this.rowData.STORAGE_TYPE == 'ME_table' ||
-              this.rowData.STORAGE_TYPE == 'MK_table' ||
-              this.rowData.STORAGE_TYPE == 'NF_table'
-            "
-            v-model.trim="dirRule"
-            class="elementDir"
-            label-width="100px"
-          >
-            <el-row>
-              <el-col :span="20">
-                <el-form-item label="存储目录">
-                  <el-input
-                    :disabled="!isDirEdit"
-                    placeholder="存储目录"
-                    size="small"
-                    v-model.trim="dirRule.dirNorm"
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="4">
-                <el-form-item label class="buttonCon">
-                  <el-button
-                    v-if="!isDirEdit"
-                    type="primary"
-                    size="small"
-                    @click="editDir"
-                    >编辑</el-button
-                  >
-                  <el-button
-                    v-if="isDirEdit"
-                    type="primary"
-                    size="small"
-                    @click="saveDir"
-                    >保存</el-button
-                  >
-                  <el-button
-                    v-if="isDirEdit"
-                    type="primary"
-                    size="small"
-                    @click="celDir"
-                    >取消</el-button
-                  >
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
-          <div class="el-main">
-            <div class="elementTableTitle">
-              <i id="el_table_flag" class="el-icon-postcard"></i>表信息
-            </div>
-            <table-info
-              class="floor"
-              :tableInfo="commonTableObj.tableInfo"
-              :rowData="rowData"
-              :tableBaseInfo="tableBaseInfo"
-              tableType="E"
-              v-on:reloadTableInfo="getTableInfo"
-              @findTips="findTips"
-            ></table-info>
-          </div>
-        </el-main>
-      </el-container>
-      <el-tabs
-        v-if="tabs.table.common"
-        v-model.trim="tableActive"
-        @tab-click="manageTabsClick"
-      >
-        <el-tab-pane label="基本信息" name="db">
-          <el-collapse
-            class="collapseCon el-col el-col-24"
-            v-model="activeBaseCol"
-          >
-            <el-collapse-item class="floor" name="column">
-              <template slot="title">
-                <i id="el_field" class="el-icon-price-tag"></i>字段
-              </template>
-              <div>
-                <v-column
-                  v-on:reloadTableInfo="getTableInfo"
-                  :rowData="rowData"
-                  :tableInfo="commonTableObj.tableInfo"
-                ></v-column>
-              </div>
-            </el-collapse-item>
-          </el-collapse>
+      <el-tabs v-model.trim="tableActive" @tab-click="manageTabsClick">
+        <el-tab-pane v-if="tabs.dc" label="解码配置" name="dc">
+          <decoding-config :rowData="rowData"></decoding-config>
         </el-tab-pane>
-        <el-tab-pane label="约束分区" name="yueArea">
-          <el-collapse v-model="activeIndexCol">
-            <el-collapse-item class="floor" name="1">
-              <template slot="title">
-                <i id="el_indexes" class="el-icon-price-tag"></i>索引
-              </template>
-              <div>
-                <v-index
-                  :tableInfo="commonTableObj.tableInfo"
-                  :rowData="rowData"
-                ></v-index>
-              </div>
-            </el-collapse-item>
-            <el-collapse-item class="floor" name="2">
-              <template slot="title">
-                <i id="el_tableKey" class="el-icon-price-tag"></i>分区键
-              </template>
-              <div>
-                <part-key
-                  :tableInfo="commonTableObj.tableInfo"
-                  :rowData="rowData"
-                ></part-key>
-              </div>
-            </el-collapse-item>
-          </el-collapse>
-          <div
-            class="elementTableTitle"
-            v-if="
-              commonTableObj.tableInfo.storageType == 'K_E_table' ||
-              commonTableObj.tableInfo.storageType == 'MK_table' ||
-              tableBaseInfo.storageType == 'K_E_table' ||
-              tableBaseInfo.storageType == 'MK_table'
-            "
-          >
-            <i class="el-icon-postcard"></i>外键关联
-          </div>
-          <div
-            v-if="
-              commonTableObj.tableInfo.storageType == 'K_E_table' ||
-              commonTableObj.tableInfo.storageType == 'MK_table' ||
-              tableBaseInfo.storageType == 'K_E_table' ||
-              tableBaseInfo.storageType == 'MK_table'
-            "
-          >
-            <foreign-key
-              :tableInfo="commonTableObj.tableInfo"
-              :rowData="rowData"
-            ></foreign-key>
-          </div>
+        <el-tab-pane v-if="tabs.rg" label="区域信息" name="rg">
+          <area-config ref="areaRef" :rowData="rowData"></area-config>
         </el-tab-pane>
-        <el-tab-pane label="DDL" name="ddl">
-          <handle-SQl
-            :tableInfo="commonTableObj.tableInfo"
-            :rowData="rowData"
-          ></handle-SQl>
+        <el-tab-pane v-if="tabs.ds || tabs.pl" label="数据服务" name="ds">
+          <serve-config ref="serveRef" :rowData="rowData"></serve-config>
         </el-tab-pane>
-        <el-tab-pane label="资料类型统计" name="maType">
-          <data-statistics
-            :tableInfo="commonTableObj.tableInfo"
-            :rowData="rowData"
-          ></data-statistics>
-        </el-tab-pane>
-        <el-tab-pane label="样例数据查询" name="demoData">
-          <div>
-            <sample-data
-              :tableInfo="commonTableObj.tableInfo"
-              :rowData="rowData"
-            ></sample-data>
-          </div>
-        </el-tab-pane>
+        <!-- <el-tab-pane v-if="tabs.pl" label="产品列表" name="pl">
+          <product-config ref="productRef" :rowData="rowData"></product-config>
+        </el-tab-pane>-->
       </el-tabs>
-
-      <div v-show="tabs.table.ka" class="el-main">
-        <el-collapse class="collapseCon el-col el-col-24" v-model="activeKaCol">
-          <el-collapse-item name="keycode" class="floor">
-            <template slot="title">
-              <i id="ka_key_field" class="el-icon-price-tag"></i>主键字段
-            </template>
-            <div>
-              <v-column
-                tableType="E-Kshow"
-                v-on:reloadTableInfo="getTableInfo"
-                :rowData="rowData"
-                :tableInfo="keyObj.tableInfo"
-              ></v-column>
-            </div>
-          </el-collapse-item>
-          <el-collapse-item name="elcode" class="floor">
-            <template slot="title">
-              <i id="ka_arr_field" class="el-icon-price-tag"></i>属性字段
-            </template>
-            <div>
-              <v-column
-                tableType="E-Eshow"
-                v-on:reloadTableInfo="getTableInfo"
-                :rowData="rowData"
-                :tableInfo="commonTableObj.tableInfo"
-              ></v-column>
-            </div>
-          </el-collapse-item>
-          <el-collapse-item name="index" class="floor">
-            <template slot="title">
-              <i id="ka_indexes" class="el-icon-price-tag"></i>索引
-            </template>
-            <div>
-              <v-index
-                :tableInfo="commonTableObj.tableInfo"
-                :rowData="rowData"
-              ></v-index>
-            </div>
-          </el-collapse-item>
-        </el-collapse>
-      </div>
+      <el-backtop target=".el-dialog.is-fullscreen"></el-backtop>
     </el-scrollbar>
-    <!-- SQL建表 -->
-    <el-dialog
-      :close-on-click-modal="false"
-      title="SQL建表"
-      :visible.sync="handleSQLDialog"
-      width="80%"
-      v-dialogDrag
-      append-to-body
-    >
-      <handle-SQl2
-        @cancelHandle="handleSQLDialog = false"
-        v-if="handleSQLDialog"
-        :handleSQLObj="handleSQLObj"
-      ></handle-SQl2>
-    </el-dialog>
   </div>
 </template>
 
@@ -249,11 +35,19 @@ import SampleData from "@/views/structureManagement/dataList/TableManage/SampleD
 import TableInfoManage from "@/views/structureManagement/dataList/TableManage/TableInfoManage";
 /*外键关联*/
 import ForeignKeyManage from "@/views/structureManagement/dataList/TableManage/ForeignKeyManage";
-// DDl
-import handleSQL from "@/views/structureManagement/dataList/TableManage/handleSQL";
-import handleSQL2 from "@/views/structureManagement/dataList/TableManage/handleSQL2";
-import { getNorm, saveNorm } from "@/api/structureManagement/dataList/index";
-import { dataTableGet } from "@/api/structureManagement/dataList/index";
+/*解码配置*/
+import DecodingConfigManage from "@/views/structureManagement/dataList/TableManage/DecodingConfigManage";
+/* 区域信息 */
+import areaConfigManage from "@/views/structureManagement/dataList/TableManage/gridAreaDefine";
+/* 产品列表 */
+import productConfigManage from "@/views/structureManagement/dataList/TableManage/productList";
+// 数据服务
+import serveConfigManage from "@/views/structureManagement/dataList/TableManage/dataServeManage";
+import {
+  gcl,
+  getNorm,
+  saveNorm,
+} from "@/api/structureManagement/dataList/StructureManageTable";
 export default {
   components: {
     "v-column": ColumnManage,
@@ -263,172 +57,139 @@ export default {
     "sample-data": SampleData,
     "table-info": TableInfoManage,
     "foreign-key": ForeignKeyManage,
-    "handle-SQl": handleSQL,
-    "handle-SQl2": handleSQL2,
+    "decoding-config": DecodingConfigManage,
+    "area-config": areaConfigManage,
+    "product-config": productConfigManage,
+    "serve-config": serveConfigManage,
   },
-  props: { parentRowData: Object, tableBaseInfo: Object },
+  props: { parentRowData: Object },
   data() {
     return {
-      tipsFlag: true,
+      elActive: "",
+      keyActive: "",
+      GActive: "",
+      storage: {
+        //表类型展示配置
+        E_table: {
+          table: { el: true, key: false, ka: false, key_el: false },
+          db: true,
+          dc: false,
+          rg: false,
+          ds: false,
+          pl: false,
+        },
+        F_table: {
+          table: { el: false, key: false, ka: true, key_el: false },
+          db: true,
+          dc: false,
+          rg: true,
+          ds: false,
+          pl: true,
+        },
+        ME_table: {
+          table: { el: true, key: false, ka: false, key_el: false },
+          db: true,
+          dc: true,
+          rg: true,
+          ds: true,
+          pl: false,
+        },
+        G_table: {
+          table: { el: false, key: false, ka: true, key_el: false },
+          db: true,
+          dc: false,
+          rg: true,
+          ds: false,
+          pl: true,
+        },
+        K_E_table: {
+          table: { el: true, key: true, ka: false, key_el: true },
+          db: true,
+          dc: false,
+          rg: false,
+          ds: false,
+          pl: false,
+        },
+        MK_table: {
+          table: { el: true, key: true, ka: false, key_el: true },
+          db: true,
+          dc: true,
+          rg: true,
+          ds: true,
+          pl: false,
+        },
+        NF_table: {
+          table: { el: true, key: false, ka: false, key_el: false },
+          db: true,
+          dc: false,
+          rg: true,
+          ds: false,
+          pl: true,
+        },
+        S_table: {
+          table: { el: false, key: false, ka: true, key_el: false },
+          db: true,
+          dc: false,
+          ds: false,
+          pl: true,
+          rg: true,
+        },
+        L_table: {
+          table: { el: true, key: false, ka: false, key_el: false },
+          db: true,
+          dc: false,
+          rg: false,
+          ds: false,
+          pl: false,
+        },
+      },
+      dialogStatus: { publicMatedataDialog: false, columnDialog: false },
       rowData: this.parentRowData,
       tableActive: "db",
-      activeKaCol: ["keycode", "elcode"],
-      activeBaseCol: ["column"],
-      activeIndexCol: ["1", "2"],
-
-      dialogStatus: { publicMatedataDialog: false, columnDialog: false },
+      tabs: {
+        table: { el: true, key: false, ka: false },
+        db: true,
+        dc: false,
+        rg: false,
+        ds: false,
+        pl: false,
+      },
       keyObj: { tableInfo: {}, keyColumnData: [] },
-      commonTableObj: { tableInfo: {}, ColumnData: [] },
+      elObj: { tableInfo: {}, elColumnData: [] },
+      pubOptions: {},
       dirRule: { dirNorm: "" },
       isDirEdit: false,
-      tabs: {
-        table: { common: true, ka: false },
-      },
-      handleSQLDialog: false,
-      handleSQLObj: {},
     };
   },
   methods: {
-    showSQLManage() {
-      console.log(this.commonTableObj.tableInfo);
-      if (this.commonTableObj.tableInfo.id) {
-        this.handleSQLDialog = true;
-        this.handleSQLObj = this.commonTableObj.tableInfo;
-      } else {
+    elColumnEdit() {
+      //点击要素字典编辑
+      if (this.elObj.elColumnSel.length != 1) {
         this.$message({
-          message: "请先完善表信息",
-          type: "error",
-        });
-      }
-    },
-    findTips(val) {
-      console.log(val);
-      this.tipsFlag = val;
-    },
-    async getTableInfo(val) {
-      console.log(this.rowData);
-      if ((this.rowData && this.rowData.TABLE_ID) || (val && val != "init")) {
-        let id = "";
-        if (this.rowData && this.rowData.TABLE_ID) {
-          id = this.rowData.TABLE_ID;
-        } else {
-          id = val;
-        }
-        await dataTableGet({ id: id }).then((res) => {
-          if (
-            this.rowData.STORAGE_TYPE == "F_table" ||
-            this.rowData.STORAGE_TYPE == "G_table" ||
-            this.rowData.STORAGE_TYPE == "S_table"
-          ) {
-            this.tabs = {
-              table: { common: false, ka: true },
-            };
-            let data = res.data;
-            // isKvK为true的时候，是主键字段，false的时候是属性字段
-            let columnArry = data.columns;
-            let newarryK = [];
-            let newarryE = [];
-            columnArry.forEach((element, index) => {
-              if (element.isKvK === true) {
-                newarryK.push(element);
-              } else if (element.isKvK === false) {
-                newarryE.push(element);
-              }
-            });
-
-            this.keyObj.tableInfo = {
-              columns: newarryK,
-              columnVo: data.columnVo,
-              column_COMMENT: data.column_COMMENT,
-              column_NAME: data.column_NAME,
-              column_TYPE: data.column_TYPE,
-              createBy: data.createBy,
-              createTime: data.createTime,
-              creator: data.creator,
-              databaseId: data.databaseId,
-              databaseName: data.databaseName,
-              databasePid: data.databasePid,
-              databaseType: data.databaseType,
-              delFlag: data.delFlag,
-              id: data.id,
-              idx: data.idx,
-              indexVo: data.indexVo,
-              index_COLUMN: data.index_COLUMN,
-              index_NAME: data.index_NAME,
-              is_NULLABLE: data.is_NULLABLE,
-              nameCn: data.nameCn,
-              non_UNQIUE: data.non_UNQIUE,
-              params: data.params,
-              realColumns: data.realColumns,
-              realTableIndex: data.realTableIndex,
-              storageType: data.storageType,
-              tableDesc: data.tableDesc,
-              tableIndexList: data.tableIndexList,
-              tableName: data.tableName,
-              tableType: data.tableType,
-              uk: data.uk,
-              updateBy: data.updateBy,
-              updateTime: data.updateTime,
-              userId: data.userId,
-            };
-            this.commonTableObj.tableInfo = {
-              columns: newarryE,
-              columnVo: data.columnVo,
-              column_COMMENT: data.column_COMMENT,
-              column_NAME: data.column_NAME,
-              column_TYPE: data.column_TYPE,
-              createBy: data.createBy,
-              createTime: data.createTime,
-              creator: data.creator,
-              databaseId: data.databaseId,
-              databaseName: data.databaseName,
-              databasePid: data.databasePid,
-              databaseType: data.databaseType,
-              delFlag: data.delFlag,
-              id: data.id,
-              idx: data.idx,
-              indexVo: data.indexVo,
-              index_COLUMN: data.index_COLUMN,
-              index_NAME: data.index_NAME,
-              is_NULLABLE: data.is_NULLABLE,
-              nameCn: data.nameCn,
-              non_UNQIUE: data.non_UNQIUE,
-              params: data.params,
-              realColumns: data.realColumns,
-              realTableIndex: data.realTableIndex,
-              storageType: data.storageType,
-              tableDesc: data.tableDesc,
-              tableIndexList: data.tableIndexList,
-              tableName: data.tableName,
-              tableType: data.tableType,
-              uk: data.uk,
-              updateBy: data.updateBy,
-              updateTime: data.updateTime,
-              userId: data.userId,
-            };
-          } else {
-            this.tabs = {
-              table: { common: true, ka: false },
-            };
-            this.commonTableObj.tableInfo = res.data;
-            //this.commonTableObj.ColumnData = res.data.columns;
-          }
+          message: "请选择一条数据！",
+          type: "warning",
         });
       } else {
-        //新增
-        if (
-          this.tableBaseInfo.storageType == "F_table" ||
-          this.tableBaseInfo.storageType == "G_table" ||
-          this.tableBaseInfo.storageType == "S_table"
-        ) {
-          this.tabs = {
-            table: { common: false, ka: true },
-          };
-        }
-        return;
+        this.columnEditData = JSON.parse(
+          JSON.stringify(this.elObj.elColumnSel[0])
+        );
+        this.dialogStatus.columnDialog = true;
       }
     },
-
+    keyColumnEdit() {
+      //点击键表字段编辑
+      if (this.keyObj.keyColumnSel.length != 1) {
+        this.$message({
+          message: "请选择一条数据！",
+          type: "warning",
+        });
+      } else {
+        this.columnEditData = JSON.parse(
+          JSON.stringify(this.keyObj.keyColumnSel[0])
+        );
+        this.dialogStatus.columnDialog = true;
+      }
+    },
     editDir() {
       this.isDirEdit = !this.isDirEdit;
     },
@@ -464,13 +225,32 @@ export default {
         });
       }
     },
-    manageTabsClick(val) {},
-  },
-  async created() {
-    await this.getTableInfo("init");
+    manageTabsClick(val) {
+      if (val.label == "区域信息") {
+        this.$refs["areaRef"].forParent();
+      } else if (val.label == "产品列表") {
+        this.$refs["productRef"].forParent();
+      } else if (val.label == "数据服务") {
+        this.$refs["serveRef"].forParent();
+      }
+    },
   },
   mounted() {
+    //获取表信息
+    this.tabs = this.storage[this.rowData.STORAGE_TYPE];
     this.getDir();
+    this.$nextTick(function () {
+      /*现在数据已经渲染完毕*/
+      if (this.tabs.dc) {
+        this.tableActive = "dc";
+      } else if (this.tabs.rg) {
+        this.tableActive = "rg";
+        this.$refs["areaRef"].forParent();
+      } else if (this.tabs.ds || this.tabs.pl) {
+        this.tableActive = "ds";
+        this.$refs["serveRef"].forParent();
+      }
+    });
   },
 };
 </script>
@@ -478,7 +258,7 @@ export default {
 <style lang="scss">
 .scrollMain {
   position: absolute;
-  top: 64px;
+  top: 48px;
   bottom: 14px;
   left: 20px;
   right: 20px;
@@ -490,13 +270,10 @@ export default {
       overflow-x: hidden;
     }
   }
+}
+.structureManageTable {
   .el-main {
     padding: 0 10px;
-  }
-  .structureManageTable {
-    .el-main {
-      padding: 0;
-    }
   }
   .elementTableTitle {
     box-sizing: border-box;
@@ -588,9 +365,6 @@ export default {
     .el-form-item__content {
       margin-left: 20px !important;
     }
-  }
-  .el-alert {
-    margin-bottom: 3px;
   }
 }
 </style>

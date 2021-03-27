@@ -21,4 +21,10 @@ public interface DataAuthorityRecordDao extends BaseDao<DataAuthorityRecordEntit
 
     List<DataAuthorityRecordEntity> findByApplyId(String applyId);
 
+    /**
+     * 根据表id删除
+     * @param tableId
+     */
+    void deleteByTableId(String tableId);
+
 }

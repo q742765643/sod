@@ -2,7 +2,36 @@
   <el-main class="DataStatistics">
     <fieldset>
       <legend>{{ rowData.DATABASE_NAME }}</legend>
-
+      <el-form
+        ref="ruleForm"
+        :model="searchParams"
+        label-width="100px"
+        :inline="true"
+      >
+        <el-form-item>
+          <el-radio-group
+            v-model.trim="searchParams.isAllLine"
+            @change="handleQuery"
+          >
+            <el-radio :label="1">全部在线</el-radio>
+            <el-radio :label="2">近线服务</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="归档开始时间" v-show="searchParams.isAllLine == 2">
+          <el-input
+            v-model.trim="searchParams.beginTime"
+            size="small"
+            readonly
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="归档结束时间" v-show="searchParams.isAllLine == 2">
+          <el-input
+            v-model.trim="searchParams.endTime"
+            size="small"
+            readonly
+          ></el-input>
+        </el-form-item>
+      </el-form>
       <el-table
         border
         :data="tableData"
@@ -52,7 +81,12 @@
 </template>
 
 <script>
-import { datastatisticsList } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
+import {
+  datastatisticsList,
+  updateIsAllLine,
+  getArchive,
+} from "@/api/structureManagement/dataList/StructureManageTable";
+import { parseTime } from "@/utils/ruoyi";
 export default {
   name: "DataStatistics",
   props: { rowData: Object, tableInfo: Object },
@@ -66,6 +100,11 @@ export default {
         pageNum: 1,
         pageSize: 10,
       },
+      searchParams: {
+        isAllLine: 1,
+        beginTime: "",
+        endTime: "",
+      },
       tableData: [],
       total: 0,
     };
@@ -74,6 +113,19 @@ export default {
     this.searchFun();
   }, */
   methods: {
+    handleQuery(value) {
+      if (value == 2) {
+        getArchive({ ddataid: this.rowData.D_DATA_ID }).then((res) => {
+          this.searchParams.endTime = parseTime(res.data.endTime);
+          this.searchParams.beginTime = parseTime(res.data.beginTime);
+        });
+        //return;
+      }
+      let obj = {};
+      obj.dataClassId = this.rowData.DATA_CLASS_ID;
+      obj.isAllLine = value;
+      updateIsAllLine(obj).then((response) => {});
+    },
     // table自增定义方法
     table_index(index) {
       return (

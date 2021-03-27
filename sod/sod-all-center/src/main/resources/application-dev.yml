@@ -145,6 +145,11 @@ cloudDeploy:
   cloudName: multifort
   cloudPassword: Admin#11
 
+#统一认证平台
+unifyAuthorize:
+  url: http://10.40.25.44:8080
+  password: f969ba3a158e48de8dc1f5585d387b4f
+
 
 serverfile:
   dbfile: /space/cmadaas/sod/src/sod/file/upload/dbfile
@@ -199,3 +204,6 @@ session:
 database:
   sys-users: usr_sod,usr_music,usr_manager,information_schema,sysdba,root,gbase
 
+#部署级别 , 国家级 : C , 省级 : P
+sysLevel:
+  value: C
