@@ -28,7 +28,7 @@ public interface DataClassService {
 
     void delete(String id);
 
-    void deleteByDataClassId(String dataClassId);
+    ResultT deleteByDataClassId(String dataClassId);
 
     List<DataClassDto> all();
 

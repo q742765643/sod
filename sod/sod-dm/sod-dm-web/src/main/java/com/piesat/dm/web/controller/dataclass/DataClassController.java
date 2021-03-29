@@ -148,13 +148,12 @@ public class DataClassController {
     }
 
     @ApiOperation(value = "根据dataClassId删除")
-    @RequiresPermissions("dm:dataClass:delByClass")
+//    @RequiresPermissions("dm:dataClass:delByClass")
     @Log(title = "资料分类管理", businessType = BusinessType.DELETE)
     @DeleteMapping(value = "/delByClass")
-    public ResultT deleteByClassName(String dataClassId) {
+    public ResultT deleteByClassName(@RequestBody DataClassDto dataClassDto) {
         try {
-            this.dataClassService.deleteByDataClassId(dataClassId);
-            return ResultT.success();
+            return this.dataClassService.deleteByDataClassId(dataClassDto.getDataClassId());
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

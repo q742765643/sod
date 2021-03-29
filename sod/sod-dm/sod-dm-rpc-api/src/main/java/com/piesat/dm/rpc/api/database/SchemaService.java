@@ -49,4 +49,11 @@ public interface SchemaService {
     List<Map<String, Object>> getDatabaseList(String ifDisplay);
 
     List<SchemaDto> findByDatabaseName(String databaseName);
+
+    /**
+     * 统计模式使用空间
+     * @param id
+     * @return
+     */
+    ResultT statisticalSpace(String id);
 }

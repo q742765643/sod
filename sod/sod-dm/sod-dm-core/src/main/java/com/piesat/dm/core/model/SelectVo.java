@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  */
 @Data
 public class SelectVo {
+    private String databaseName;
     private String schema;
     private String tableName;
     private String timeColumn;

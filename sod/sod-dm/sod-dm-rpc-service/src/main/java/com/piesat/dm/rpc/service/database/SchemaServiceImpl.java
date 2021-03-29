@@ -2,6 +2,11 @@ package com.piesat.dm.rpc.service.database;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.dm.common.constants.Constants;
+import com.piesat.dm.core.action.build.DataBuild;
+import com.piesat.dm.core.enums.DatabaseTypesEnum;
+import com.piesat.dm.core.model.ConnectVo;
+import com.piesat.dm.core.model.SelectVo;
 import com.piesat.dm.dao.database.SchemaDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.database.SchemaEntity;
@@ -139,6 +144,33 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
     public List<SchemaDto> findByDatabaseName(String databaseName) {
         List<SchemaEntity> databaseEntityList = this.schemaDao.findBySchemaNameCn(databaseName);
         return this.databaseMapper.toDto(databaseEntityList);
+    }
+
+    @Override
+    public ResultT statisticalSpace(String id) {
+        ResultT r = new ResultT();
+        SchemaDto schemaDto = this.getDotById(id);
+        ConnectVo connectVo = schemaDto.getConnectVo();
+        if (connectVo.getDatabaseType().equals(DatabaseTypesEnum.XUGU)) {
+            String url = connectVo.getUrl();
+            int i = url.indexOf(Constants.QUESTION_MARK);
+            int i1 = url.indexOf(Constants.BACKSLASH, url.lastIndexOf(Constants.BACKSLASH_DUBLE) + 2);
+            String databaseName = url.substring(i1 + 1, i);
+            url.replace(databaseName, Constants.SYSTEM);
+            connectVo.setUrl(url);
+            connectVo.setUserName(Constants.SYSDBA);
+            connectVo.setPassWord(Constants.SYSDBA);
+            SelectVo s = new SelectVo();
+            s.setSchema(schemaDto.getSchemaName());
+            s.setDatabaseName(databaseName);
+            new DataBuild()
+                    .init(connectVo, r)
+                    .statisticalSpace(s, r)
+                    .close();
+        } else {
+            r.setData("未知");
+        }
+        return r;
     }
 
     @Override

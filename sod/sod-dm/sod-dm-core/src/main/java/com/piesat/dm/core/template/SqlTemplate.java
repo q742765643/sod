@@ -72,4 +72,13 @@ public class SqlTemplate {
             "</#list>\n" +
             " FROM \n" +
             "\"${schema}\".\"${tableName}\"";
+
+    public static final String QUERY_SCHEMA_STATISTICAL_SPACE = "SELECT SUM(S) N FROM (\n" +
+            "SELECT A.SCHEMA_NAME,B.OBJ_NAME,B.OBJ_ID,COUNT(*)*8/1024 AS S\n" +
+            " FROM SYS_SCHEMAS A,SYS_OBJECTS B,SYS_GSTORES C \n" +
+            "WHERE A.SCHEMA_ID=B.SCHEMA_ID \n" +
+            "AND A.DB_ID=(SELECT DB_ID FROM SYS_DATABASES WHERE DB_NAME='${databaseName}') " +
+            "AND A.DB_ID=B.DB_ID AND B.OBJ_ID=C.OBJ_ID AND A.SCHEMA_NAME='${schema}' GROUP BY  A.SCHEMA_NAME,B.OBJ_NAME,B.OBJ_ID \n" +
+            "ORDER BY S DESC\n" +
+            ")";
 }

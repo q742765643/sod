@@ -96,6 +96,7 @@ public class SchemaController {
 
     /**
      * 数据库_专题库
+     *
      * @return
      */
     @GetMapping("/getDatabaseName")
@@ -128,11 +129,11 @@ public class SchemaController {
     @GetMapping(value = "/findByUserId")
     public ResultT findByUserId(String userId) {
         try {
-            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId,"1");
-            if(databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())){
+            DatabaseUserDto databaseUserDto = this.databaseUserService.findByUserIdAndExamineStatus(userId, "1");
+            if (databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())) {
                 return ResultT.failed("请先创建存储账户！！！");
             }
-            List<SchemaDto> schemaDtos = this.schemaService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库",Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
+            List<SchemaDto> schemaDtos = this.schemaService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(databaseUserDto.getExamineDatabaseId().split(",")));
             return ResultT.success(schemaDtos);
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,9 +157,9 @@ public class SchemaController {
     @ApiOperation(value = "根据用户ID和数据库父ID查询可用专题库的信息")
 //    @RequiresPermissions("dm:database:findByUserIdAndDatabaseDefineId")
     @GetMapping(value = "/findByUserIdAndDatabaseDefineId")
-    public ResultT findByUserIdAndDatabaseDefineId(String userId,String databaseDefineId) {
+    public ResultT findByUserIdAndDatabaseDefineId(String userId, String databaseDefineId) {
         try {
-            List<Map<String,Object>> databaseDtos = this.schemaService.findByUserIdAndDatabaseDefineId(userId,databaseDefineId);
+            List<Map<String, Object>> databaseDtos = this.schemaService.findByUserIdAndDatabaseDefineId(userId, databaseDefineId);
             return ResultT.success(databaseDtos);
         } catch (Exception e) {
             e.printStackTrace();
@@ -173,6 +174,17 @@ public class SchemaController {
         try {
             List<SchemaDto> all = this.schemaService.findByDatabaseName(databaseName);
             return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "统计模式使用空间")
+    @GetMapping(value = "/statisticalSpace")
+    public ResultT statisticalSpace(String id) {
+        try {
+            return this.schemaService.statisticalSpace(id);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

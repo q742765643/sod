@@ -379,11 +379,13 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteByDataClassId(String dataClassId) {
+    public ResultT deleteByDataClassId(String dataClassId) {
+        ResultT r = new ResultT();
         logger.info("根据dataClassId删除资料:" + dataClassId);
         DataClassDto dataClass = this.findByDataClassId(dataClassId);
         if (dataClass == null) {
             logger.info("根据dataClassId删除资料,查出资料为null:" + dataClassId);
+            r.setErrorMessage("根据dataClassId删除资料,查出资料为null:" + dataClassId);
         }
         this.dataClassLabelService.deleteByDataClassId(dataClassId);
         this.dataLogicDao.deleteByDataClassId(dataClassId);
@@ -398,6 +400,7 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
                 });
             }
         }
+        return r;
 
     }
 

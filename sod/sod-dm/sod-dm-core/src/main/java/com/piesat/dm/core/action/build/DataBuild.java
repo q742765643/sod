@@ -140,4 +140,21 @@ public class DataBuild implements Action {
             resultT.setData(OwnException.get(e));
         }
     }
+
+    public DataBuild statisticalSpace(SelectVo selectVo, ResultT<String> resultT){
+        if (this.databaseType.equals(DatabaseTypesEnum.XUGU)) {
+            String statistical = TemplateUtil.rendering(SqlTemplate.QUERY_SCHEMA_STATISTICAL_SPACE, selectVo);
+            List<Map<String, Object>> parti = this.ba.exeQuery(statistical, resultT);
+            if (parti == null) {
+                resultT.setData("未知");
+            } else {
+                String o = parti.get(0).get(Constants.N)
+                        .toString();
+                resultT.setData(o);
+            }
+        }else {
+            resultT.setData("未知");
+        }
+        return this;
+    }
 }
