@@ -713,19 +713,19 @@
                dt.table_name,
                da.user_id,
                da.create_time    as "apply_time",
-               sdb.database_name as "schema_name",
-               sdb.schema_name   as "schema_id",
-               sdd.SCHEMA_NAME_CN   database_name,
+               sdb.schema_name as "schema_name",
+               sdb.DATABASE_CLASSIFY   as "schema_id",
+               sdd.DATABASE_NAME   database_name,
                sdd.id            as "database_define_id",
                sdc.class_name,
-               tsu.web_username     user_name
+               tsu.web_username user_name
         from T_SOD_DATA_AUTHORITY_APPLY dd
-                 left join T_SOD_DATA_TABLE_INFO dt
-                           on dt.id = dd.table_id and dt.database_id = dd.database_id
+                 left join T_SOD_DATA_TABLE_INFO dt on dt.id = dd.table_id
+                 left join T_SOD_DATACLASS_TABLE dlt on dlt.TABLE_ID = dd.table_id
                  left join T_SOD_DATA_AUTHORITY_APPLY_FLOW da on dd.apply_id = da.id
-                 left join t_sod_database sdb on dd.database_id = sdb.id
+                 left join t_sod_database sdb on dt.database_id = sdb.id
                  left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
-                 left join t_sod_data_class sdc on substr(dd.data_class_id, 1, 1) = sdc.data_class_id
+                 left join t_sod_data_class sdc on substr(dlt.data_class_id, 1, 1) = sdc.data_class_id
                  left join t_sod_user tsu on tsu.user_name = dt.user_id
         where da.user_id = #{userId}
         order by da.create_time desc,
