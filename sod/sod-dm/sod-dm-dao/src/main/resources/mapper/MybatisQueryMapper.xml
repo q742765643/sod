@@ -721,9 +721,9 @@
                tsu.web_username     user_name
         from T_SOD_DATA_AUTHORITY_APPLY dd
                  left join T_SOD_DATA_TABLE_INFO dt
-                           on dt.id = dd.table_id and dt.database_id = dd.database_id
+                           on dt.id = dd.table_id
                  left join T_SOD_DATA_AUTHORITY_APPLY_FLOW da on dd.apply_id = da.id
-                 left join t_sod_database sdb on dd.database_id = sdb.id
+                 left join t_sod_database sdb on dt.database_id = sdb.id
                  left join t_sod_database_define sdd on sdb.database_define_id = sdd.id
                  left join t_sod_data_class sdc on substr(dd.data_class_id, 1, 1) = sdc.data_class_id
                  left join t_sod_user tsu on tsu.user_name = dt.user_id
@@ -1055,7 +1055,7 @@
         group by
         t1.database_id,t6.class_name,t1.apply_id
         ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
-        t3.class_name,t4.database_name,t4.schema_name,t4.database_define_id,t5.database_name
+        t3.class_name,t4.schema_name_cn,t4.schema_name,t4.database_define_id,t5.database_name
         order by
         t1.create_time desc
     </select>

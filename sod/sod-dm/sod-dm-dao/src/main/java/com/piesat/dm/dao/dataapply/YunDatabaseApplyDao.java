@@ -9,5 +9,5 @@ import java.util.List;
 public interface YunDatabaseApplyDao extends BaseDao<YunDatabaseApplyEntity> {
     List<YunDatabaseApplyEntity> findByUserIdOrderByExamineStatusAscCreateTimeDesc(String UserId);
     List<YunDatabaseApplyEntity> findByUserIdAndStorageLogic(String UserId,String StorageLogic);
-    List<YunDatabaseApplyEntity> findByUserIdAndStorageLogicAndExamineStatusLikeAndDisplaynameLike(String UserId,String StorageLogic,String examineStatus,String displayname);
+    List<YunDatabaseApplyEntity> findByUserIdAndStorageLogicLikeAndExamineStatusLikeAndDisplaynameLike(String UserId,String StorageLogic,String examineStatus,String displayname);
 }

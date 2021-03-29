@@ -18,10 +18,12 @@ import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.ReadAuthorityDao;
 import com.piesat.dm.dao.dataapply.DataAuthorityApplyDao;
 import com.piesat.dm.dao.dataapply.DataAuthorityRecordDao;
+import com.piesat.dm.dao.dataclass.DataClassDao;
 import com.piesat.dm.dao.datatable.DataTableDao;
 import com.piesat.dm.entity.ReadAuthorityEntity;
 import com.piesat.dm.entity.dataapply.DataAuthorityApplyEntity;
 import com.piesat.dm.entity.dataapply.DataAuthorityRecordEntity;
+import com.piesat.dm.entity.dataclass.DataClassEntity;
 import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisPageMapper;
@@ -67,7 +69,8 @@ import java.util.*;
  */
 @Service
 public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityApplyEntity> implements DataAuthorityApplyService {
-
+    @Autowired
+    private DataClassDao dataClassDao;
     @Autowired
     private DataAuthorityApplyDao dataAuthorityApplyDao;
     @Autowired
@@ -383,6 +386,36 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
             result.put("returnCode", "1");
             result.put("returnMessage", "查询失败");
         }
+        return result;
+    }
+
+    @Override
+    public List<Map<String, Object>>getClassNum(String userId){
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdAsc("0",1);
+
+        Map<String, Object> paraMap = new HashMap<String, Object>();
+        paraMap.put("userId", userId);
+        List<Map<String, Object>> daList = mybatisQueryMapper.getDataAuthorityList(paraMap);
+        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+//        Map<String, Object> result = new HashMap<String, Object>();
+        int num;
+        for(DataClassEntity dataClassEntity : dataClassIdAsc){
+            String className = dataClassEntity.getClassName();
+            Map<String, Object> mapData = new HashMap<String, Object>();
+            num = 0;
+            for(Map<String, Object> daListNew : daList){
+                String classNameNew = String.valueOf(daListNew.get("CATEGORYNAME"));
+                if(className.equalsIgnoreCase(classNameNew)){
+                    num++;
+                }
+            }
+            mapData.put("name",className);
+            mapData.put("y",num);
+//            result.put(className,num);
+            result.add(mapData);
+
+        }
+
         return result;
     }
 

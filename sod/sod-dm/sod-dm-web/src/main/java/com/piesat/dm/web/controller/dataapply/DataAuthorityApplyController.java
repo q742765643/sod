@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/dm/dataAuthorityApply")
-@Api(value = "资料访问权限审核", tags = {"资料访问权限审核"})
+@Api(value="资料访问权限审核",tags= {"资料访问权限审核"})
 public class DataAuthorityApplyController {
 
     @Autowired
@@ -204,7 +204,18 @@ public class DataAuthorityApplyController {
         }
     }
 
-    @ApiOperation(value = "根据四级编码获取用户信息")
+    @ApiOperation(value="获取数据分类数据量")
+    @GetMapping(value="/api/dataAuthorityApply/getClassNum")
+    public ResultT getClassNum(String userId){
+        try {
+            List<Map<String, Object>> map = dataAuthorityApplyService.getClassNum(userId);
+            return ResultT.success(map);
+        }catch (Exception e){
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value="根据四级编码获取用户信息")
     @RequiresPermissions("api:dataAuthorityApply:getDataCreator")
     @PostMapping(value = "/api/dataAuthorityApply/getDataCreator")
     public ResultT getDataCreator(String dataClassId) {

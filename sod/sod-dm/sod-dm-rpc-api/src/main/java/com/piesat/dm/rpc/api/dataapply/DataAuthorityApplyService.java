@@ -45,6 +45,8 @@ public interface DataAuthorityApplyService {
 
     Map<String, Object> getDataAuthorityList(String userId, String applyAuthority, String logicId, String dataName, String category, String schemaId);
 
+    List<Map<String, Object>> getClassNum(String userId);
+
     Map<String, Object> getDataCreator(String dataClassId);
 
     Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId);
