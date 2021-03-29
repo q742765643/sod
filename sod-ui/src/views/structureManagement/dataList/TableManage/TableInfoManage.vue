@@ -1,7 +1,86 @@
 <template>
   <el-main class="TableInfoManage">
+    <el-form
+      v-model="tableBaseForm"
+      label-width="100px"
+      class="elementTableCon"
+      style="border-bottom: none"
+    >
+      <div class="el-row">
+        <div class="el-col el-col-5">
+          <el-form-item label="数据库">
+            <el-select
+              size="small"
+              disabled
+              v-model="tableBaseForm.databasePid"
+              @change="handleFindSpec"
+            >
+              <el-option
+                v-for="(citem, cindex) in DatabaseDefineList"
+                :key="cindex"
+                :label="citem.databaseName"
+                :value="citem.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+        <div class="el-col el-col-5">
+          <el-form-item label="专题库">
+            <el-select
+              size="small"
+              disabled
+              v-model="tableBaseForm.databaseId"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="(citem, cindex) in specialList"
+                :key="cindex"
+                :label="citem.schemaNameCn"
+                :value="citem.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+        <div class="el-col el-col-5">
+          <el-form-item label="存储类型">
+            <el-select
+              size="small"
+              disabled
+              v-model="tableBaseForm.storageType"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="(citem, cindex) in storageTypeList"
+                :key="cindex"
+                :label="citem.dictLabel"
+                :value="citem.dictValue"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+      </div>
+    </el-form>
     <el-form v-model.trim="Info" class="elementTableCon" label-width="100px">
       <div class="el-row">
+        <div class="el-col el-col-5">
+          <el-form-item label="表类型">
+            <el-select
+              :disabled="!isEdit"
+              v-model="Info.tableType"
+              placeholder="请选择"
+            >
+              <el-option label="要素表" value="E"></el-option>
+              <el-option
+                label="键表"
+                value="K"
+                v-if="
+                  this.rowData.STORAGE_TYPE == 'MK_table' ||
+                  this.rowData.STORAGE_TYPE == 'K_E_table'
+                "
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
         <div :class="tableClass">
           <el-form-item label="表名称">
             <el-input
@@ -13,14 +92,14 @@
             ></el-input>
           </el-form-item>
         </div>
-        <div class="el-col el-col-3" v-if="isTableName">
+        <div class="el-col el-col-2" v-if="isTableName">
           <el-form-item class="buttonCon">
             <el-button type="primary" size="small" @click="help"
               >帮助</el-button
             >
           </el-form-item>
         </div>
-        <div class="el-col el-col-10">
+        <div class="el-col el-col-5">
           <el-form-item label="中文名称">
             <el-input
               clearable
@@ -31,75 +110,7 @@
             ></el-input>
           </el-form-item>
         </div>
-        <div class="el-col el-col-4">
-          <el-form-item class="buttonCon">
-            <el-button v-if="!isEdit" type="primary" size="small" @click="edit"
-              >编辑</el-button
-            >
-            <el-popover
-              v-if="!isEdit"
-              placement="bottom"
-              width="240"
-              trigger="hover"
-              popper-class="tableMsgPop"
-            >
-              <div>
-                <ul>
-                  <li>
-                    <p>
-                      <span>{{ "四级编码:" }}</span>
-                      <span>{{ this.rowData.D_DATA_ID }}</span>
-                    </p>
-                  </li>
-                  <li>
-                    <p>
-                      <span>{{ "用途描述:" }}</span>
-                      <span>{{ this.rowData.LOGIC_NAME }}</span>
-                    </p>
-                  </li>
-                  <li>
-                    <p>
-                      <span>{{ "数据库名称:" }}</span>
-                      <span>{{ this.rowData.DATABASE_NAME_F }}</span>
-                    </p>
-                  </li>
-                  <li>
-                    <p>
-                      <span>{{ "表类型:" }}</span>
-                      <span>{{ this.rowData.DICT_LABEL }}</span>
-                    </p>
-                  </li>
-                </ul>
-              </div>
-              <el-button
-                class="tipsBtn"
-                type="primary"
-                size="small"
-                slot="reference"
-                icon="el-icon-tickets"
-              ></el-button>
-            </el-popover>
-            <el-button v-if="isEdit" type="primary" size="small" @click="save"
-              >保存</el-button
-            >
-            <el-button v-if="isEdit" type="primary" size="small" @click="cel"
-              >取消</el-button
-            >
-          </el-form-item>
-        </div>
-      </div>
-      <div class="el-row">
-        <div class="el-col el-col-10">
-          <el-form-item label="服务编码">
-            <el-input
-              :disabled="true"
-              placeholder="服务编码"
-              size="small"
-              v-model.trim="Info.dataServiceId"
-            ></el-input>
-          </el-form-item>
-        </div>
-        <div class="el-col el-col-10">
+        <div class="el-col el-col-5">
           <el-form-item label="备注">
             <el-input
               clearable
@@ -110,15 +121,33 @@
             ></el-input>
           </el-form-item>
         </div>
-        <div class="el-col el-col-4">
+        <div class="el-col el-col-4" v-if="!this.rowData.MYDISABLED">
           <el-form-item class="buttonCon">
-            <el-button
-              type="primary"
-              size="small"
-              @click="baseMsgEdit"
-              v-if="tableStructureManageContral"
-              >基础信息编辑</el-button
+            <el-button v-if="!isEdit" type="primary" size="small" @click="edit"
+              >编辑</el-button
             >
+            <el-button v-if="isEdit" type="primary" size="small" @click="save"
+              >保存</el-button
+            >
+            <el-button v-if="isEdit" type="primary" size="small" @click="cel"
+              >取消</el-button
+            >
+          </el-form-item>
+        </div>
+        <div class="el-col el-col-24" v-if="linkMateriaTableData.length > 0">
+          <el-form-item label="关联资料">
+            <el-table :data="linkMateriaTableData" style="width: 100%">
+              <el-table-column prop="CLASS_NAME" label="资料名" align="center">
+              </el-table-column>
+              <el-table-column
+                prop="DATA_CLASS_ID"
+                label="四级编码"
+                align="center"
+              >
+              </el-table-column>
+              <el-table-column prop="D_DATA_ID" label="存储编码" align="center">
+              </el-table-column>
+            </el-table>
           </el-form-item>
         </div>
       </div>
@@ -179,48 +208,40 @@
         </div>
       </div>
     </el-dialog>
-    <el-dialog
-      :close-on-click-modal="false"
-      v-dialogDrag
-      title="基础信息编辑"
-      :visible.sync="baseMsgEditDialog"
-      width="80%"
-      :before-close="handleClose"
-      append-to-body
-    >
-      <handleBaseMsg
-        @handleClose="handleClose"
-        v-if="baseMsgEditDialog"
-        :handleId="handleId"
-      ></handleBaseMsg>
-    </el-dialog>
   </el-main>
 </template>
 
 <script>
 //接口地址
-// 基础信息编辑
-import { enable } from "@/api/structureManagement/dataList/index";
-import handleBaseMsg from "@/views/structureManagement/dataList/TableManage/handleBaseMsg";
-import { dataTableSavle } from "@/api/structureManagement/dataList/StructureManageTable";
+import { dataTableSavle } from "@/api/structureManagement/tableStructureManage/StructureManageTable";
 import { tableNameVail } from "@/components/commonVaildate.js";
+import {
+  getCanShowDatabaseDefineList,
+  findByDatabaseDefineId,
+} from "@/api/structureManagement/materialManage/index";
+import {
+  getClassByTableId,
+  existTable,
+} from "@/api/structureManagement/dataList/index";
 export default {
   name: "TableInfoManage",
-  components: {
-    handleBaseMsg,
-  },
+  components: {},
   props: {
     rowData: Object,
     tableInfo: Object,
     tableType: String,
+    tableBaseInfo: Object,
   },
   data() {
     return {
-      tableStructureManageContral: false,
+      linkMateriaTableData: [],
+      tableBaseForm: {},
+      storageTypeList: [],
+      DatabaseDefineList: [],
+      specialList: [],
       Info: {
-        table_name: "",
-        name_cn: "",
-        dataServiceId: "",
+        tableName: "",
+        nameCn: "",
         tableDesc: "",
       },
       childTableType: this.tableType,
@@ -228,7 +249,7 @@ export default {
       isEdit: false,
       isTableName: false,
       infoList: [],
-      tableClass: "el-col el-col-10",
+      tableClass: "el-col el-col-5",
       dialogVisible: false,
       baseMsgEditDialog: false,
       handleObj: "",
@@ -314,26 +335,33 @@ export default {
       ],
     };
   },
-  created() {
-    enable().then((res) => {
-      if (res.data == "true") {
-        this.tableStructureManageContral = true;
-      } else {
-        this.tableStructureManageContral = false;
-      }
+  async created() {
+    await this.getDicts("sys_storage_type").then((response) => {
+      this.storageTypeList = response.data;
     });
+    await getCanShowDatabaseDefineList().then((res) => {
+      this.DatabaseDefineList = res.data;
+    });
+    if (this.tableBaseInfo.databasePid) {
+      await this.handleFindSpec(this.tableBaseInfo.databasePid);
+      this.tableBaseForm = this.tableBaseInfo;
+    }
   },
   mounted() {
     this.Info = JSON.parse(JSON.stringify(this.tableInfo));
-    this.isHelp();
+    console.log(this.Info);
+    getClassByTableId({ tableId: this.rowData.TABLE_ID }).then((res) => {
+      this.linkMateriaTableData = res.data;
+    });
   },
   methods: {
-    isHelp() {
-      if (!this.Info.nameCn) {
-        this.Info.nameCn = this.rowData.CLASS_NAME;
-        this.Info.dataServiceId = this.rowData.D_DATA_ID;
-      }
+    //切换数据库查询专题库
+    async handleFindSpec(val) {
+      await findByDatabaseDefineId({ id: val }).then((res) => {
+        this.specialList = res.data;
+      });
     },
+
     reloadTableInfo() {
       this.$emit("reloadTableInfo");
     },
@@ -354,33 +382,23 @@ export default {
         );
         return;
       }
-      let saveObj = {};
-      saveObj.classLogic = this.Info.classLogic;
-      if (!saveObj.classLogic) {
-        saveObj.classLogic = {
-          id: this.rowData.LOGIC_ID,
-        };
-      }
-      saveObj.tableName = this.Info.tableName;
-      saveObj.nameCn = this.Info.nameCn;
-      saveObj.dataServiceId = this.Info.dataServiceId;
-      saveObj.tableDesc = this.Info.tableDesc;
-      saveObj.version = this.Info.version;
-      saveObj.id = this.Info.id;
-      saveObj.createTime = this.Info.createTime;
-      saveObj.dataServiceName = this.rowData.CLASS_NAME;
-      if (this.tableType == "E-Kshow") {
-        saveObj.dbTableType = this.childTableType;
-      } else {
-        saveObj.dbTableType = this.tableType;
-      }
+      let saveObj = {
+        databasePid: this.tableBaseForm.databasePid,
+        databaseId: this.tableBaseForm.databaseId,
+        storageType: this.tableBaseForm.storageType,
+        tableName: this.Info.tableName,
+        nameCn: this.Info.nameCn,
+        tableDesc: this.Info.tableDesc,
+        tableType: this.Info.tableType,
+      };
+      console.log(saveObj);
       dataTableSavle(saveObj).then((response) => {
         if (response.code == 200) {
           this.$message({
             type: "success",
             message: "操作成功",
           });
-          this.$emit("reloadTableInfo");
+          this.$emit("reloadTableInfo", response.data.id);
         } else {
           this.$message({
             type: "error",
@@ -397,11 +415,7 @@ export default {
     help() {
       this.dialogVisible = true;
     },
-    // 基础信息编辑
-    baseMsgEdit() {
-      this.handleId = this.Info.dataServiceId;
-      this.baseMsgEditDialog = true;
-    },
+
     handleClose() {
       this.dialogVisible = false;
       this.baseMsgEditDialog = false;
@@ -411,15 +425,30 @@ export default {
     tableInfo(val) {
       this.Info = JSON.parse(JSON.stringify(val));
       console.log(this.Info);
+      if (!this.tableBaseForm.databasePid) {
+        this.handleFindSpec(this.Info.databasePid);
+        this.tableBaseForm = {
+          databasePid: this.Info.databasePid,
+          databaseId: this.Info.databaseId,
+          storageType: this.Info.storageType,
+        };
+        console.log(this.tableBaseForm);
+      }
+      existTable({
+        databaseId: this.Info.databaseId,
+        tableName: this.Info.tableName,
+      }).then((res) => {
+        this.$emit("findTips", res.data);
+      });
       if (this.tableType == "E-Kshow") {
         this.childTableType = "E";
         this.namehelp = "show";
       }
       if (this.namehelp == "show") {
-        this.tableClass = "el-col el-col-7";
+        this.tableClass = "el-col el-col-3";
         this.isTableName = true;
       } else {
-        this.tableClass = "el-col el-col-10";
+        this.tableClass = "el-col el-col-5";
         this.isTableName = false;
       }
     },
@@ -429,6 +458,9 @@ export default {
 
 <style lang='scss'>
 .TableInfoManage {
+  .el-select {
+    width: 100%;
+  }
   padding-top: 0;
   .buttonCon {
     .el-form-item__content {
