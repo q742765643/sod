@@ -363,7 +363,7 @@
         T_SOD_DATA_AUTHORITY_APPLY_FLOW A LEFT JOIN T_SOD_USER B ON A.USER_ID = B.USER_NAME
         <where>
             <if test="map.userId != null and map.userId != ''">
-                A.USER_ID = #{userId}
+                A.USER_ID = #{map.userId}
             </if>
         </where>
     </select>
@@ -413,7 +413,7 @@
                 AND sdc.class_name LIKE '%${map.className}%'
             </if>
             <if test="map.dataId != null and map.dataId  != ''">
-                AND sdc.class_name LIKE '%${map.dataId}%'
+                AND a.d_data_id LIKE '%${map.dataId}%'
             </if>
             <if test="map.pId != null and map.pId  != ''">
                 AND substr(a.data_class_id, 1, 1) = #{map.pId}

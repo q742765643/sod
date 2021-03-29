@@ -119,12 +119,38 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
     List<Map<String, Object>> findTables(String tableName);
 
     /**
+     * 根据表名、用户id查询相关表信息
+     * @param tableName
+     * @param userId
+     * @return
+     */
+    @Query(value =
+            "SELECT DISTINCT A.*,C.DATABASE_NAME,B.SCHEMA_NAME_CN SCHEMA_NAME,D.DICT_LABEL,E.SUB_TABLE_ID " +
+                    "FROM T_SOD_DATA_TABLE_INFO A " +
+                    "INNER JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID " +
+                    "INNER JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID " +
+                    "INNER JOIN T_SOD_DATABASE_AUTHORIZED F ON F.DATABASE_ID = C.ID " +
+                    "LEFT JOIN T_SOD_DATA_TABLE_FOREIGNKEY E ON E.TABLE_ID = A.ID " +
+                    "LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE WHERE A.TABLE_NAME = ?1 AND F.DATABASE_USERNAME = ?2", nativeQuery = true)
+    List<Map<String, Object>> findTablesByUserId(String tableName,String userId);
+
+
+    /**
      * 查询所有要素表
      * @return
      */
     @Query(value = "SELECT DISTINCT TABLE_NAME FROM T_SOD_DATA_TABLE_INFO WHERE TABLE_TYPE = 'E' ", nativeQuery = true)
     List<Map<String, Object>> findAllETables();
 
+
+    /**
+     * 根据用户id查询所有可用要素表
+     * @return
+     */
+    @Query(value = "SELECT DISTINCT TABLE_NAME FROM T_SOD_DATA_TABLE_INFO A WHERE TABLE_TYPE = 'E' " +
+            "AND EXISTS (SELECT 1 FROM T_SOD_DATABASE B LEFT JOIN T_SOD_DATABASE_AUTHORIZED C " +
+            "ON B.DATABASE_DEFINE_ID = C.DATABASE_ID WHERE A.DATABASE_ID = B.ID AND C.DATABASE_USERNAME = ?1) ", nativeQuery = true)
+    List<Map<String, Object>> findAllETablesByUserId(String userId);
 
     /**
      * 根据存储编码查询表及数据库信息

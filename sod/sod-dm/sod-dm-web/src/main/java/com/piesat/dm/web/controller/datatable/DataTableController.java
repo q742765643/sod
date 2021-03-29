@@ -400,6 +400,17 @@ public class DataTableController {
         }
     }
 
+    @ApiOperation(value = "根据表名、用户id查询相关表信息")
+    @RequiresPermissions("dm:dataTable:findTablesByTableNameAndUserId")
+    @GetMapping(value = "/findTablesByTableNameAndUserId")
+    public ResultT findTablesByTableNameAndUserId(String tableName, String userId) {
+        try {
+            return ResultT.success(this.dataTableService.findTablesByTableNameAndUserId(tableName, userId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
     @ApiOperation(value = "查询所有要素表")
     @RequiresPermissions("dm:dataTable:findAllETables")
@@ -407,6 +418,19 @@ public class DataTableController {
     public ResultT findAllETables() {
         try {
             return ResultT.success(this.dataTableService.findAllETables());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
+    @ApiOperation(value = "根据用户id查询所有可用要素表")
+    @RequiresPermissions("dm:dataTable:findAllETablesByUserId")
+    @GetMapping(value = "/findAllETablesByUserId")
+    public ResultT findAllETablesByUserId(String userId) {
+        try {
+            return ResultT.success(this.dataTableService.findAllETablesByUserId(userId));
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -430,7 +454,7 @@ public class DataTableController {
     @ApiOperation(value = "查询回收站")
     @RequiresPermissions("dm:dataTable:getRecycle")
     @GetMapping(value = "/getRecycle")
-    public ResultT getRecycle(TableInfoVo tableInfoVo ,@RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+    public ResultT getRecycle(TableInfoVo tableInfoVo, @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         try {
             Map<String, Object> map = tableInfoVo.getMap();

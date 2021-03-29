@@ -525,8 +525,18 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     }
 
     @Override
+    public List<Map<String, Object>> findTablesByTableNameAndUserId(String tableName, String userId) {
+        return this.dataTableDao.findTablesByUserId(tableName, userId);
+    }
+
+    @Override
     public List<Map<String, Object>> findAllETables() {
         return this.dataTableDao.findAllETables();
+    }
+
+    @Override
+    public List<Map<String, Object>> findAllETablesByUserId(String userId) {
+        return this.dataTableDao.findAllETablesByUserId(userId);
     }
 
     @Override

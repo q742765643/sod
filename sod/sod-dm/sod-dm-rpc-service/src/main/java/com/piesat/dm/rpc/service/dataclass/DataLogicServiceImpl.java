@@ -135,7 +135,8 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
         if (dataClassLogicDtos != null && !dataClassLogicDtos.isEmpty()) {
             dataClassLogicDtos = dataClassLogicDtos.stream().map(e -> {
                 String tableId = e.getTableId();
-                String databaseId = this.dataTableService.getDotById(tableId).getDatabaseId();
+                String databaseId = this.dataTableService.getDotById(tableId)
+                        .getDatabaseId();
                 SchemaDto dotById = this.schemaService.getDotById(databaseId);
                 e.setDatabaseId(databaseId);
                 e.setDatabasePid(dotById.getDatabase().getId());

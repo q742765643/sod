@@ -39,7 +39,6 @@
     </select>
 
 
-
     <!--修改存储结构概览状态-->
     <update id="updateStorageConfigurationStatus">
         update T_SOD_ADVANCED_CONFIG
@@ -368,7 +367,6 @@
     </select>
 
 
-
     <update id="updateNewdataApplyStatus">
         update t_sod_newdata_apply
         <set>
@@ -495,42 +493,44 @@
     </select>
 
     <select id="getRecordByApplyId" resultType="java.util.Map" parameterType="java.util.Map">
-        select distinct
-        d.*,dd.class_name,dd.is_access,dd.type_id,dd.type_name,dd.table_name,dd.special_database_name,dd.database_name
-        from T_SOD_DATA_AUTHORITY_APPLY d left join
-        (select a.data_class_id,a.class_name,a.is_access,f.data_class_id type_id,f.class_name
-        type_name,c.database_id,b.id class_logic_id,c.table_name,e.SCHEMA_NAME_CN special_database_name,ee.database_name, c.id table_id
-        from T_SOD_DATA_CLASS a
-        left join T_SOD_DATA_CLASS f on SUBSTR(a.data_class_id,0,1) = f.data_class_id
-        left join T_SOD_DATACLASS_TABLE b on a.data_class_id = b.data_class_id
-        left join T_SOD_DATA_TABLE_INFO c on (c.id = b.table_id or c.id = b.sub_table_id)
-        left join T_SOD_DATABASE e on c.database_id = e.id
-        left join T_SOD_DATABASE_DEFINE ee on e.database_define_id = ee.id ) dd
-        on d.table_id = dd.table_id
+        SELECT DISTINCT
+        D.*,DD.CLASS_NAME, DD.D_DATA_ID,DD.STORAGE_TYPE,
+        DD.DATA_CLASS_ID,DD.IS_ACCESS,DD.TYPE_ID,DD.TYPE_NAME,DD.TABLE_NAME,DD.DATABASE_ID,DD.SPECIAL_DATABASE_NAME,DD.DATABASE_NAME
+        FROM T_SOD_DATA_AUTHORITY_APPLY D LEFT JOIN
+        (SELECT A.DATA_CLASS_ID, A.D_DATA_ID,A.CLASS_NAME,A.IS_ACCESS,F.DATA_CLASS_ID TYPE_ID,F.CLASS_NAME
+        TYPE_NAME,C.DATABASE_ID,B.ID CLASS_LOGIC_ID,C.TABLE_NAME,E.SCHEMA_NAME_CN
+        SPECIAL_DATABASE_NAME,EE.DATABASE_NAME, C.ID TABLE_ID, C.STORAGE_TYPE
+        FROM T_SOD_DATA_CLASS A
+        LEFT JOIN T_SOD_DATA_CLASS F ON SUBSTR(A.DATA_CLASS_ID,0,1) = F.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DATACLASS_TABLE B ON A.DATA_CLASS_ID = B.DATA_CLASS_ID
+        LEFT JOIN T_SOD_DATA_TABLE_INFO C ON (C.ID = B.TABLE_ID OR C.ID = B.SUB_TABLE_ID)
+        LEFT JOIN T_SOD_DATABASE E ON C.DATABASE_ID = E.ID
+        LEFT JOIN T_SOD_DATABASE_DEFINE EE ON E.DATABASE_DEFINE_ID = EE.ID ) DD
+        ON D.TABLE_ID = DD.TABLE_ID
         <where>
             <if test="map.applyId != null and map.applyId  != ''">
-                d.apply_id = #{map.applyId}
+                D.APPLY_ID = #{map.applyId}
             </if>
             <if test="map.typeName != null and map.typeName  != ''">
-                AND type_name like '%${map.typeName}%'
+                AND TYPE_NAME like '%${map.typeName}%'
             </if>
             <if test="map.className != null and map.className  != ''">
-                AND class_name like '%${map.className}%'
+                AND CLASS_NAME like '%${map.className}%'
             </if>
             <if test="map.tableName != null and map.tableName  != ''">
-                AND table_name like '%${map.tableName}%'
+                AND TABLE_NAME like '%${map.tableName}%'
             </if>
             <if test="map.databaseName != null and map.databaseName  != ''">
-                AND database_name like '%${map.databaseName}%'
+                AND DATABASE_NAME like '%${map.databaseName}%'
             </if>
             <if test="map.specialDatabaseName != null and map.specialDatabaseName  != ''">
-                AND special_database_name like '%${map.specialDatabaseName}%'
+                AND SPECIAL_DATABASE_NAME like '%${map.specialDatabaseName}%'
             </if>
             <if test="map.applyAuthority != null and map.applyAuthority  != ''">
-                AND apply_authority = #{map.applyAuthority}
+                AND APPLY_AUTHORITY = #{map.applyAuthority}
             </if>
             <if test="map.authorize != null and map.authorize  != ''">
-                AND authorize = #{map.authorize}
+                AND AUTHORIZE = #{map.authorize}
             </if>
         </where>
     </select>
@@ -1075,7 +1075,6 @@
     </select>
 
 
-
     <!-- 查询资料分类 -->
     <select id="getDataCategory" resultType="java.util.Map">
         select DATA_CLASS_ID as "id", CLASS_NAME as "name"
@@ -1460,7 +1459,6 @@
     </select>
 
 
-
     <!--用户申请的文件索引库的资料-->
     <select id="getApplyedRecodeFileDataInfo" resultType="java.util.Map" parameterType="String">
         select dl.data_class_id,
@@ -1531,7 +1529,8 @@
     </select>
 
     <select id="getRecycle" resultType="java.util.Map" parameterType="java.util.Map">
-        SELECT DISTINCT A.ID TABLE_ID,A.TABLE_TYPE,A.TABLE_NAME,A.DATABASE_ID, C.DATABASE_NAME, B.SCHEMA_NAME_CN, B.SCHEMA_NAME, D.DICT_LABEL
+        SELECT DISTINCT A.ID TABLE_ID,A.TABLE_TYPE,A.TABLE_NAME,A.DATABASE_ID, C.DATABASE_NAME, B.SCHEMA_NAME_CN,
+        B.SCHEMA_NAME, D.DICT_LABEL
         FROM T_SOD_DATA_TABLE_INFO A
         LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID
         LEFT JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID

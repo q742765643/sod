@@ -29,6 +29,7 @@ public interface DataTableService {
 
     /**
      * 根据id删除
+     *
      * @param id
      */
     void deleteById(String id);
@@ -77,6 +78,7 @@ public interface DataTableService {
 
     /**
      * 获取关联表信息
+     *
      * @param tableId
      * @return
      */
@@ -92,6 +94,7 @@ public interface DataTableService {
 
     /**
      * 分页查询
+     *
      * @param pageForm
      * @return
      */
@@ -99,6 +102,7 @@ public interface DataTableService {
 
     /**
      * 单表数据量
+     *
      * @param tableSqlDto
      * @return
      */
@@ -106,27 +110,47 @@ public interface DataTableService {
 
     /**
      * 根据子表类型查询
+     *
      * @param tableType
      * @param storageType
      * @return
      */
-    List<Map<String, Object>> findBySubType(String tableType,String storageType);
+    List<Map<String, Object>> findBySubType(String tableType, String storageType);
 
     /**
      * 根据表名查询相关表信息
+     *
      * @param tableName
      * @return
      */
     List<Map<String, Object>> findTablesByTableName(String tableName);
 
     /**
+     * 根据表名、用户id查询相关表信息
+     *
+     * @param tableName
+     * @param userId
+     * @return
+     */
+    List<Map<String, Object>> findTablesByTableNameAndUserId(String tableName, String userId);
+
+    /**
      * 查询所有要素表
+     *
      * @return
      */
     List<Map<String, Object>> findAllETables();
 
     /**
+     * 根据用户id查询所有可用要素表
+     *
+     * @return
+     */
+    List<Map<String, Object>> findAllETablesByUserId(String userId);
+
+    /**
      * 逻辑删除
+     *
      * @param tableId
      * @return
      */
@@ -134,6 +158,7 @@ public interface DataTableService {
 
     /**
      * 查询回收站数据
+     *
      * @return
      */
     PageBean getRecycle(PageForm<Map<String, Object>> pageForm);

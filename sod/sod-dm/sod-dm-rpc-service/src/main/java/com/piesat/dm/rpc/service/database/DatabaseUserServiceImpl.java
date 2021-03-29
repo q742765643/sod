@@ -910,7 +910,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             da.setDatabaseUsername(principal.getUserName());
             da.setStatus(resultT.isSuccess());
             da.setMsg(log);
-            da.setOpeType(ConstantsMsg.OPE_CREATE);
+            da.setOpeType(ConstantsMsg.OPE_DROP);
             da = this.databaseAuthorizedService.saveDto(da);
             List<DatabaseAuthorizedDto> list = new ArrayList<>();
             list.add(da);

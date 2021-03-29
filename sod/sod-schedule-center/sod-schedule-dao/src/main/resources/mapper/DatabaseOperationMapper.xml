@@ -40,7 +40,7 @@
             #{schemaName} AND  table_name=#{tableName} and parti_no>0 order by parti_no
     </select>
     <delete id="deletePartition">
-        alter table ${tableName} drop partition ${partName} wait 120000
+        alter table ${tableName} drop partition ${partName} wait 1200000
     </delete>
     <select id="selectByKCondition"  parameterType="com.piesat.schedule.entity.DatabaseOperationVo" resultType="java.util.Map">
          SELECT *  from ${ktable}

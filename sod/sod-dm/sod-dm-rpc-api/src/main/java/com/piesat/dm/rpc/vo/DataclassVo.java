@@ -3,6 +3,7 @@ package com.piesat.dm.rpc.vo;
 import lombok.Data;
 import org.springframework.cglib.beans.BeanMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,14 @@ public class DataclassVo {
     private String tableName;
     private String userId;
     private String onlyMy;
-    public Map<String,Object> getMap(){
-       return BeanMap.create(this);
+    private String all;
+
+    public Map<String, Object> getMap() {
+        boolean b = !"1".equals(all) && (classIds == null || classIds.size() == 0);
+        if (b) {
+            classIds = new ArrayList<>();
+            classIds.add("PLACEHOLDER");
+        }
+        return BeanMap.create(this);
     }
 }

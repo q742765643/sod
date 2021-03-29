@@ -603,8 +603,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
         specificationBuilder.add("userType", SpecificationOperator.Operator.eq.name(), "11");
         if (StringUtils.isNotNullString(userName)) {
-            specificationBuilder.add("userName", SpecificationOperator.Operator.likeAll.name(), userName);
-            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(), userName);
+            specificationBuilder.add("userName", SpecificationOperator.Operator.eq.name(), userName);
+//            specificationBuilder.add("nickName", SpecificationOperator.Operator.likeAll.name(), userName);
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         List<UserEntity> all = this.getAll(specificationBuilder.generateSpecification(), sort);
