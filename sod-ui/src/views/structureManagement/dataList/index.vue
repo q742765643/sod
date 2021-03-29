@@ -906,8 +906,15 @@ export default {
     //查询所有
     queryListAll() {
       this.queryAll = !this.queryAll;
-      let queryObj = undefined;
-      if (!this.queryAll) {
+      let queryObj = {};
+      if (this.queryAll) {
+        queryObj = {
+          className: this.searchObj.className,
+          dataId: this.searchObj.dataId,
+          tableDataRadio: this.searchObj.tableDataRadio,
+          all: 1,
+        };
+      } else {
         queryObj = this.searchObj;
       }
       this.queryMethods(queryObj);
@@ -917,6 +924,7 @@ export default {
       if (this.searchObj.tableDataRadio == "数据表") {
         queryUrl = getPageTableInfo;
       }
+      console.log(queryObj);
       queryUrl(queryObj).then((response) => {
         this.tableData = response.data;
         if (this.tableData.length > 0) {
@@ -963,12 +971,6 @@ export default {
         this.editTableName = "";
         this.isSourceTree = false;
       } else if (operateType === "编辑资料" || operateType === "查看资料") {
-        /*
-         :isSourceTree="isSourceTree"
-        :editNodeId="editNodeId"
-        :editMaterial="editMaterial"
-        :editTableName="editTableName"
-        :isFooterShow="isFooterShow"*/
         this.currentRow = [];
         this.currentRow.push(scopeRow);
         this.materialSingleTitle = operateType;

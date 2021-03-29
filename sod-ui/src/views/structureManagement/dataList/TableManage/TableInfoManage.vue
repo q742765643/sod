@@ -7,7 +7,7 @@
       style="border-bottom: none"
     >
       <div class="el-row">
-        <div class="el-col el-col-5">
+        <div class="el-col el-col-6">
           <el-form-item label="数据库">
             <el-select
               size="small"
@@ -24,7 +24,7 @@
             </el-select>
           </el-form-item>
         </div>
-        <div class="el-col el-col-5">
+        <div class="el-col el-col-6">
           <el-form-item label="专题库">
             <el-select
               size="small"
@@ -41,7 +41,7 @@
             </el-select>
           </el-form-item>
         </div>
-        <div class="el-col el-col-5">
+        <div class="el-col el-col-6">
           <el-form-item label="存储类型">
             <el-select
               size="small"
@@ -62,7 +62,7 @@
     </el-form>
     <el-form v-model.trim="Info" class="elementTableCon" label-width="100px">
       <div class="el-row">
-        <div class="el-col el-col-5">
+        <div class="el-col el-col-6">
           <el-form-item label="表类型">
             <el-select
               :disabled="!isEdit"
@@ -99,7 +99,7 @@
             >
           </el-form-item>
         </div>
-        <div class="el-col el-col-5">
+        <!-- <div class="el-col el-col-6">
           <el-form-item label="中文名称">
             <el-input
               clearable
@@ -109,8 +109,8 @@
               v-model.trim="Info.nameCn"
             ></el-input>
           </el-form-item>
-        </div>
-        <div class="el-col el-col-5">
+        </div> -->
+        <div class="el-col el-col-6">
           <el-form-item label="备注">
             <el-input
               clearable
@@ -249,7 +249,7 @@ export default {
       isEdit: false,
       isTableName: false,
       infoList: [],
-      tableClass: "el-col el-col-5",
+      tableClass: "el-col el-col-6",
       dialogVisible: false,
       baseMsgEditDialog: false,
       handleObj: "",
@@ -448,7 +448,7 @@ export default {
         this.tableClass = "el-col el-col-3";
         this.isTableName = true;
       } else {
-        this.tableClass = "el-col el-col-5";
+        this.tableClass = "el-col el-col-6";
         this.isTableName = false;
       }
     },
