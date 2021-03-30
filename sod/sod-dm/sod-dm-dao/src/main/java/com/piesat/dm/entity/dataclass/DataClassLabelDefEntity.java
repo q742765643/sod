@@ -25,6 +25,9 @@ public class DataClassLabelDefEntity extends BaseEntity {
     @Column(name = "status")
     private Integer status;
 
+    @Column(name = "user_id")
+    private String userId;
+
     @Column(name = "remark", columnDefinition = "TEXT")
     private String remark;
 

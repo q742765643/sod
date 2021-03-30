@@ -62,6 +62,13 @@ public class DataClassInfoDto extends BaseDto {
      */
     private String dir;
 
+
+    /**
+     * 用户id
+     */
+    private String userId;
+
+
     /**
      * 数据类型（0：业务数据，1：业务中间数据）
      * data_type

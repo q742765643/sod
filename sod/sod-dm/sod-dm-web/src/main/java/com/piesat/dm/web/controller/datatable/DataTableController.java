@@ -441,9 +441,9 @@ public class DataTableController {
     @RequiresPermissions("dm:dataTable:tombstone")
     @Log(title = "表信息管理", businessType = BusinessType.UPDATE)
     @PostMapping(value = "/tombstone")
-    public ResultT tombstone(String tableId, String delFlag) {
+    public ResultT tombstone(@RequestBody DataClassLogicDto dataClassLogicDto) {
         try {
-            this.dataTableService.tombstone(tableId, delFlag);
+            this.dataTableService.tombstone(dataClassLogicDto.getTableId(), dataClassLogicDto.getDelFlag());
             return ResultT.success();
         } catch (Exception e) {
             e.printStackTrace();

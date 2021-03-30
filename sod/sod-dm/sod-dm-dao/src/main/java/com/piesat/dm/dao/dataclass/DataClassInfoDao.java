@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface DataClassInfoDao extends BaseDao<DataClassInfoEntity> {
     /**
-     * 根据数据类型查询
+     * 根据数据类型查询（0：业务数据，1：业务中间数据）
      * @param dataType
      * @return
      */
-    List<DataClassInfoEntity> findByDataTypeOrderByDataClassId(Integer dataType);
+    List<DataClassInfoEntity> findByDataTypeOrderByDataClassIdDesc(Integer dataType);
 }

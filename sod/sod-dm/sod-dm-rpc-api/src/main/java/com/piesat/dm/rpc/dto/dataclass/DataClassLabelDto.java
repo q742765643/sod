@@ -22,4 +22,7 @@ public class DataClassLabelDto extends BaseDto {
 
     private String labelKey;
 
+    private String labelName;
+
+    private String remark;
 }

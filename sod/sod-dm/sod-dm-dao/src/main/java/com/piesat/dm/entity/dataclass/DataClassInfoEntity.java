@@ -73,6 +73,12 @@ public class DataClassInfoEntity extends BaseEntity {
     private String dir;
 
     /**
+     * 用户id
+     */
+    @Column(name = "user_id")
+    private String userId;
+
+    /**
      * 数据类型（0：业务数据，1：业务中间数据）
      * data_type
      */

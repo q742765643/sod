@@ -17,6 +17,8 @@ public class DataClassLabelDefDto extends BaseDto {
 
     private String labelName;
 
+    private String userId;
+
     private Integer status;
 
     private String remark;
