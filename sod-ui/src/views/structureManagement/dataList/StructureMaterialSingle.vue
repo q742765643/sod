@@ -234,7 +234,7 @@
         </div>
       </div>
     </div>
-    <div class="dialog-footer" slot="footer" v-if="!DRegistrationObj">
+    <div class="dialog-footer" slot="footer" v-if="isFooterShow">
       <el-button type="primary" @click="makeSureSave('materialForm')"
         >确认</el-button
       >
@@ -321,6 +321,9 @@ export default {
     },
     editTableName: {
       type: String,
+    },
+    isFooterShow: {
+      type: Boolean,
     },
   },
   data() {

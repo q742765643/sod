@@ -6,7 +6,25 @@
       size="small"
       style="border: 1px; padding: 5px"
     >
-      <el-col :span="7">
+      <el-col :span="8">
+        <el-form-item label="关联表">
+          <el-select
+            filterable
+            v-model.trim="formData.subTableId"
+            placeholder="请选择外键关联表"
+            style="width: 100%"
+            @change="getKeyColumnData"
+          >
+            <el-option
+              v-for="(item, index) in linkTableList"
+              :key="index"
+              :label="item.TABLE_NAME + '(' + item.NAME_CN + ')'"
+              :value="item.ID"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="4">
         <el-form-item label="键表字段">
           <el-select
             filterable
@@ -23,7 +41,7 @@
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="7">
+      <el-col :span="4">
         <el-form-item label="要素表字段">
           <el-select
             filterable
@@ -34,13 +52,13 @@
             <el-option
               v-for="item in elColumnData"
               :key="item.dbEleCode"
-              :label="item.dbEleCode"
+              :label="item.dbEleCode + '[' + item.eleName + ']'"
               :value="item.dbEleCode"
             ></el-option>
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="3">
         <el-form-item label="是否存在真实外键">
           <el-select
             v-model.trim="formData.isReal"
@@ -52,7 +70,7 @@
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="4">
+      <el-col :span="3" v-if="!this.rowData.MYDISABLED">
         <el-button
           type="primary"
           size="small"
@@ -72,12 +90,12 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="keyColumn" label="键表字段"></el-table-column>
-      <el-table-column prop="eleColumn" label="要素表字段"></el-table-column>
-      <el-table-column prop="isReal" label="是否存在真实外键">
+      <el-table-column prop="KEY_COLUMN" label="键表字段"></el-table-column>
+      <el-table-column prop="ELE_COLUMN" label="要素表字段"></el-table-column>
+      <el-table-column prop="IS_REAL" label="是否存在真实外键">
         <template slot-scope="scope">
-          <span v-if="scope.row.isReal == true">是</span>
-          <span v-if="scope.row.isReal == false">否</span>
+          <span v-if="scope.row.IS_REAL == true">是</span>
+          <span v-if="scope.row.IS_REAL == false">否</span>
         </template>
       </el-table-column>
     </el-table>
@@ -87,25 +105,28 @@
 <script>
 import {
   findByTableId,
-  // foreignKeyList,
   foreignKeySave,
   delByIdsKey,
-} from "@/api/structureManagement/dataList/StructureManageTable";
+  foreignKeyByTableId,
+} from "@/api/structureManagement/materialManage/StructureManageTable";
+
+import { findBySubType } from "@/api/structureManagement/dataList/index";
 export default {
   name: "ForeignKeyManage",
-  props: { rowData: Object, keyTableInfo: Object, elTableInfo: Object },
+  props: { rowData: Object, tableInfo: Object },
   data() {
     return {
       tableData: [],
       formData: {
-        tableId: "",
+        tableId: this.rowData.TABLE_ID,
         keyColumn: "",
         eleColumn: "",
         isReal: "true",
       },
       keyColumnData: [],
-      elColumnData: [],
+      elColumnData: this.tableInfo.columns,
       multipleSelection: [],
+      linkTableList: [],
     };
   },
   methods: {
@@ -113,24 +134,14 @@ export default {
       this.multipleSelection = val;
     },
     // 根据键表ID查询键表字段
-    getKeyColumnData() {
-      findByTableId({ tableId: this.keyTableInfo.id }).then((response) => {
+    getKeyColumnData(val) {
+      findByTableId({ tableId: this.formData.subTableId }).then((response) => {
         if (response.code == 200) {
           this.keyColumnData = response.data;
-          this.formData.tableId = this.keyTableInfo.id;
-        }
-      });
-    },
-    // 根据要素表ID查询要素表字段
-    getElColumnData() {
-      findByTableId({ tableId: this.elTableInfo.id }).then((response) => {
-        if (response.code == 200) {
-          this.elColumnData = response.data;
         }
       });
     },
     add() {
-      this.formData.classLogicId = this.rowData.LOGIC_ID;
       foreignKeySave(this.formData).then((response) => {
         if (response.code == 200) {
           this.$message({
@@ -157,8 +168,8 @@ export default {
         let ids = [];
         let keyColumns = [];
         this.multipleSelection.forEach((element) => {
-          ids.push(element.id);
-          keyColumns.push(element.keyColumn);
+          ids.push(element.ID);
+          keyColumns.push(element.KEY_COLUMN);
         });
         this.$confirm("确认删除" + keyColumns.join(",") + "吗?", "温馨提示", {
           confirmButtonText: "确定",
@@ -184,24 +195,33 @@ export default {
           .catch(() => {});
       }
     },
-    // 根据LOGIC_ID查询外键关联
+    //外键关联表格
     getForeignKeyData() {
-      foreignKeyList({ logicId: this.rowData.LOGIC_ID }).then((response) => {
-        if (response.code == 200) {
-          this.tableData = response.data;
+      foreignKeyByTableId({ tableId: this.rowData.TABLE_ID }).then(
+        (response) => {
+          if (response.code == 200) {
+            this.tableData = response.data;
+          }
         }
-      });
+      );
     },
   },
   mounted() {
+    //关联表下拉框
+    findBySubType({
+      storageType: this.rowData.STORAGE_TYPE,
+      tableType: this.rowData.TABLE_TYPE,
+    }).then((response) => {
+      if (response.code == 200) {
+        this.linkTableList = response.data;
+      }
+    });
+    //外键关联表格
     this.getForeignKeyData();
   },
   watch: {
-    keyTableInfo(val) {
-      this.getKeyColumnData();
-    },
-    elTableInfo(val) {
-      this.getElColumnData();
+    tableInfo(val) {
+      this.elColumnData = val.columns;
     },
   },
 };

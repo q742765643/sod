@@ -302,19 +302,11 @@ export default {
       this.handleObj = {};
       this.handlepowerDialog = true;
     },
-    downloadTable() {},
-    //查看原因
-    viewReason(row) {
-      this.$alert(row.failure_reason, "拒绝原因", {
-        confirmButtonText: "确定",
-      });
-    },
+
     viewCell(row) {
       this.handleObj = row;
       this.handleDialog = true;
     },
-    deleteCell(row) {},
-    analysisCell(row) {},
     handleDialogClose() {
       this.handleDialog = false;
       this.handleObj = {};
