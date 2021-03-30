@@ -451,7 +451,7 @@ public class YunDatabaseApplyController {
     @ApiOperation(value ="Portal查询",notes = "Portal查询")
     public ResultT<List<YunDatabaseApplyDto>> getByDNES(String userId,String storageLogic,String examineStatus,String displayname){
         ResultT<List<YunDatabaseApplyDto>> resultT = new ResultT<>();
-        List<YunDatabaseApplyDto> yunDatabaseApplyDtos = this.yunDatabaseApplyService.getByDNES(userId,storageLogic,"%"+examineStatus+"%","%"+displayname+"%");
+        List<YunDatabaseApplyDto> yunDatabaseApplyDtos = this.yunDatabaseApplyService.getByDNES(userId,"%"+storageLogic+"%","%"+examineStatus+"%","%"+displayname+"%");
         resultT.setData(yunDatabaseApplyDtos);
         return resultT;
     }

@@ -83,7 +83,7 @@ public  class YunDatabaseApplyLogServiceImpl extends BaseService<YunDatabaseAppl
     @Override
     public YunDatabaseApplyLogDto saveLog(YunDatabaseApplyLogDto yunDatabaseApplyLogDto) {
         YunDatabaseApplyLogEntity yunDatabaseApplyLogEntity = yunDatabaseApplyLogMapper.toEntity(yunDatabaseApplyLogDto);
-        yunDatabaseApplyLogEntity = this.saveNotNull(yunDatabaseApplyLogEntity);
+        yunDatabaseApplyLogEntity = this.save(yunDatabaseApplyLogEntity);
         return yunDatabaseApplyLogMapper.toDto(yunDatabaseApplyLogEntity);
     }
     @Override

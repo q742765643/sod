@@ -180,7 +180,6 @@ public  class YunDatabaseApplyServiceImpl extends BaseService<YunDatabaseApplyEn
     public YunDatabaseApplyDto getById1(String id) {
         YunDatabaseApplyEntity yunDatabaseApplyEntity = this.getById(id);
         YunDatabaseApplyDto yunDatabaseApplyDto = yunDatabaseApplyMapper.toDto(yunDatabaseApplyEntity);
-//        System.out.println("+++++++"+yunDatabaseApplyDto+"--------------------");
         return yunDatabaseApplyDto;
     }
     @Override
@@ -198,7 +197,7 @@ public  class YunDatabaseApplyServiceImpl extends BaseService<YunDatabaseApplyEn
 
     @Override
     public  List<YunDatabaseApplyDto> getByDNES(String userId,String storageLogic,String examineStatus,String displayname){
-        List<YunDatabaseApplyEntity> yunDatabaseApplyEntities = yunDatabaseApplyDao.findByUserIdAndStorageLogicAndExamineStatusLikeAndDisplaynameLike(userId,storageLogic,examineStatus,displayname);
+        List<YunDatabaseApplyEntity> yunDatabaseApplyEntities = yunDatabaseApplyDao.findByUserIdAndStorageLogicLikeAndExamineStatusLikeAndDisplaynameLike(userId,storageLogic,examineStatus,displayname);
         return  yunDatabaseApplyMapper.toDto(yunDatabaseApplyEntities);
     }
 
