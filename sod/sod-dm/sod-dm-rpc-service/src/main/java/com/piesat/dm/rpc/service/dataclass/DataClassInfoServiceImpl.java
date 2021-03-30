@@ -170,6 +170,10 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     @Override
     public DataClassInfoDto getDotById(String id) {
         DataClassInfoDto dataClassInfoDto = this.dataClassInfoMapper.toDto(this.getById(id));
+        List<DataClassLabelDto> dataClassLabelDtoList = this.dataClassLabelService.findByDataClassId(dataClassInfoDto.getDataClassId());
+        List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(dataClassInfoDto.getDataClassId());
+        dataClassInfoDto.setDataClassLabelList(dataClassLabelDtoList);
+        dataClassInfoDto.setDataClassLogicList(dataClassLogicDtoList);
         return dataClassInfoDto;
     }
 
