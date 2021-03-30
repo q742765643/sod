@@ -10,7 +10,7 @@ import java.util.List;
  * @author cwh
  * @version 1.0.0
  * @ClassName DataClassInfoDto.java
- * @Description TODO
+ * @Description TODO 资料信息
  * @createTime 2021年03月30日 11:05:00
  */
 @Data

@@ -36,6 +36,15 @@ public class DataClassInfoController {
         return this.dataClassInfoService.saveDto(dataClassInfoDto);
     }
 
+    @ApiOperation(value = "新增")
+    @RequiresPermissions("dm:dataclassinfo:apply")
+    @Log(title = "资料信息管理", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/apply")
+    public ResultT apply(@RequestBody DataClassInfoDto dataClassInfoDto) {
+        return this.dataClassInfoService.apply(dataClassInfoDto);
+    }
+
+
     @GetMapping("/list")
     @RequiresPermissions("dm:dataclassinfo:list")
     @ApiOperation(value = "条件分页查询", notes = "条件分页查询")
