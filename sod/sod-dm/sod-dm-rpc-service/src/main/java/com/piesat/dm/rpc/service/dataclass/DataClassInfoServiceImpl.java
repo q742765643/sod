@@ -88,19 +88,8 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
         return ResultT.success();
     }
 
-    public static void main(String[] args) {
-        String a = "MLDT.2021.0326.0002";
-        String su = a.substring(0, 14);
-        String s1 = a.substring(15, 19);
-        System.out.println(su);
-        System.out.println(s1);
-        int i = Integer.valueOf(s1) + 1;
-        DecimalFormat df = new DecimalFormat("0000");
-        String str = df.format(i);
-        System.out.println(str);
-    }
-
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultT apply(DataClassInfoDto dataClassInfoDto) {
         try {
             String dataClassId = dataClassInfoDto.getDataClassId();
@@ -140,7 +129,7 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
             }
             List<DataClassLogicDto> dataClassLogicList = dataClassInfoDto.getDataClassLogicList();
             for (DataClassLogicDto dataClassLogicDto : dataClassLogicList) {
-                if (StringUtils.isEmpty(dataClassInfoDto.getDataClassId())){
+                if (StringUtils.isEmpty(dataClassLogicDto.getDataClassId())){
                     dataClassLogicDto.setDataClassId(dataClassId);
                 }
             }
