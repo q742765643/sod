@@ -1021,17 +1021,18 @@
     <!-- 获取资料申请 -->
     <select id="getDataAuthorityList" resultType="java.util.Map" parameterType="java.util.Map">
         select
-        t1.database_id,t6.class_name as "categoryName",t1.apply_id
+        t3.database_id,t6.class_name as "categoryName",t1.apply_id
         ,t1.apply_authority,t1.authorize,t1.create_time,t1.cause,
         t3.table_name ,t4.SCHEMA_NAME_CN as "databaseSchemaName",
         t4.schema_name,t4.database_define_id,t5.database_name as "databaseName"
         from
         T_SOD_DATA_AUTHORITY_APPLY t1
+        left join T_SOD_DATACLASS_TABLE dlt on dlt.TABLE_ID = t1.table_id
         left join T_SOD_DATA_AUTHORITY_APPLY_FLOW t2 on t1.apply_id = t2.id
         left join T_SOD_DATA_TABLE_INFO t3 on t1.table_id = t3.id
-        left join t_sod_database t4 on t1.database_id = t4.id
+        left join t_sod_database t4 on t3.database_id = t4.id
         left join t_sod_database_define t5 on t4.database_define_id = t5.id
-        left join t_sod_data_class t6 on substr(t1.data_class_id,0,1) = t6.data_class_id
+        left join t_sod_data_class t6 on substr(dlt.data_class_id,0,1) = t6.data_class_id
         where
         1=1
         <if test="userId != null and userId != ''">
@@ -1047,7 +1048,7 @@
             and t3.table_name like CONCAT('%',#{dataName},'%')
         </if>
         <if test="category != null and category != ''">
-            and substr(t1.data_class_id,0,1) = #{category}
+            and substr(dlt.data_class_id,0,1) = #{category}
         </if>
         <if test="schemaId != null and schemaId != ''">
             and t4.id = #{schemaId}
