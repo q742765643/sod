@@ -18,7 +18,7 @@ public class DatabaseAuthorizedDto extends BaseDto {
 
     private String databaseId;
 
-    private Boolean status;
+    private Integer status;
 
     private String opeType;
 

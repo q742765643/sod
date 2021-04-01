@@ -1287,18 +1287,16 @@
 
     <!-- 查询用户可申请资料 -->
     <select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
-        select
-        t1.data_class_id as "dataClassId",t4.id as "databaseId",
-        t1.class_name ||'【数据库：'|| t4.database_name||'】【专题名：'|| t3.SCHEMA_NAME_CN ||'】' as "dataName" ,
-        t3.schema_name as "schemaName" ,t3.id as "logicId",t1.is_access as "accessControl",t5.table_name as "tableName"
-        from
-        t_sod_data_class t1
-        inner join T_SOD_DATACLASS_TABLE t2 on t1. data_class_id = t2.data_class_id
-        inner join T_SOD_DATA_TABLE_INFO t5 on t2.table_id = t5.id or t2.sub_table_id = t5.id
-        inner join t_sod_database t3 on t5.database_id = t3.id
-        inner join t_sod_database_define t4 on t3.database_define_id = t4.id and t4.user_display_control !=2
+        SELECT C.DATABASE_ID,C.TABLE_NAME,B.DATABASE_CLASSIFY,BB.DATABASE_NAME,C.ID TABLE_ID,(
+        SELECT WM_CONCAT(CLASS_NAME) FROM T_SOD_DATA_CLASS D INNER JOIN T_SOD_DATACLASS_TABLE E ON D."DATA_CLASS_ID" = E."DATA_CLASS_ID" WHERE E."TABLE_ID" = C.ID
+        ) CLASS_NAME,B.DATABASE_DEFINE_ID FROM T_SOD_DATABASE_AUTHORIZED A INNER JOIN T_SOD_DATABASE B ON A."DATABASE_ID" = B."DATABASE_DEFINE_ID"
+        INNER JOIN T_SOD_DATABASE_DEFINE BB ON B."DATABASE_DEFINE_ID" = BB."ID"
+        INNER JOIN T_SOD_DATA_TABLE_INFO C ON B."ID" = C."DATABASE_ID" AND EXISTS (SELECT 1 FROM T_SOD_DATACLASS_TABLE WHERE TABLE_ID = C.ID)
+        AND NOT EXISTS (
+        SELECT 1 FROM T_SOD_DATA_AUTHORITY_APPLY WHERE USER_ID = #{userId} AND TABLE_ID = C."ID"
+        )
         <if test="userId != null and userId != ''">
-            where t1.create_by &lt;&gt; #{userId} or t1.create_by is null
+            where A.USER_ID &lt;&gt; #{userId} or t1.create_by is null
         </if>
         order by
         dataName asc

@@ -29,6 +29,7 @@ import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseAuthorizedService;
 import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
@@ -39,6 +40,7 @@ import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.ReadAuthorityDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
+import com.piesat.dm.rpc.dto.database.DatabaseAuthorizedDto;
 import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.DataClassDto;
@@ -60,6 +62,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -69,6 +72,10 @@ import java.util.*;
  */
 @Service
 public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityApplyEntity> implements DataAuthorityApplyService {
+
+    private final String DATABASE_DEFINE_ID = "DATABASE_DEFINE_ID";
+    private final String TABLE_NAME = "TABLE_NAME";
+
     @Autowired
     private DataClassDao dataClassDao;
     @Autowired
@@ -107,6 +114,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     private DatabaseInfo databaseInfo;
     @Autowired
     private DataLogicService dataLogicService;
+    @Autowired
+    private DatabaseAuthorizedService databaseAuthorizedService;
 
     @GrpcHthtClient
     private UserDao userDao;
@@ -118,10 +127,10 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     public PageBean selectPageList(PageForm<Map<String, String>> pageForm) {
-        PageHelper.startPage(pageForm.getCurrentPage(),pageForm.getPageSize());
-        List<Map<String,Object>> lists = this.mybatisPageMapper.getPageAuthorityDataApplyFlow(pageForm.getT());
-        PageInfo<Map<String,Object>> pageInfo = new PageInfo<>(lists);
-        PageBean pageBean=new PageBean(pageInfo.getTotal(),pageInfo.getPages(),lists);
+        PageHelper.startPage(pageForm.getCurrentPage(), pageForm.getPageSize());
+        List<Map<String, Object>> lists = this.mybatisPageMapper.getPageAuthorityDataApplyFlow(pageForm.getT());
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(lists);
+        PageBean pageBean = new PageBean(pageInfo.getTotal(), pageInfo.getPages(), lists);
         return pageBean;
     }
 
@@ -131,10 +140,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
         //新增申请设置成待审
         dataAuthorityApplyEntity.setAuditStatus("01");
-
         //保存
         dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
-
         //读申请是否自动授权
         List<ReadAuthorityEntity> readAuthorityEntities = readAuthorityDao.findAll();
         if (readAuthorityEntities != null && readAuthorityEntities.size() > 0) {
@@ -390,8 +397,8 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    public List<Map<String, Object>>getClassNum(String userId){
-        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdAsc("0",1);
+    public List<Map<String, Object>> getClassNum(String userId) {
+        List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdAsc("0", 1);
 
         Map<String, Object> paraMap = new HashMap<String, Object>();
         paraMap.put("userId", userId);
@@ -399,18 +406,18 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 //        Map<String, Object> result = new HashMap<String, Object>();
         int num;
-        for(DataClassEntity dataClassEntity : dataClassIdAsc){
+        for (DataClassEntity dataClassEntity : dataClassIdAsc) {
             String className = dataClassEntity.getClassName();
             Map<String, Object> mapData = new HashMap<String, Object>();
             num = 0;
-            for(Map<String, Object> daListNew : daList){
+            for (Map<String, Object> daListNew : daList) {
                 String classNameNew = String.valueOf(daListNew.get("CATEGORYNAME"));
-                if(className.equalsIgnoreCase(classNameNew)){
+                if (className.equalsIgnoreCase(classNameNew)) {
                     num++;
                 }
             }
-            mapData.put("name",className);
-            mapData.put("y",num);
+            mapData.put("name", className);
+            mapData.put("y", num);
 //            result.put(className,num);
             result.add(mapData);
 
@@ -443,12 +450,11 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId) {
+    public Map<String, Object> deleteDataAuthorityById(String applyId, String tableId) {
         Map<String, Object> result = new HashMap<String, Object>();
         Map<String, Object> paraMap = new HashMap<String, Object>();
         paraMap.put("applyId", applyId);
-        paraMap.put("dataBaseId", dataBaseId);
-        paraMap.put("dataClassId", dataClassId);
+        paraMap.put("tableId", tableId);
         //删除前查询是否存在
         try {
             mybatisModifyMapper.delDataAuthorityByApplyId(paraMap);
@@ -489,61 +495,25 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
      */
     @Override
     public List<Map<String, Object>> getApplyDataInfo(String userId) throws Exception {
-        //获取userId的可用物理库
-        DatabaseUserDto databaseUserDto = databaseUserService.findByUserIdAndExamineStatus(userId, "1");
-        if (databaseUserDto == null || !StringUtils.isNotNullString(databaseUserDto.getExamineDatabaseId())) {
+
+        List<DatabaseAuthorizedDto> da = this.databaseAuthorizedService.findByDatabaseUsername(userId);
+        if (da.isEmpty()) {
             return null;
         }
+        List<String> dbs = da.
+                stream()
+                .map(DatabaseAuthorizedDto::getDatabaseId)
+                .collect(Collectors.toList());
         //查询所有不属于该用户的资料
         List<Map<String, Object>> result = mybatisQueryMapper.getApplyDataInfo(userId);
-
-        //查询该用户已经申请使用的资料
-        List<Map<String, Object>> recordListByUserId = mybatisQueryMapper.getApplyRecordListByUserId(userId);
-
         //查询可用物理库里已建的表
-        Map<String, List<String>> databaseTables = dataLogicService.getDatabaseTables(databaseUserDto.getExamineDatabaseId());
-
-
+        Map<String, List<String>> databaseTables = dataLogicService.getDatabaseTables(dbs);
         //剔除还没在物理库建表的资料
-        List<String> databaseIds = Arrays.asList(databaseUserDto.getExamineDatabaseId().split(","));
-        for (int i = result.size() - 1; i > -1; i--) {
-            Map<String, Object> map = result.get(i);
-            String databaseId = (String) map.get("DATABASEID");
-            String dataClassId = (String) map.get("DATACLASSID");
-            String tableName = (String) map.get("TABLENAME");
-
-            //资料所在的库没有权限的移除
-            if (!databaseIds.contains(databaseId)) {
-                result.remove(map);
-                continue;
-            }
-
-            //没建表的移除
-            List<String> tableList = databaseTables.get(databaseId);
-            if (tableList == null || tableList.size() == 0) {
-                result.remove(map);
-                continue;
-            }
-            if ("HADB".equalsIgnoreCase(databaseId) && !tableList.contains(tableName.toLowerCase())) {
-                result.remove(map);
-                continue;
-            }
-            if (!"HADB".equalsIgnoreCase(databaseId) && !tableList.contains(tableName.toUpperCase())) {
-                result.remove(map);
-                continue;
-            }
-
-            //已经申请过的移除
-            if (recordListByUserId != null && recordListByUserId.size() > 0) {
-                for (Map<String, Object> record : recordListByUserId) {
-                    if (databaseId.equals((String) record.get("DATABASE_DEFINE_ID")) && dataClassId.equals((String) record.get("DATA_CLASS_ID"))) {
-                        result.remove(map);
-                        break;
-                    }
-                }
-            }
-
-        }
+        result = result.stream().filter(e -> {
+            String dbId = String.valueOf(e.get(this.DATABASE_DEFINE_ID));
+            String tableName = String.valueOf(e.get(this.TABLE_NAME));
+            return databaseTables.get(dbId).contains(tableName.toUpperCase());
+        }).collect(Collectors.toList());
         return result;
     }
 

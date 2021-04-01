@@ -848,7 +848,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             DatabaseAuthorizedDto da = new DatabaseAuthorizedDto();
             da.setDatabaseId(databaseId);
             da.setDatabaseUsername(u.getUserName());
-            da.setStatus(r.isSuccess());
+            da.setStatus(r.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_CREATE);
             DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
@@ -908,7 +908,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                             : String.format(ConstantsMsg.FAIL, resultT.getProcessMsg()));
             da.setDatabaseId(databaseId);
             da.setDatabaseUsername(principal.getUserName());
-            da.setStatus(resultT.isSuccess());
+            da.setStatus(resultT.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_DROP);
             da = this.databaseAuthorizedService.saveDto(da);
@@ -997,7 +997,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             }
             da.setDatabaseId(databaseId);
             da.setDatabaseUsername(u.getUserName());
-            da.setStatus(r.isSuccess());
+            da.setStatus(r.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_ALERT_PWD);
             DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);
@@ -1064,7 +1064,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             }
             da.setDatabaseId(databaseId);
             da.setDatabaseUsername(u.getUserName());
-            da.setStatus(r.isSuccess());
+            da.setStatus(r.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_ALERT_WHITELIST);
             DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.saveDto(da);

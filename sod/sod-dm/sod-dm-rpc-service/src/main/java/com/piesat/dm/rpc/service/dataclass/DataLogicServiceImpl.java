@@ -6,6 +6,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.api.DatabaseDcl;
+import com.piesat.dm.core.model.ConnectVo;
 import com.piesat.dm.core.parser.DatabaseInfo;
 import com.piesat.dm.dao.database.DatabaseDao;
 import com.piesat.dm.dao.dataclass.DataClassDao;
@@ -16,6 +17,7 @@ import com.piesat.dm.entity.datatable.DataTableInfoEntity;
 import com.piesat.dm.entity.special.DatabaseSpecialReadWriteEntity;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.AdvancedConfigService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.DataLogicService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
@@ -45,6 +47,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> implements DataLogicService {
+
+    private final String TABLE_NAME = "TABLE_NAME";
+
     @Autowired
     private DataLogicDao dataLogicDao;
     @Autowired
@@ -58,7 +63,7 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     @Autowired
     private DataTableService dataTableService;
     @Autowired
-    private DatabaseDao databaseDao;
+    private DatabaseService databaseService;
     @Autowired
     private DataClassDao dataClassDao;
 
@@ -131,17 +136,21 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
     @Override
     public List<DataClassLogicDto> findByDataClassId(String dataClassId) {
         List<DataClassAndTableEntity> byDataClassId = this.dataLogicDao.findByDataClassId(dataClassId);
-        List<DataClassLogicDto > dataClassLogicDtos = this.dataLogicMapper.toDto(byDataClassId);
+        List<DataClassLogicDto> dataClassLogicDtos = this.dataLogicMapper.toDto(byDataClassId);
         if (dataClassLogicDtos != null && !dataClassLogicDtos.isEmpty()) {
-            dataClassLogicDtos = dataClassLogicDtos.stream().map(e -> {
-                String tableId = e.getTableId();
-                String databaseId = this.dataTableService.getDotById(tableId)
-                        .getDatabaseId();
-                SchemaDto dotById = this.schemaService.getDotById(databaseId);
-                e.setDatabaseId(databaseId);
-                e.setDatabasePid(dotById.getDatabase().getId());
-                return e;
-            }).collect(Collectors.toList());
+            dataClassLogicDtos = dataClassLogicDtos
+                    .stream()
+                    .map(e -> {
+                        String tableId = e.getTableId();
+                        String databaseId = this.dataTableService.getDotById(tableId)
+                                .getDatabaseId();
+                        SchemaDto dotById = this.schemaService.getDotById(databaseId);
+                        e.setDatabaseId(databaseId);
+                        e.setDatabasePid(
+                                dotById.getDatabase()
+                                        .getId());
+                        return e;
+                    }).collect(Collectors.toList());
         }
         return dataClassLogicDtos;
     }
@@ -190,101 +199,100 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
 
     @Override
     public Map<String, Object> getTableByDBLogics(String tdbId, String logics) {
-            Map<String, Object> map = new HashMap();
+        Map<String, Object> map = new HashMap();
 
-            //查物理库的基础库和专题库下的表信息
-            List<Map<String,Object>> dataList=mybatisQueryMapper.queryTableBylogics(Arrays.asList(logics.split(",")));
-            //查询物理库下专题库下的表信息
-            List<Map<String,Object>>  groupConcat = mybatisQueryMapper.getGroupConcat(Arrays.asList(logics.split(",")));
-            //获取物理库中得表名称
-             Map<String, List<String>> databaseTables = getDatabaseTables(logics);
+        //查物理库的基础库和专题库下的表信息
+        List<Map<String, Object>> dataList = mybatisQueryMapper.queryTableBylogics(Arrays.asList(logics.split(",")));
+        //查询物理库下专题库下的表信息
+        List<Map<String, Object>> groupConcat = mybatisQueryMapper.getGroupConcat(Arrays.asList(logics.split(",")));
+        //获取物理库中得表名称
+        Map<String, List<String>> databaseTables = getDatabaseTables(Arrays.asList(logics.split(",")));
 
-             //如果是向砖题库中追加资料，过滤掉之前选择过的资料
-            if(!StringUtils.isBlank(tdbId)){
-                //专题库下的资料
-                List<DatabaseSpecialReadWriteEntity> selectedList = databaseSpecialReadWriteDao.findBySdbId(tdbId);
+        //如果是向砖题库中追加资料，过滤掉之前选择过的资料
+        if (!StringUtils.isBlank(tdbId)) {
+            //专题库下的资料
+            List<DatabaseSpecialReadWriteEntity> selectedList = databaseSpecialReadWriteDao.findBySdbId(tdbId);
 
-                //dataList剔除掉该专题库下的资料
-                if(selectedList!=null&&selectedList.size()>0){
-                    List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
-                    for(Map<String,Object> notSelect :dataList){
-                        for(DatabaseSpecialReadWriteEntity databaseSpecial :selectedList){
-                            if(notSelect.get("DATA_CLASS_ID").toString().equals(databaseSpecial.getDataClassId().toString())){
-                                delectedList.add(notSelect);
-                            }
+            //dataList剔除掉该专题库下的资料
+            if (selectedList != null && selectedList.size() > 0) {
+                List<Map<String, Object>> delectedList = new ArrayList<Map<String, Object>>();
+                for (Map<String, Object> notSelect : dataList) {
+                    for (DatabaseSpecialReadWriteEntity databaseSpecial : selectedList) {
+                        if (notSelect.get("DATA_CLASS_ID").toString().equals(databaseSpecial.getDataClassId().toString())) {
+                            delectedList.add(notSelect);
                         }
                     }
-                    dataList.removeAll(delectedList);
                 }
-
-                //资料申请访问权限下得资料，专题库id=业务用户id
-                Map<String, Object> dataAuthorityMap = dataAuthorityApplyService.getDataAuthorityList(tdbId,"","","","","");
-                //dataList剔除掉资料访问权限申请的资料
-                if(dataAuthorityMap != null && dataAuthorityMap.get("DS") != null){
-                    List<Map<String,Object>> dataAuthorityList = (List<Map<String,Object>>)dataAuthorityMap.get("DS");
-                    List<Map<String,Object>> delectedList = new ArrayList<Map<String,Object>>();
-                    for(Map<String,Object> notSelect :dataList){
-                        for(Map<String, Object> dataAuthorityRecord :dataAuthorityList){
-                            if(notSelect.get("DATA_CLASS_ID").toString().equals(dataAuthorityRecord.get("DATA_CLASS_ID").toString())){
-                                delectedList.add(notSelect);
-                            }
-                        }
-                    }
-                    dataList.removeAll(delectedList);
-                }
+                dataList.removeAll(delectedList);
             }
 
+            //资料申请访问权限下得资料，专题库id=业务用户id
+            Map<String, Object> dataAuthorityMap = dataAuthorityApplyService.getDataAuthorityList(tdbId, "", "", "", "", "");
+            //dataList剔除掉资料访问权限申请的资料
+            if (dataAuthorityMap != null && dataAuthorityMap.get("DS") != null) {
+                List<Map<String, Object>> dataAuthorityList = (List<Map<String, Object>>) dataAuthorityMap.get("DS");
+                List<Map<String, Object>> delectedList = new ArrayList<Map<String, Object>>();
+                for (Map<String, Object> notSelect : dataList) {
+                    for (Map<String, Object> dataAuthorityRecord : dataAuthorityList) {
+                        if (notSelect.get("DATA_CLASS_ID").toString().equals(dataAuthorityRecord.get("DATA_CLASS_ID").toString())) {
+                            delectedList.add(notSelect);
+                        }
+                    }
+                }
+                dataList.removeAll(delectedList);
+            }
+        }
 
 
-            // 下面创建JSONArray对象，来存储查出的所有记录数据。
-            JSONArray data = new JSONArray();
-            HashSet<String> pp = new HashSet<String>();
-            if(dataList != null && dataList.size()>0){
-                for(int i=0;i<dataList.size();i++){
-                    Map<String,Object> dataTable = dataList.get(i);
+        // 下面创建JSONArray对象，来存储查出的所有记录数据。
+        JSONArray data = new JSONArray();
+        HashSet<String> pp = new HashSet<String>();
+        if (dataList != null && dataList.size() > 0) {
+            for (int i = 0; i < dataList.size(); i++) {
+                Map<String, Object> dataTable = dataList.get(i);
 
-                    //剔除掉物理库中不存在得资料
-                    String database_define_id = dataTable.get("DATABASE_DEFINE_ID") == null ? null : (String)dataTable.get("DATABASE_DEFINE_ID") ;
-                    String table_name = dataTable.get("TABLE_NAME") == null ? null : (String)dataTable.get("TABLE_NAME") ;
-                    if(databaseTables.get(database_define_id) == null){
-                        continue;
-                    }
-                    if("HADB".equalsIgnoreCase(database_define_id) && !databaseTables.get(database_define_id).contains(table_name.toLowerCase())){
-                        continue;
-                    }
-                    if(!"HADB".equalsIgnoreCase(database_define_id) && !databaseTables.get(database_define_id).contains(table_name.toUpperCase())){
-                        continue;
-                    }
+                //剔除掉物理库中不存在得资料
+                String database_define_id = dataTable.get("DATABASE_DEFINE_ID") == null ? null : (String) dataTable.get("DATABASE_DEFINE_ID");
+                String table_name = dataTable.get("TABLE_NAME") == null ? null : (String) dataTable.get("TABLE_NAME");
+                if (databaseTables.get(database_define_id) == null) {
+                    continue;
+                }
+                if ("HADB".equalsIgnoreCase(database_define_id) && !databaseTables.get(database_define_id).contains(table_name.toLowerCase())) {
+                    continue;
+                }
+                if (!"HADB".equalsIgnoreCase(database_define_id) && !databaseTables.get(database_define_id).contains(table_name.toUpperCase())) {
+                    continue;
+                }
 
-                    JSONObject pIdData = new JSONObject();
-                    if(!pp.contains(dataTable.get("PID"))){
-                        pIdData.put("id",dataTable.get("PID"));
-                        pIdData.put("pId","-1");
-                        pIdData.put("name",dataTable.get("CLASSNAME"));
-                        pIdData.put("d_data_id",dataTable.get("PD_DATA_ID"));
-                        pIdData.put("open","false");
-                        data.add(pIdData);
-                        pp.add(dataTable.get("PID").toString());
-                    }
-                    JSONObject oneData = new JSONObject();
-                    oneData.put("id", dataTable.get("DATA_CLASS_ID"));
-                    oneData.put("pId",dataTable.get("PID"));
-                    oneData.put("name", dataTable.get("DATANAME"));
-                    oneData.put("d_data_id", dataTable.get("D_DATA_ID"));
-                    oneData.put("table_name", dataTable.get("TABLE_NAME"));
-                    oneData.put("open","false");
-                    oneData.put("db_table_type",dataTable.get("DB_TABLE_TYPE"));
-                    oneData.put("storage_type",dataTable.get("STORAGE_TYPE"));
-                    oneData.put("special_database_name", dataTable.get("SPECIAL_DATABASE_NAME"));
-                    oneData.put("database_schema_name", dataTable.get("DATABASE_SCHEMA_NAME"));
-                    //如果是键表-要素表中的要素表，要隐藏
-                    if("E".equals(dataTable.get("DB_TABLE_TYPE")) && ((String)dataTable.get("STORAGE_TYPE")).contains("K")){
-                        oneData.put("isHidden",true);
-                    }
-                    //前台临时存储使用
-                    oneData.put("readOrWrite", "");
-                    oneData.put("database_id", dataTable.get("DATABASE_ID"));
-                    oneData.put("physicalDB", dataTable.get("DATABASE_DEFINE_ID"));
+                JSONObject pIdData = new JSONObject();
+                if (!pp.contains(dataTable.get("PID"))) {
+                    pIdData.put("id", dataTable.get("PID"));
+                    pIdData.put("pId", "-1");
+                    pIdData.put("name", dataTable.get("CLASSNAME"));
+                    pIdData.put("d_data_id", dataTable.get("PD_DATA_ID"));
+                    pIdData.put("open", "false");
+                    data.add(pIdData);
+                    pp.add(dataTable.get("PID").toString());
+                }
+                JSONObject oneData = new JSONObject();
+                oneData.put("id", dataTable.get("DATA_CLASS_ID"));
+                oneData.put("pId", dataTable.get("PID"));
+                oneData.put("name", dataTable.get("DATANAME"));
+                oneData.put("d_data_id", dataTable.get("D_DATA_ID"));
+                oneData.put("table_name", dataTable.get("TABLE_NAME"));
+                oneData.put("open", "false");
+                oneData.put("db_table_type", dataTable.get("DB_TABLE_TYPE"));
+                oneData.put("storage_type", dataTable.get("STORAGE_TYPE"));
+                oneData.put("special_database_name", dataTable.get("SPECIAL_DATABASE_NAME"));
+                oneData.put("database_schema_name", dataTable.get("DATABASE_SCHEMA_NAME"));
+                //如果是键表-要素表中的要素表，要隐藏
+                if ("E".equals(dataTable.get("DB_TABLE_TYPE")) && ((String) dataTable.get("STORAGE_TYPE")).contains("K")) {
+                    oneData.put("isHidden", true);
+                }
+                //前台临时存储使用
+                oneData.put("readOrWrite", "");
+                oneData.put("database_id", dataTable.get("DATABASE_ID"));
+                oneData.put("physicalDB", dataTable.get("DATABASE_DEFINE_ID"));
                     /*for(int j=0;j<groupConcat.size();j++){
                         Map<String,Object> group = groupConcat.get(j);
                         oneData.put("database_id", group.get("DATABASE_ID"));
@@ -293,56 +301,33 @@ public class DataLogicServiceImpl extends BaseService<DataClassAndTableEntity> i
                             break;
                         }
                     }*/
-                    data.add(oneData);
-                }
+                data.add(oneData);
             }
+        }
 
-            map.put("data", data);
+        map.put("data", data);
 
-            //下面返回值。
-            return map;
+        //下面返回值。
+        return map;
     }
 
     @Override
-    public Map<String,List<String>> getDatabaseTables(String logics){
+    public Map<String, List<String>> getDatabaseTables(List<String> databaseIds) {
         HashMap<String, List<String>> map = new HashMap<>();
-        if(StringUtils.isNotEmpty(logics)){
-            //List<DatabaseDto> databaseDtos = databaseService.findByDatabaseClassifyAndDatabaseDefineIdIn("物理库", Arrays.asList(logics.split(",")));
-            List<SchemaDto> schemaDtos = schemaService.findByDatabaseDefineIdIn(Arrays.asList(logics.split(",")));
-            for(int i=0;i<schemaDtos.size();i++){
-                DatabaseDcl databaseDcl = null;
-                try {
-                    databaseDcl = DatabaseUtil.getDatabase(schemaDtos.get(i), databaseInfo);
-                }catch (Exception e){
-                    if (e.getMessage().contains("用户不存在")){
-                        if(databaseDcl != null) {
-                            databaseDcl.closeConnect();
-                        }
-                        continue;
-                    }
-                }
-
-                try{
-                    ResultT resultT = databaseDcl.queryAllTableName(schemaDtos.get(i).getSchemaName());
-                    if(resultT.isSuccess() && resultT.getData() != null){
-                        List<String> tableList = map.get(schemaDtos.get(i).getDatabase().getId());
-                        if(tableList != null){
-                            tableList.addAll((List<String>)resultT.getData());
-                            map.put(schemaDtos.get(i).getDatabase().getId(),tableList);
-                        }else{
-                            map.put(schemaDtos.get(i).getDatabase().getId(),(List<String>)resultT.getData());
-                        }
-                    }
-                    databaseDcl.closeConnect();
-                }catch (Exception e){
-                    continue;
-                }finally {
-                    if (databaseDcl!=null){
-                        databaseDcl.closeConnect();
-                    }
-                }
+        for (String databaseId : databaseIds) {
+            ResultT<List<Map<String, Object>>> r = new ResultT();
+            ConnectVo coreInfo = this.databaseService.getDotById(databaseId)
+                    .getCoreInfo();
+            coreInfo.build(r)
+                    .allTables(null, r)
+                    .close();
+            if (r.isSuccess()) {
+                List<String> names = r.getData()
+                        .stream()
+                        .map(e -> String.valueOf(e.get(this.TABLE_NAME)).toUpperCase())
+                        .collect(Collectors.toList());
+                map.put(coreInfo.getPid(), names);
             }
-
         }
         return map;
     }

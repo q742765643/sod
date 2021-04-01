@@ -11,14 +11,14 @@ import javax.persistence.Table;
 @Table(name = "T_SOD_DATABASE_AUTHORIZED")
 @Entity
 public class DatabaseAuthorizedEntity extends BaseEntity {
-    @Column(name = "database_username")
-    private String databaseUsername;
+    @Column(name = "db_username")
+    private String dbUsername;
 
     @Column(name = "database_id")
     private String databaseId;
 
-    @Column(name = "status", columnDefinition = "Boolean default false")
-    private Boolean status;
+    @Column(name = "status")
+    private Integer status;
 
     @Column(name = "ope_type")
     private String opeType;

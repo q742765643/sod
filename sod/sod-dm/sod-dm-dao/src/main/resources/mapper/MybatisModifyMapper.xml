@@ -87,11 +87,8 @@
     <delete id="delDataAuthorityByApplyId" parameterType="java.util.Map">
         delete from T_SOD_DATA_AUTHORITY_APPLY
         where apply_id = #{applyId}
-        <if test="dataBaseId != null and dataBaseId !=''">
-            and DATABASE_ID = #{dataBaseId}
-        </if>
-        <if test="dataClassId != null and dataClassId != ''">
-            and DATA_CLASS_ID = #{dataClassId}
+        <if test="tableId != null and tableId !=''">
+            and table_id = #{tableId}
         </if>
     </delete>
 </mapper>

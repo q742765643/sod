@@ -49,7 +49,7 @@ public interface DataAuthorityApplyService {
 
     Map<String, Object> getDataCreator(String dataClassId);
 
-    Map<String, Object> deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId);
+    Map<String, Object> deleteDataAuthorityById(String applyId, String tableId);
 
     Map<String, Object> getDataCategory();
     /**

@@ -122,6 +122,7 @@ public class GbaseBusiness extends BaseBusiness{
                         .append(" -u")
                         .append(connectVo.getUserName())
                         .append(" -p").append(connectVo.getPassWord())
+                        .append(" -vvv ")
                         .append(" -e ")
                         .append("\"").append(sql)
                         .append(" INTO OUTFILE '").append(tempFilePath).append("'")

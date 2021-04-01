@@ -47,5 +47,10 @@ public interface DataLogicService {
 
     Map<String, Object> getTableByDBLogics(String tdbId, String logics);
 
-    Map<String,List<String>> getDatabaseTables(String logics);
+    /**
+     * 根据物理库查询实际存在的表
+     * @param databaseIds
+     * @return
+     */
+    Map<String,List<String>> getDatabaseTables(List<String> databaseIds);
 }

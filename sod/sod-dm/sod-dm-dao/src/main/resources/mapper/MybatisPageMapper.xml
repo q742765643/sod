@@ -284,10 +284,10 @@
             <if test="map.dataId != null and map.dataId  != ''">
                 AND C.D_DATA_ID LIKE '%${map.dataId}%'
             </if>
-            <if test="map.onlyMy == '1'">
+            <if test='map.onlyMy == "1"'>
                 AND A.USER_ID = #{map.userId}
             </if>
-            <if test="map.userId != null and map.userId  != '' and map.onlyMy  == '0'">
+            <if test='map.userId != null and map.userId  != "" and map.onlyMy  == "0"'>
                 AND (A.USER_ID = #{map.userId} OR EXISTS
                 (SELECT TABLE_ID FROM T_SOD_DATA_AUTHORITY_APPLY WHERE TABLE_ID = A.ID AND USER_ID = #{map.userId}))
             </if>
@@ -347,10 +347,10 @@
             <if test="map.tableName != null and map.tableName  != ''">
                 AND C.TABLE_NAME LIKE '%${map.tableName}%'
             </if>
-            <if test="map.onlyMy == '1'">
+            <if test='map.onlyMy == "1"'>
                   AND C.USER_ID = #{map.userId}
             </if>
-            <if test="map.userId != null and map.userId  != '' and map.onlyMy  == '0'">
+            <if test='map.userId != null and map.userId  != "" and map.onlyMy == "0"'>
                 AND (C.USER_ID = #{map.userId} OR EXISTS
                 (SELECT TABLE_ID FROM T_SOD_DATA_AUTHORITY_APPLY WHERE TABLE_ID = C.ID AND USER_ID = #{map.userId}))
             </if>

@@ -1,5 +1,6 @@
 package com.piesat.dm.core.model;
 
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.core.constants.Constants;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.enums.DbaEnum;
@@ -16,20 +17,22 @@ public class AuthorityVo {
     private String userName;
     private DbaEnum dbaEnum;
 
-    public AuthorityVo(){}
-    public AuthorityVo(String schema,String tableName,String userName,DbaEnum dbaEnum){
+    public AuthorityVo() {
+    }
+
+    public AuthorityVo(String schema, String tableName, String userName, DbaEnum dbaEnum) {
         this.schema = schema;
         this.tableName = tableName;
         this.userName = userName;
         this.dbaEnum = dbaEnum;
     }
 
-    public AuthorityVo(String schema,String tableName){
+    public AuthorityVo(String schema, String tableName) {
         this.schema = schema;
         this.tableName = tableName;
     }
 
-    public AuthorityVo(String schema){
+    public AuthorityVo(String schema) {
         this.schema = schema.toUpperCase();
     }
 
@@ -46,24 +49,28 @@ public class AuthorityVo {
         this.grantArr = dbaEnum.getDba().split(Constants.COMMA);
     }
 
-    public void format(DatabaseTypesEnum databaseType){
-        if (databaseType.equals(DatabaseTypesEnum.CASSANDRA)){
+    public void format(DatabaseTypesEnum databaseType) {
+        if (databaseType.equals(DatabaseTypesEnum.CASSANDRA)) {
             this.schema = schema.toLowerCase();
             this.tableName = tableName.toLowerCase();
-        }else {
+        } else {
             this.schema = schema.toUpperCase();
             this.tableName = tableName.toUpperCase();
         }
     }
 
-    public void lower(Boolean b){
-        if (b){
-            this.schema = schema.toLowerCase();
-            this.tableName = tableName.toLowerCase();
+    public void lower(Boolean b) {
+        if (b) {
+            if (!StringUtils.isEmpty(this.schema)) {
+                this.schema = schema.toLowerCase();
+            }
+            if (!StringUtils.isEmpty(this.tableName)) {
+                this.tableName = tableName.toLowerCase();
+            }
         }
     }
 
-    public void upper(){
+    public void upper() {
         this.schema = schema.toUpperCase();
         this.tableName = tableName.toUpperCase();
     }

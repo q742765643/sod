@@ -58,7 +58,7 @@ public class XuguBusiness extends BaseBusiness{
         String tempFilePath=strategyVo.getTempPtah()+"/"+backupLogEntity.getFileName()+".exp";
         try {
             semaphore.acquire();
-            select2File.expparttab2(backupLogEntity.getTableName(),tempFilePath,sql,backupLogEntity.getParentId());
+            long l = select2File.expparttab2(backupLogEntity.getTableName(), tempFilePath, sql, backupLogEntity.getParentId());
             strategyVo.setKfilePath(tempFilePath);
             ExpMetadata expMetadata=new ExpMetadata();
             File tempFile=new File(tempFilePath);
@@ -100,7 +100,7 @@ public class XuguBusiness extends BaseBusiness{
         Select2File select2File=new Select2File();
         String tempFilePath=strategyVo.getTempPtah()+"/"+strategyVo.getVfileName()+".exp";
         try {
-            select2File.expparttab2(backupLogEntity.getVTableName(),tempFilePath,sql,backupLogEntity.getParentId());
+            long l = select2File.expparttab2(backupLogEntity.getVTableName(), tempFilePath, sql, backupLogEntity.getParentId());
             strategyVo.setVfilePath(tempFilePath);
             File tempFile=new File(tempFilePath);
             ExpMetadata expMetadata=new ExpMetadata();

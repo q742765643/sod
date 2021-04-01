@@ -343,8 +343,15 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.QUERY_TABLES, authorityVo);
+        if (authorityVo != null) {
+            authorityVo.lower(this.ba.lower);
+        }
+        String sql;
+        if (authorityVo == null || StringUtils.isEmpty(authorityVo.getSchema())) {
+            sql = TemplateUtil.rendering(T.QUERY_ALL_TABLES, authorityVo);
+        } else {
+            sql = TemplateUtil.rendering(T.QUERY_TABLES, authorityVo);
+        }
         resultT.setData(this.ba.exeQuery(sql, resultT));
         return this;
     }

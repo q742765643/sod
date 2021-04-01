@@ -15,14 +15,14 @@ public interface DatabaseAuthorizedDao extends BaseDao<DatabaseAuthorizedEntity>
      * @param username
      * @return
      */
-    List<DatabaseAuthorizedEntity> findByDatabaseUsername(String username);
+    List<DatabaseAuthorizedEntity> findByDbUsername(String username);
 
     /**
      * 根据数据库账户和数据库id删除
      * @param username
      * @param databaseId
      */
-    void deleteByDatabaseUsernameAndDatabaseId(String username, String databaseId);
+    void deleteByDbUsernameAndDatabaseId(String username, String databaseId);
 
     /**
      * 根据数据库账户和数据库id查询
@@ -30,6 +30,6 @@ public interface DatabaseAuthorizedDao extends BaseDao<DatabaseAuthorizedEntity>
      * @param databaseId
      * @return
      */
-    List<DatabaseAuthorizedEntity> findByDatabaseUsernameAndDatabaseId(String username, String databaseId);
+    List<DatabaseAuthorizedEntity> findByDbUsernameAndDatabaseId(String username, String databaseId);
 
 }

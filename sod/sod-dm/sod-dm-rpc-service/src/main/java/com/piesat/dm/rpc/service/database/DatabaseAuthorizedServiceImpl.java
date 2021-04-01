@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author cwh
@@ -51,17 +50,17 @@ public class DatabaseAuthorizedServiceImpl extends BaseService<DatabaseAuthorize
 
     @Override
     public List<DatabaseAuthorizedDto> findByDatabaseUsername(String username) {
-        return this.databaseAuthorizedMapper.toDto(this.databaseAuthorizedDao.findByDatabaseUsername(username));
+        return this.databaseAuthorizedMapper.toDto(this.databaseAuthorizedDao.findByDbUsername(username));
     }
 
     @Override
     public void delete(String username, String databaseId) {
-        this.databaseAuthorizedDao.deleteByDatabaseUsernameAndDatabaseId(username, databaseId);
+        this.databaseAuthorizedDao.deleteByDbUsernameAndDatabaseId(username, databaseId);
     }
 
     @Override
     public DatabaseAuthorizedDto findByDatabaseUsernameAndDatabaseId(String username, String databaseId) {
-        List<DatabaseAuthorizedEntity> r = this.databaseAuthorizedDao.findByDatabaseUsernameAndDatabaseId(username, databaseId);
+        List<DatabaseAuthorizedEntity> r = this.databaseAuthorizedDao.findByDbUsernameAndDatabaseId(username, databaseId);
         if (r != null && r.size() > 0) {
             return this.databaseAuthorizedMapper.toDto(r.get(0));
         } else {

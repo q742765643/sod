@@ -230,9 +230,9 @@ public class DataAuthorityApplyController {
     @ApiOperation(value = "根据id删除资料记录")
 //    @RequiresPermissions("api:dataAuthorityApply:deleteDataAuthorityById")
     @GetMapping(value = "/deleteDataAuthorityById")
-    public ResultT deleteDataAuthorityById(String applyId, String dataBaseId, String dataClassId) {
+    public ResultT deleteDataAuthorityById(String applyId, String tableId) {
         try {
-            Map<String, Object> map = dataAuthorityApplyService.deleteDataAuthorityById(applyId, dataBaseId, dataClassId);
+            Map<String, Object> map = dataAuthorityApplyService.deleteDataAuthorityById(applyId, tableId);
             return ResultT.success();
         } catch (Exception e) {
             return ResultT.failed(e.getMessage());

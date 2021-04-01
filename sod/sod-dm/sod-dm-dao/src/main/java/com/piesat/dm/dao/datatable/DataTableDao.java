@@ -131,7 +131,7 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
                     "INNER JOIN T_SOD_DATABASE_DEFINE C ON B.DATABASE_DEFINE_ID = C.ID " +
                     "INNER JOIN T_SOD_DATABASE_AUTHORIZED F ON F.DATABASE_ID = C.ID " +
                     "LEFT JOIN T_SOD_DATA_TABLE_FOREIGNKEY E ON E.TABLE_ID = A.ID " +
-                    "LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE WHERE A.TABLE_NAME = ?1 AND F.DATABASE_USERNAME = ?2", nativeQuery = true)
+                    "LEFT JOIN T_SOD_DICT_DATA D ON A.STORAGE_TYPE = D.DICT_VALUE WHERE A.TABLE_NAME = ?1 AND F.DB_USERNAME = ?2", nativeQuery = true)
     List<Map<String, Object>> findTablesByUserId(String tableName,String userId);
 
 
@@ -149,7 +149,7 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      */
     @Query(value = "SELECT DISTINCT TABLE_NAME FROM T_SOD_DATA_TABLE_INFO A WHERE TABLE_TYPE = 'E' " +
             "AND EXISTS (SELECT 1 FROM T_SOD_DATABASE B LEFT JOIN T_SOD_DATABASE_AUTHORIZED C " +
-            "ON B.DATABASE_DEFINE_ID = C.DATABASE_ID WHERE A.DATABASE_ID = B.ID AND C.DATABASE_USERNAME = ?1) ", nativeQuery = true)
+            "ON B.DATABASE_DEFINE_ID = C.DATABASE_ID WHERE A.DATABASE_ID = B.ID AND C.DB_USERNAME = ?1) ", nativeQuery = true)
     List<Map<String, Object>> findAllETablesByUserId(String userId);
 
     /**
