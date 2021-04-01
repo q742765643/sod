@@ -1053,10 +1053,6 @@
         <if test="schemaId != null and schemaId != ''">
             and t4.id = #{schemaId}
         </if>
-        group by
-        t1.database_id,t6.class_name,t1.apply_id
-        ,t1.apply_authority,t1.authorize,t1.create_time,t1.data_class_id,t1.cause,
-        t3.class_name,t4.database_name,t4.schema_name,t4.database_define_id,t5.database_name
         order by
         t1.create_time desc
     </select>
