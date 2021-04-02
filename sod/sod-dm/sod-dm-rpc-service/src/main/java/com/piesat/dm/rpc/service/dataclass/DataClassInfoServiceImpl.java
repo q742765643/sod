@@ -161,6 +161,11 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
         DataClassInfoDto dataClassInfoDto = this.dataClassInfoMapper.toDto(this.getById(id));
         List<DataClassLabelDto> dataClassLabelDtoList = this.dataClassLabelService.findByDataClassId(dataClassInfoDto.getDataClassId());
         List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(dataClassInfoDto.getDataClassId());
+        if (dataClassLogicDtoList.size()>0){
+            String tableId = dataClassLogicDtoList.get(0).getTableId();
+            DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
+            dataClassInfoDto.setTableName(dataTableInfoDto.getTableName());
+        }
         dataClassInfoDto.setDataClassLabelList(dataClassLabelDtoList);
         dataClassInfoDto.setDataClassLogicList(dataClassLogicDtoList);
         return dataClassInfoDto;

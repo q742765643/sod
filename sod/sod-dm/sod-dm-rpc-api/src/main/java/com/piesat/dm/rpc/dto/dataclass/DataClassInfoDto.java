@@ -84,4 +84,9 @@ public class DataClassInfoDto extends BaseDto {
      * 资料标签关系
      */
     private List<DataClassLabelDto> dataClassLabelList;
+
+    /**
+     * 辅助参数
+     */
+    private String tableName;
 }
