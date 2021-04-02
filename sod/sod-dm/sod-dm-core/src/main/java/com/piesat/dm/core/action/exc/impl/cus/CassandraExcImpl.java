@@ -15,7 +15,7 @@ public class CassandraExcImpl extends ExcImpl {
 
     @Override
     public boolean existUser(UserInfo userInfo, ResultT<String> resultT) {
-        return ((CassandraDatabaseImpl) this.ba).cassandraUserIn(T.QUERY_USER, userInfo.getUserName());
+        return ((CassandraDatabaseImpl) this.ba).cassandraUserIn(T.getQUERY_USER(), userInfo.getUserName());
     }
 
 }

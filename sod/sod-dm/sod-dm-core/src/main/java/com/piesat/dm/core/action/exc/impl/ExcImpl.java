@@ -7,10 +7,12 @@ import com.piesat.dm.common.util.TemplateUtil;
 import com.piesat.dm.core.action.exc.Exc;
 import com.piesat.dm.core.action.exc.abs.ExcAbs;
 import com.piesat.dm.core.action.impl.abs.BaseAbs;
+import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.model.AuthorityVo;
 import com.piesat.dm.core.model.ColumnVo;
 import com.piesat.dm.core.model.UserInfo;
 import com.piesat.dm.core.template.SqlTemplateComm;
+import com.piesat.dm.core.template.SqlTemplateXuGu;
 import com.piesat.util.ResultT;
 
 import java.util.List;
@@ -23,6 +25,14 @@ import java.util.Map;
  * @date 2021年 01月27日 17:27:40
  */
 public class ExcImpl extends ExcAbs {
+
+    public static void main(String[] args) {
+        SqlTemplateComm sqlTemplateXuGu = new SqlTemplateXuGu();
+        System.out.println(sqlTemplateXuGu.getQUERY_ALL_TABLES());
+
+        System.out.println(DatabaseTypesEnum.XUGU.getSt().getQUERY_ALL_TABLES());
+
+    }
 
     @Override
     public ExcAbs init(BaseAbs ba, SqlTemplateComm t) {
@@ -52,7 +62,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         if (!this.existUser(userInfo, resultT)) {
-            String sql = TemplateUtil.rendering(T.CREATE_USER, userInfo);
+            String sql = TemplateUtil.rendering(T.getCREATE_USER(), userInfo);
             this.ba.exe(sql, resultT);
         }
         return this;
@@ -68,7 +78,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         if (this.existUser(userInfo, resultT)) {
-            String sql = TemplateUtil.rendering(T.DROP_USER, userInfo);
+            String sql = TemplateUtil.rendering(T.getDROP_USER(), userInfo);
             this.ba.exe(sql, resultT);
         }
         return this;
@@ -79,7 +89,7 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return false;
         }
-        String sql = TemplateUtil.rendering(T.QUERY_USER, userInfo);
+        String sql = TemplateUtil.rendering(T.getQUERY_USER(), userInfo);
         return this.ba.exeQuery(sql);
     }
 
@@ -88,7 +98,7 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        String sql = TemplateUtil.rendering(T.ALTER_USER_PWD, userInfo);
+        String sql = TemplateUtil.rendering(T.getALTER_USER_PWD(), userInfo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -98,7 +108,7 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        String sql = TemplateUtil.rendering(T.ALTER_USER_WHITELIST, userInfo);
+        String sql = TemplateUtil.rendering(T.getALTER_USER_WHITELIST(), userInfo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -115,7 +125,7 @@ public class ExcImpl extends ExcAbs {
             return false;
         }
         authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.QUERY_SCHEMA, authorityVo);
+        String sql = TemplateUtil.rendering(T.getQUERY_SCHEMA(), authorityVo);
         return this.ba.exeQuery(sql);
     }
 
@@ -129,7 +139,7 @@ public class ExcImpl extends ExcAbs {
             resultT.setErrorMessage(String.format(ConstantsMsg.MSG1, authorityVo.getSchema()));
             return this;
         }
-        String sql = TemplateUtil.rendering(T.CREATE_SCHEMA, authorityVo);
+        String sql = TemplateUtil.rendering(T.getCREATE_SCHEMA(), authorityVo);
         this.ba.exe(sql, resultT);
         this.grantAnyTable(authorityVo, resultT);
         return this;
@@ -145,7 +155,7 @@ public class ExcImpl extends ExcAbs {
             resultT.setErrorMessage(String.format(ConstantsMsg.MSG1, authorityVo.getSchema()));
             return this;
         }
-        String sql = TemplateUtil.rendering(T.DROP_SCHEMA, authorityVo);
+        String sql = TemplateUtil.rendering(T.getDROP_SCHEMA(), authorityVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -159,7 +169,7 @@ public class ExcImpl extends ExcAbs {
         String[] grantArr = authorityVo.getGrantArr();
         for (int i = 0; i < grantArr.length; i++) {
             authorityVo.setGrantStr(grantArr[i]);
-            String sql = TemplateUtil.rendering(T.GRANT_ANY_TABLE, authorityVo);
+            String sql = TemplateUtil.rendering(T.getGRANT_ANY_TABLE(), authorityVo);
             this.ba.exe(sql, resultT);
         }
         return this;
@@ -175,7 +185,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.GRANT_TABLE, authorityVo);
+        String sql = TemplateUtil.rendering(T.getGRANT_TABLE(), authorityVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -186,7 +196,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.REVOKE_TABLE, authorityVo);
+        String sql = TemplateUtil.rendering(T.getREVOKE_TABLE(), authorityVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -197,7 +207,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.DROP_TABLE, authorityVo);
+        String sql = TemplateUtil.rendering(T.getDROP_TABLE(), authorityVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -208,7 +218,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_ADD_COLUMN, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_ADD_COLUMN(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -219,7 +229,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_DROP_COLUMN, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_DROP_COLUMN(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -230,7 +240,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_RENAME_COLUMN, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_RENAME_COLUMN(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -241,7 +251,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_COLUMN_ATTR, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_COLUMN_ATTR(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -251,12 +261,12 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        if (StringUtils.isEmpty(T.ALTER_COLUMN_SET_DEFAULT)) {
+        if (StringUtils.isEmpty(T.getALTER_COLUMN_SET_DEFAULT())) {
             resultT.setErrorMessage(ConstantsMsg.MSG14);
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_COLUMN_SET_DEFAULT, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_COLUMN_SET_DEFAULT(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -266,12 +276,12 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        if (StringUtils.isEmpty(T.ALTER_COLUMN_DROP_DEFAULT)) {
+        if (StringUtils.isEmpty(T.getALTER_COLUMN_DROP_DEFAULT())) {
             resultT.setErrorMessage(ConstantsMsg.MSG14);
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_COLUMN_DROP_DEFAULT, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_COLUMN_DROP_DEFAULT(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -281,12 +291,12 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        if (StringUtils.isEmpty(T.ALTER_COLUMN_SET_NOTNULL)) {
+        if (StringUtils.isEmpty(T.getALTER_COLUMN_SET_NOTNULL())) {
             resultT.setErrorMessage(ConstantsMsg.MSG14);
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_COLUMN_SET_NOTNULL, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_COLUMN_SET_NOTNULL(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -296,12 +306,12 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        if (StringUtils.isEmpty(T.ALTER_COLUMN_DROP_NOTNULL)) {
+        if (StringUtils.isEmpty(T.getALTER_COLUMN_DROP_NOTNULL())) {
             resultT.setErrorMessage(ConstantsMsg.MSG14);
             return this;
         }
         columnVo.format();
-        String sql = TemplateUtil.rendering(T.ALTER_COLUMN_DROP_NOTNULL, columnVo);
+        String sql = TemplateUtil.rendering(T.getALTER_COLUMN_DROP_NOTNULL(), columnVo);
         this.ba.exe(sql, resultT);
         return this;
     }
@@ -312,7 +322,7 @@ public class ExcImpl extends ExcAbs {
             return false;
         }
         authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.QUERY_COLUMN, authorityVo);
+        String sql = TemplateUtil.rendering(T.getQUERY_COLUMN(), authorityVo);
         return this.ba.exeQuery(sql);
     }
 
@@ -322,7 +332,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.QUERY_COLUMN, authorityVo);
+        String sql = TemplateUtil.rendering(T.getQUERY_COLUMN(), authorityVo);
         resultT.setData(this.ba.exeQuery(sql, resultT));
         return this;
     }
@@ -333,7 +343,7 @@ public class ExcImpl extends ExcAbs {
             return this;
         }
         authorityVo.lower(this.ba.lower);
-        String sql = TemplateUtil.rendering(T.QUERY_INDEX, authorityVo);
+        String sql = TemplateUtil.rendering(T.getQUERY_INDEX(), authorityVo);
         resultT.setData(this.ba.exeQuery(sql, resultT));
         return this;
     }
@@ -348,9 +358,9 @@ public class ExcImpl extends ExcAbs {
         }
         String sql;
         if (authorityVo == null || StringUtils.isEmpty(authorityVo.getSchema())) {
-            sql = TemplateUtil.rendering(T.QUERY_ALL_TABLES, authorityVo);
+            sql = TemplateUtil.rendering(T.getQUERY_ALL_TABLES(), authorityVo);
         } else {
-            sql = TemplateUtil.rendering(T.QUERY_TABLES, authorityVo);
+            sql = TemplateUtil.rendering(T.getQUERY_TABLES(), authorityVo);
         }
         resultT.setData(this.ba.exeQuery(sql, resultT));
         return this;

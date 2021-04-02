@@ -1293,10 +1293,10 @@
         SELECT 1 FROM T_SOD_DATA_AUTHORITY_APPLY WHERE USER_ID = #{userId} AND TABLE_ID = C."ID"
         )
         <if test="userId != null and userId != ''">
-            where A.USER_ID &lt;&gt; #{userId} or t1.create_by is null
+            where A.DB_USERNAME = #{userId}
         </if>
         order by
-        dataName asc
+        C.DATABASE_ID asc
     </select>
 
     <select id="getDataClassInfo" resultType="java.util.LinkedHashMap">
