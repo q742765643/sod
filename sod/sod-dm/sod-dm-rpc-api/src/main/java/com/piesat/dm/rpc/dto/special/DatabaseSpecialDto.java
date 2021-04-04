@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.dto.special;
 
 import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
+import com.piesat.dm.entity.special.DatabaseSpecialDbsEntity;
 import com.piesat.util.BaseDto;
 import lombok.Data;
 
@@ -10,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 专题库管理
@@ -27,6 +29,11 @@ public class DatabaseSpecialDto extends BaseDto {
     private String sdbName;
 
     /**
+     * 专题库类型(DB,NAS两种)
+     */
+    private String dbType;
+
+    /**
      * 专题库图片
      */
     private String sdbImg;
@@ -36,15 +43,7 @@ public class DatabaseSpecialDto extends BaseDto {
      */
     private String userId;
 
-    /**
-     * 申请空间(GB)
-     */
-    private Integer sizeOfSpace;
 
-    /**
-     * 已用空间(GB)
-     */
-    private Integer usedSpace;
 
     /**
      * 用途
@@ -117,6 +116,8 @@ public class DatabaseSpecialDto extends BaseDto {
      * 联系方式
      */
     private String userPhone;
+
+    private Set<DatabaseSpecialDbsEntity> dbsList;
 
     private List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList;
 }

@@ -2,15 +2,15 @@ package com.piesat.dm.entity.special;
 
 import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
+import com.piesat.dm.entity.database.DatabaseAdministratorEntity;
 import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 专题库管理
@@ -35,6 +35,14 @@ public class DatabaseSpecialEntity extends BaseEntity {
     private String sdbName;
 
     /**
+     * 专题库类型(DB,NAS两种)
+     */
+    @Column(name = "db_type")
+    @Excel(name = "专题库类型")
+    private String dbType;
+
+
+    /**
      * 专题库图片
      */
     @Column(name = "sdb_img")
@@ -47,12 +55,6 @@ public class DatabaseSpecialEntity extends BaseEntity {
     @Excel(name = "用户ID")
     private String userId;
 
-    /**
-     * 申请空间(GB)
-     */
-    @Excel(name = "申请空间")
-    @Column(name = "size of space")
-    private Integer sizeOfSpace;
 
     /**
      * 用途
@@ -100,11 +102,6 @@ public class DatabaseSpecialEntity extends BaseEntity {
     @Column(name = "use_status")
     private String useStatus;
 
-    /**
-     * 数据库ID
-     */
-    @Column(name = "database_id")
-    private String databaseId;
 
     /**
      * 数据库模式
@@ -122,4 +119,9 @@ public class DatabaseSpecialEntity extends BaseEntity {
     @Excel(name = "数据库授权情况",width = 100)
     @Transient
     private String authorizationStatus;
+
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "dbs_id")
+    private Set<DatabaseSpecialDbsEntity> dbsList = new HashSet<>();
 }
