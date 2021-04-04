@@ -42,7 +42,7 @@ public class DatabaseSpecialDto extends BaseDto {
     private Integer sizeOfSpace;
 
     /**
-     * 申请空间(GB)
+     * 已用空间(GB)
      */
     private Integer usedSpace;
 
