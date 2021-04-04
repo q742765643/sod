@@ -23,6 +23,8 @@ public class DataAuthorityApplyDto extends BaseDto {
 
     private String appName;
 
+    private String owner;
+
     /**
      * 申请用户名
      */

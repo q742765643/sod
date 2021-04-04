@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto.special;
 
+import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
 import com.piesat.util.BaseDto;
 import lombok.Data;
@@ -34,6 +35,16 @@ public class DatabaseSpecialDto extends BaseDto {
      * 用户ID
      */
     private String userId;
+
+    /**
+     * 申请空间(GB)
+     */
+    private Integer sizeOfSpace;
+
+    /**
+     * 申请空间(GB)
+     */
+    private Integer usedSpace;
 
     /**
      * 用途

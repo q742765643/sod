@@ -48,6 +48,13 @@ public class DatabaseSpecialEntity extends BaseEntity {
     private String userId;
 
     /**
+     * 申请空间(GB)
+     */
+    @Excel(name = "申请空间")
+    @Column(name = "size of space")
+    private Integer sizeOfSpace;
+
+    /**
      * 用途
      */
     @Column(name = "uses")
