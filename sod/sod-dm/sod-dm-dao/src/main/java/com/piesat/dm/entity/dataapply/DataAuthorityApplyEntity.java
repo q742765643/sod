@@ -30,6 +30,11 @@ public class DataAuthorityApplyEntity extends BaseEntity {
     @Column(name = "user_id", length = 50)
     private String userId;
 
+    /**
+     * 拥有者
+     */
+    @Column(name = "owner")
+    private String owner;
 
     /**
      * 审核状态

@@ -21,6 +21,11 @@ public class DataAuthorityRecordDto extends BaseDto {
     private String tableId;
 
     /**
+     * 模式
+     */
+    private String schema;
+
+    /**
      * 申请权限
      * 1:读权限 2：写权限
      */

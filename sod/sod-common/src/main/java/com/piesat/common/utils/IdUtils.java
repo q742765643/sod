@@ -43,11 +43,14 @@ public class IdUtils {
         return UUID.fastUUID().toString(true);
     }
 
-    public static String serialNumber(String code, String userName) {
+    public static String serialNumber(String code, String userName ,String schema) {
         String timeNow = DateUtils.dateTimeNow();
         StringBuffer s = new StringBuffer("SN-SOD-");
         if (!StringUtils.isEmpty(code)) {
             s.append(code.toUpperCase()).append("-");
+        }
+        if (!StringUtils.isEmpty(schema)) {
+            s.append(schema.toUpperCase()).append("-");
         }
         if (!StringUtils.isEmpty(userName)) {
             s.append(userName.toUpperCase()).append("-");

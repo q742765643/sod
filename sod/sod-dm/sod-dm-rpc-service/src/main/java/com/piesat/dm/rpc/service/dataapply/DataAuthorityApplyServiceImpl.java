@@ -8,6 +8,7 @@ import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
+import com.piesat.common.utils.IdUtils;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.core.constants.Constants;
@@ -137,29 +138,44 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public DataAuthorityApplyDto saveDto(DataAuthorityApplyDto dataAuthorityApplyDto) {
-        DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
-        //新增申请设置成待审
-        dataAuthorityApplyEntity.setAuditStatus("01");
-        //保存
-        dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
+        dataAuthorityApplyDto.setAuditStatus("01");
+        List<DataAuthorityRecordDto> dataAuthorityRecordList = dataAuthorityApplyDto.getDataAuthorityRecordList();
+        Map<String, List<DataAuthorityRecordDto>> map = dataAuthorityRecordList.stream()
+                .collect(Collectors.groupingBy(DataAuthorityRecordDto::getSchema));
+
+        map.forEach((k,v)->{
+            String flowId = IdUtils.serialNumber("SOD", dataAuthorityApplyDto.getUserId(), k);
+            if ("USR_SOD".equalsIgnoreCase(k)){
+                dataAuthorityApplyDto.setOwner("admin");
+            }
+            dataAuthorityApplyDto.setFlowId(flowId);
+            dataAuthorityApplyDto.setDataAuthorityRecordList(v);
+            DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
+            dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
+        });
+
+//        DataAuthorityApplyEntity dataAuthorityApplyEntity = dataAuthorityApplyMapper.toEntity(dataAuthorityApplyDto);
+//
+//        //保存
+//        dataAuthorityApplyEntity = this.saveNotNull(dataAuthorityApplyEntity);
         //读申请是否自动授权
         List<ReadAuthorityEntity> readAuthorityEntities = readAuthorityDao.findAll();
-        if (readAuthorityEntities != null && readAuthorityEntities.size() > 0) {
-            //读申请自动授权
-            if ("1".equals(readAuthorityEntities.get(0).getValue())) {
-                Set<DataAuthorityRecordEntity> dataAuthorityRecordList = dataAuthorityApplyEntity.getDataAuthorityRecordList();
-                if (dataAuthorityRecordList != null && dataAuthorityRecordList.size() > 0) {
-                    for (DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordList) {
-                        if (dataAuthorityRecordEntity.getApplyAuthority().intValue() == 1) {
-                            DataAuthorityRecordDto dataAuthorityRecordDto = dataAuthorityRecordMapper.toDto(dataAuthorityRecordEntity);
-                            //物理库授权
-                            updateOneRecordCheck(dataAuthorityApplyEntity.getUserId(), dataAuthorityRecordDto);
-                        }
-                    }
-                }
-            }
-        }
-        return dataAuthorityApplyMapper.toDto(dataAuthorityApplyEntity);
+//        if (readAuthorityEntities != null && readAuthorityEntities.size() > 0) {
+//            //读申请自动授权
+//            if ("1".equals(readAuthorityEntities.get(0).getValue())) {
+//                Set<DataAuthorityRecordEntity> dataAuthorityRecordList = dataAuthorityApplyEntity.getDataAuthorityRecordList();
+//                if (dataAuthorityRecordList != null && dataAuthorityRecordList.size() > 0) {
+//                    for (DataAuthorityRecordEntity dataAuthorityRecordEntity : dataAuthorityRecordList) {
+//                        if (dataAuthorityRecordEntity.getApplyAuthority().intValue() == 1) {
+//                            DataAuthorityRecordDto dataAuthorityRecordDto = dataAuthorityRecordMapper.toDto(dataAuthorityRecordEntity);
+//                            //物理库授权
+//                            updateOneRecordCheck(dataAuthorityApplyEntity.getUserId(), dataAuthorityRecordDto);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+        return dataAuthorityApplyDto;
     }
 
     @Override
