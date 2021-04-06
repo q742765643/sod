@@ -14,6 +14,7 @@ import com.piesat.dm.common.tree.Ztree;
 import com.piesat.dm.core.api.DatabaseDcl;
 import com.piesat.dm.core.api.impl.Gbase8a;
 import com.piesat.dm.core.api.impl.Xugu;
+import com.piesat.dm.core.enums.DatabaseTypesEnum;
 import com.piesat.dm.core.enums.DbaEnum;
 import com.piesat.dm.core.model.AuthorityVo;
 import com.piesat.dm.core.model.ConnectVo;
@@ -34,14 +35,13 @@ import com.piesat.dm.entity.special.*;
 import com.piesat.dm.mapper.MybatisModifyMapper;
 import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialAuthorityService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.database.DatabaseDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialAccessDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialAuthorityDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
-import com.piesat.dm.rpc.dto.special.DatabaseSpecialReadWriteDto;
+import com.piesat.dm.rpc.dto.special.*;
 import com.piesat.dm.rpc.mapper.database.DatabaseDefineMapper;
 import com.piesat.dm.rpc.mapper.database.DatabaseMapper;
 import com.piesat.dm.rpc.mapper.special.DatabaseSpecialAccessMapper;
@@ -95,6 +95,8 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
     private DatabaseInfo databaseInfo;
     @Autowired
     private DatabaseDao databaseDao;
+    @Autowired
+    private SchemaService schemaService;
     @Autowired
     private DatabaseDefineMapper databaseDefineMapper;
     @Autowired
@@ -205,8 +207,20 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
 
     @Override
     public List<DatabaseSpecialDto> findByUserId(String userId) {
-        List<DatabaseSpecialEntity> byUserId = this.databaseSpecialDao.findByUserId(userId);
-        return this.databaseSpecialMapper.toDto(byUserId);
+        List<DatabaseSpecialEntity> databaseSpecials = this.databaseSpecialDao.findByUserId(userId);
+        List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialMapper.toDto(databaseSpecials);
+        databaseSpecialDtos.forEach(e -> {
+            Set<DatabaseSpecialDbsDto> dbsList = e.getDbsList();
+            dbsList.forEach(d -> {
+                String databaseId = d.getDatabaseId();
+                DatabaseEntity databaseEntity = this.databaseDao.findById(databaseId).orElse(null);
+                if (databaseEntity != null) {
+                    ResultT resultT = this.schemaService.statisticalSpace(databaseId);
+                    d.setUsedSpace(resultT.getData().toString());
+                }
+            });
+        });
+        return databaseSpecialDtos;
     }
 
     @Override
@@ -387,7 +401,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
             String databaseUpId = dul.get(0).getDatabaseUpId();
             AuthorityVo a = new AuthorityVo(schemaDto.getSchemaName(), null, databaseUpId, DbaEnum.ALL);
             coreInfo.build(r)
-                    .revokeTable(a,r)
+                    .revokeTable(a, r)
                     .close();
         }
         return r;
