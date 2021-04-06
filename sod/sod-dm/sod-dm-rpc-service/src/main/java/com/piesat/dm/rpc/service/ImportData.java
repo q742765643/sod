@@ -27,8 +27,12 @@ import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.portal.dao.DepartManageDao;
+import com.piesat.portal.dao.FileManageDao;
+import com.piesat.portal.dao.SdkManageDao;
 import com.piesat.portal.dao.UserManageDao;
 import com.piesat.portal.entity.DepartManageEntity;
+import com.piesat.portal.entity.FileManageEntity;
+import com.piesat.portal.entity.SdkManageEntity;
 import com.piesat.portal.entity.UserManageEntity;
 import com.piesat.schedule.dao.backup.BackupDao;
 import com.piesat.schedule.dao.backup.MetaBackupDao;
@@ -201,6 +205,13 @@ public class ImportData {
     @Autowired
     private DepartManageDao departManageDao;
 
+    @Autowired
+    private FileManageDao fileManageDao;
+
+    @Autowired
+    private SdkManageDao sdkManageDao;
+
+
 
     public void implDataClass() {
         importDataClassData();
@@ -248,6 +259,8 @@ public class ImportData {
 
         //importPortalUser2();
         //importPortalDepart();
+
+        //chengPortalFilePath();
     }
 
 
@@ -2674,6 +2687,42 @@ public class ImportData {
             departManageDao.saveNotNull(departManageEntity);
 
         }
+
+    }
+
+    public void chengPortalFilePath(){
+        /*List<FileManageEntity> all = fileManageDao.findAll();
+        for(int i=0;i<all.size();i++){
+            FileManageEntity fileManageEntity = all.get(i);
+            String filePath = fileManageEntity.getFilePath();
+            //CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/portalfile/MUSIC管理接口开发使用文档.pdf
+            ///CMADAAS/EXCHANGE/SOD/SOD_FILES/        portalfile/MUSIC管理接口开发使用文档.pdf
+            if(filePath.contains("CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload")){
+                filePath = filePath.replace("CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload","CMADAAS/EXCHANGE/SOD/SOD_FILES");
+                fileManageEntity.setFilePath(filePath);
+            }
+            fileManageDao.saveNotNull(fileManageEntity);
+        }*/
+
+        List<SdkManageEntity> all1 = sdkManageDao.findAll();
+        for(int i=0;i<all1.size();i++){
+            SdkManageEntity sdkManageEntity = all1.get(i);
+            String sdkDocUrl = sdkManageEntity.getSdkDocUrl();
+            ///CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile/虚谷数据库JDBC编程指南.pdf
+            ///CMADAAS/EXCHANGE/SOD/SOD_FILES/portalfile       /虚谷数据库JDBC编程指南.pdf
+
+            if(sdkDocUrl.contains("CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile")){
+                sdkDocUrl = sdkDocUrl.replace("CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile","CMADAAS/EXCHANGE/SOD/SOD_FILES/portalfile");
+                sdkManageEntity.setSdkDocUrl(sdkDocUrl);
+            }
+            String sdkJarUrl = sdkManageEntity.getSdkJarUrl();
+            if(sdkJarUrl.contains("CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile")){
+                sdkJarUrl = sdkJarUrl.replace("CMADAAS/EXCHANGE/SOD/PORTAL_FILES/upload/sdkfile","CMADAAS/EXCHANGE/SOD/SOD_FILES/portalfile");
+                sdkManageEntity.setSdkJarUrl(sdkJarUrl);
+            }
+            sdkManageDao.saveNotNull(sdkManageEntity);
+        }
+
 
     }
 }
