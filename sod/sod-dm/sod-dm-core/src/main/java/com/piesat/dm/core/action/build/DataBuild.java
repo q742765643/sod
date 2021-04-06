@@ -55,7 +55,7 @@ public class DataBuild implements Action {
         Map<String, Object> all = this.ba.exeQueryOne(sql, resultT);
         String all_ct = all == null ? Constants.ZERO : all.get(Constants.RT).toString();
         m.put(CountEnum.ALL_COUNT, all_ct);
-        if (onlyAll){
+        if (onlyAll) {
             return this;
         }
         sql = TemplateUtil.rendering(SqlTemplate.QUERY_BEGIN_END, selectVo);
@@ -141,18 +141,19 @@ public class DataBuild implements Action {
         }
     }
 
-    public DataBuild statisticalSpace(SelectVo selectVo, ResultT<String> resultT){
+    public DataBuild statisticalSpace(SelectVo selectVo, ResultT<String> resultT) {
         if (this.databaseType.equals(DatabaseTypesEnum.XUGU)) {
             String statistical = TemplateUtil.rendering(SqlTemplate.QUERY_SCHEMA_STATISTICAL_SPACE, selectVo);
             List<Map<String, Object>> parti = this.ba.exeQuery(statistical, resultT);
             if (parti == null) {
                 resultT.setData("未知");
             } else {
-                String o = parti.get(0).get(Constants.N)
+                String o = parti.get(0)
+                        .get(Constants.N)
                         .toString();
                 resultT.setData(o);
             }
-        }else {
+        } else {
             resultT.setData("未知");
         }
         return this;

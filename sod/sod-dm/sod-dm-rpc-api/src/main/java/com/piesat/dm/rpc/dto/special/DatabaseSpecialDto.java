@@ -117,7 +117,7 @@ public class DatabaseSpecialDto extends BaseDto {
      */
     private String userPhone;
 
-    private Set<DatabaseSpecialDbsEntity> dbsList;
+    private Set<DatabaseSpecialDbsDto> dbsList;
 
     private List<DatabaseSpecialReadWriteDto> databaseSpecialReadWriteList;
 }
