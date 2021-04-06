@@ -110,7 +110,7 @@ public interface DataTableDao extends BaseDao<DataTableInfoEntity> {
      * @return
      */
     @Query(value =
-            "SELECT DISTINCT A.*,C.DATABASE_NAME,B.SCHEMA_NAME_CN SCHEMA_NAME,D.DICT_LABEL,E.SUB_TABLE_ID " +
+            "SELECT DISTINCT A.*,C.DATABASE_NAME,B.DATABASE_DEFINE_ID,B.SCHEMA_NAME_CN SCHEMA_NAME,D.DICT_LABEL,E.SUB_TABLE_ID " +
             "FROM T_SOD_DATA_TABLE_INFO A " +
             "LEFT JOIN T_SOD_DATA_TABLE_FOREIGNKEY E ON E.TABLE_ID = A.ID " +
             "LEFT JOIN T_SOD_DATABASE B ON A.DATABASE_ID = B.ID " +
