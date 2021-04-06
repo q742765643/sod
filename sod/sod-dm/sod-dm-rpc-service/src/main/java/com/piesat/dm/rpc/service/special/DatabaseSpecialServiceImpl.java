@@ -277,9 +277,9 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         if (StringUtils.isNotNullString(tdb_img)) {
             databaseSpecialEntity.setSdbImg(tdb_img);
         }
-        if (StringUtils.isNotNullString(database_id)) {
-            databaseSpecialEntity.setDatabaseId(database_id);
-        }
+//        if (StringUtils.isNotNullString(database_id)) {
+//            databaseSpecialEntity.setDatabaseId(database_id);
+//        }
         if (StringUtils.isNotNullString(database_schema_id)) {
             databaseSpecialEntity.setDatabaseSchema(database_schema_id);
         }

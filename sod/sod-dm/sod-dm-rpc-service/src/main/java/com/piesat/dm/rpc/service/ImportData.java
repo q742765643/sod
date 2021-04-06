@@ -1403,7 +1403,7 @@ public class ImportData {
                 databaseSpecialEntity.setApplyMaterial(apply_file_path);
             }
 
-            databaseSpecialEntity.setDatabaseId(database_id);
+//            databaseSpecialEntity.setDatabaseId(database_id);
             databaseSpecialEntity.setDatabaseSchema(database_schema_id);
             databaseSpecialEntity.setExamineStatus(examine_status);
             if (StringUtils.isNotEmpty(examine_time)) {

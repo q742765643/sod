@@ -24,13 +24,18 @@ public class DatabaseSpecialDbsEntity extends BaseEntity   {
      * 申请空间(GB)
      */
     @Excel(name = "申请空间")
-    @Column(name = "size of space")
+    @Column(name = "size_of_space")
     private Integer sizeOfSpace;
-
 
     /**
      * 数据库ID
      */
     @Column(name = "database_id")
     private String databaseId;
+
+    /**
+     * 专题库类型(DB,NAS两种)
+     */
+    @Column(name = "db_type")
+    private String dbType;
 }

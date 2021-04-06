@@ -26,6 +26,10 @@ public class DatabaseSpecialDbsDto  extends BaseDto {
      */
     private Integer usedSpace;
 
+    /**
+     * 专题库类型(DB,NAS两种)
+     */
+    private String dbType;
 
     private String databaseId;
 }
