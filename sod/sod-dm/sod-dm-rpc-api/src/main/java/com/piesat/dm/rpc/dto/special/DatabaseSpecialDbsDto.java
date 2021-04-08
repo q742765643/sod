@@ -31,5 +31,10 @@ public class DatabaseSpecialDbsDto  extends BaseDto {
      */
     private String dbType;
 
+    /**
+     * NAS路径
+     */
+    private String nasRoute;
+
     private String databaseId;
 }
