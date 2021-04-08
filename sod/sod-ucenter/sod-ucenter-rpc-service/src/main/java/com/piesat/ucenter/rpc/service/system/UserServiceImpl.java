@@ -281,14 +281,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     }
 
     @Override
-    public ResultT addBizUser(Map<String, String[]> parameterMap, String applyPaper) {
+    public ResultT addBizUser(Map<String, String> map, String applyPaper) {
 
-        Map<String, String> map = new LinkedHashMap<>();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            if (entry.getValue().length > 0) {
-                map.put(entry.getKey(), entry.getValue()[0]);
-            }
-        }
         String appNames = map.get("appName");
         String bizUserid = map.get("bizUserid");
         String applyAuthority = map.get("applyAuthority");
@@ -298,7 +292,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String sodApp = sod.getString("sodApp");
         JSONObject sodData = sod.getJSONObject("sodData");
         String dbCreate = "0";
-        JSONArray applyData = null;
         String dbIds = "";
         if (sodData != null) {
             dbIds = sodData.get("dbIds").toString();
@@ -309,7 +302,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
                 dbIds = dbIds.substring(0, dbIds.length() - 1);
             }
             dbCreate = sodData.get("dbCreate").toString();
-            applyData = sodData.getJSONArray("applyData");
         }
 
         UserEntity byBizUserId = this.userDao.findByUserName(bizUserid);
@@ -333,26 +325,13 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String tutorName = map.get("tutorName");
         String tutorPhone = map.get("tutorPhone");
         String webUserid = map.get("webUserid");
-//        String appCoin = map.get("appCoin");
-//        String applyAuthority = map.get("applyAuthority");
-//        String deptId = map.get("deptId");
-        String loginName = map.get("loginName");
         String pdfPath = map.get("pdfPath");
-//        String userId = map.get("userId");
-//        String interfaceId = map.get("interfaceId");
-//        String nonce = map.get("nonce");
-//        String timestamp = map.get("timestamp");
         UserEntity userEntity = new UserEntity();
         userEntity.setUserType("11");
         userEntity.setNickName(webUsername);
         userEntity.setApplyPaper(applyPaper);
         userEntity.setApplyTime(new Date());
         userEntity.setAppName(appNames);
-        if (applyData != null) {
-            userEntity.setSodData("1");
-        } else {
-            userEntity.setSodData("0");
-        }
         userEntity.setBizIp(bizIp);
         userEntity.setBizType(bizType);
         userEntity.setUserName(bizUserid);
@@ -379,53 +358,11 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setDbCreate(dbCreate);
         userEntity.setStatus("1".equals(sodApp) ? "0" : "1");
         userEntity = this.userDao.saveNotNull(userEntity);
-
-        if ("1".equals(dbCreate)) {
-            Map<String, String> spMap = new HashMap<>();
-            spMap.put("TDB_NAME", appNames);
-            spMap.put("USER_ID", bizUserid);
-            spMap.put("USES", remark);
-            spMap.put("DATABASE_ID", dbIds);
-            String schemaName = bizUserid.replace("USR_", "");
-            spMap.put("DATABASE_SCHEMA_ID", schemaName);
-            JSONObject jj = new JSONObject();
-            jj.put("userId", bizUserid);
-            spMap.put("data", jj.toJSONString());
-            spMap.put("TDB_NAME", remark);
-            JSONArray jjj = new JSONArray();
-            spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
-            this.databaseSpecialService.addOrUpdate(spMap, null);
-            DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
-            daa.setUserId(bizUserid);
-            daa.setCreateTime(new Date());
-            if (applyData != null) {
-                List<DataAuthorityRecordDto> list = new ArrayList<>();
-                for (int i = 0; i < applyData.size(); i++) {
-                    DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
-                    JSONObject jsonObject1 = applyData.getJSONObject(i);
-                    String databaseId = jsonObject1.getString("databaseId");
-                    String dataClassId = jsonObject1.getString("dataClassId");
-//                    dar.setDatabaseId(databaseId);
-//                    dar.setDataClassId(dataClassId);
-                    dar.setApplyAuthority(1);
-                    dar.setCreateTime(new Date());
-                    list.add(dar);
-                }
-                daa.setDataAuthorityRecordList(list);
-            }
-            this.dataAuthorityApplyService.saveDto(daa);
-        }
         return ResultT.success(userEntity);
     }
 
     @Override
-    public ResultT updateBizUser(Map<String, String[]> parameterMap, String applyPaper) {
-        Map<String, String> map = new LinkedHashMap<>();
-        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-            if (entry.getValue().length > 0) {
-                map.put(entry.getKey(), entry.getValue()[0]);
-            }
-        }
+    public ResultT updateBizUser(Map<String, String> map, String applyPaper) {
         String appNames = map.get("appName");
         String bizUserid = map.get("bizUserid");
         String applyAuthority = map.get("applyAuthority");
@@ -435,12 +372,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String sodApp = sod.getString("sodApp");
         JSONObject sodData = sod.getJSONObject("sodData");
         String dbCreate = "0";
-        JSONArray applyData = null;
         String dbIds = "";
         if (sodData != null) {
             dbIds = sodData.get("dbIds").toString();
             dbCreate = sodData.get("dbCreate").toString();
-            applyData = sodData.getJSONArray("applyData");
         }
 
         UserEntity userEntity = this.userDao.findByUserName(bizUserid);
@@ -464,26 +399,13 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         String tutorName = map.get("tutorName");
         String tutorPhone = map.get("tutorPhone");
         String webUserid = map.get("webUserid");
-//        String appCoin = map.get("appCoin");
-//        String applyAuthority = map.get("applyAuthority");
-//        String deptId = map.get("deptId");
-        String loginName = map.get("loginName");
         String pdfPath = map.get("pdfPath");
-//        String userId = map.get("userId");
-//        String interfaceId = map.get("interfaceId");
-//        String nonce = map.get("nonce");
-//        String timestamp = map.get("timestamp");
 
         userEntity.setUserType("11");
         userEntity.setNickName(webUsername);
         userEntity.setApplyPaper(applyPaper);
         userEntity.setApplyTime(new Date());
         userEntity.setAppName(appNames);
-        if (applyData != null) {
-            userEntity.setSodData("1");
-        } else {
-            userEntity.setSodData("0");
-        }
         userEntity.setBizIp(bizIp);
         userEntity.setBizType(bizType);
         userEntity.setUserName(bizUserid);
@@ -510,44 +432,6 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setDbCreate(dbCreate);
         userEntity.setStatus("1".equals(sodApp) ? "0" : "1");
         userEntity = this.userDao.saveNotNull(userEntity);
-        if ("1".equals(dbCreate)) {
-            List<DatabaseSpecialDto> databaseSpecialDtos = this.databaseSpecialService.findByUserId(bizUserid);
-            if (databaseSpecialDtos == null || databaseSpecialDtos.size() == 0) {
-                Map<String, String> spMap = new HashMap<>();
-                spMap.put("TDB_NAME", appNames);
-                spMap.put("USER_ID", bizUserid);
-                spMap.put("USES", remark);
-                spMap.put("DATABASE_ID", dbIds);
-                String schemaName = bizUserid.replace("USR_", "");
-                spMap.put("DATABASE_SCHEMA_ID", schemaName);
-                JSONObject jj = new JSONObject();
-                jj.put("userId", bizUserid);
-                spMap.put("data", jj.toJSONString());
-                spMap.put("TDB_NAME", remark);
-                JSONArray jjj = new JSONArray();
-                spMap.put("databaseSpecialReadWriteList", jjj.toJSONString());
-                this.databaseSpecialService.addOrUpdate(spMap, null);
-                if (applyData != null) {
-                    DataAuthorityApplyDto daa = new DataAuthorityApplyDto();
-                    daa.setUserId(bizUserid);
-                    daa.setCreateTime(new Date());
-                    List<DataAuthorityRecordDto> list = new ArrayList<>();
-                    for (int i = 0; i < applyData.size(); i++) {
-                        DataAuthorityRecordDto dar = new DataAuthorityRecordDto();
-                        JSONObject jsonObject1 = applyData.getJSONObject(i);
-                        String databaseId = jsonObject1.getString("databaseId");
-                        String dataClassId = jsonObject1.getString("dataClassId");
-//                        dar.setDatabaseId(databaseId);
-//                        dar.setDataClassId(dataClassId);
-                        dar.setApplyAuthority(1);
-                        dar.setCreateTime(new Date());
-                        list.add(dar);
-                    }
-                    daa.setDataAuthorityRecordList(list);
-                    this.dataAuthorityApplyService.saveDto(daa);
-                }
-            }
-        }
         return ResultT.success(userEntity);
     }
 

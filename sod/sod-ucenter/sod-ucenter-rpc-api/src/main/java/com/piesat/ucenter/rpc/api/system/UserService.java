@@ -95,9 +95,9 @@ public interface UserService {
 
     public void exportExcel(UserDto userDto);
 
-    ResultT addBizUser(Map<String, String[]> parameterMap, String applyPaper);
+    ResultT addBizUser(Map<String, String> parameterMap, String applyPaper);
 
-    ResultT updateBizUser(Map<String, String[]> parameterMap, String applyPaper);
+    ResultT updateBizUser(Map<String, String> parameterMap, String applyPaper);
 
     PageBean findAllBizUser(PageForm<UserDto> pageForm);
 

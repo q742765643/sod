@@ -24,6 +24,7 @@ import java.util.Map;
  */
 @Component
 public interface MybatisQueryMapper {
+
     List<Map<String, Object>> getDataClassListBYIn(@Param("classIds") List<String> classIds, @Param("className") String className, @Param("dDataId") String dDataId, @Param("dataclassId") String dataclassId);
 
     List<Map<String, Object>> getDataLogicByDatabaseId(String databaseId);

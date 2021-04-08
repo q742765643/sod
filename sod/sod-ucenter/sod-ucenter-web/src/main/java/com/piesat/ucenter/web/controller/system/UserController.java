@@ -51,6 +51,7 @@ public class UserController {
     private String outFilePath;
     @Value("${fileUpload.httpPath}")
     private String httpPath;
+
     @RequiresPermissions("system:user:list")
     @GetMapping("/list")
     public ResultT<PageBean> list(UserDto user, int pageNum, int pageSize) {
@@ -183,40 +184,48 @@ public class UserController {
     @ApiOperation(value = "注册用户申请", notes = "注册用户申请")
     public ResultT saveBiz(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
         try {
-            Map<String, String[]> parameterMap = request.getParameterMap();
+            Map<String, String> paramsMap = mapConvert(request.getParameterMap());
+
             File newFile = null;
-            if (applyPaper != null&& StringUtils.isNotEmpty(applyPaper.getOriginalFilename())) {
+            if (applyPaper != null && StringUtils.isNotEmpty(applyPaper.getOriginalFilename())) {
                 String originalFileName1 = applyPaper.getOriginalFilename();//旧的文件名(用户上传的文件名称)
                 //新的文件名
                 //String newFileName1 = UUID.randomUUID().toString() + originalFileName1.substring(originalFileName1.lastIndexOf("."));
                 String fileSuffix = originalFileName1.substring(originalFileName1.lastIndexOf('.'));
                 //上传文件到服务器指定路径
                 //转换PDF
-                String newFileName1=originalFileName1.substring(0, originalFileName1.lastIndexOf("."))+"_"+new SimpleDateFormat("yyyyMMddHHmms").format(new Date())+fileSuffix;
-                newFile = new File(outFilePath + File.separator + newFileName1);
+                String realFileName = originalFileName1.substring(0, originalFileName1.lastIndexOf(".")) + "_" + new SimpleDateFormat("yyyyMMddHHmms").format(new Date()) + fileSuffix;
+                newFile = new File(outFilePath + File.separator + realFileName);
                 if (!newFile.getParentFile().exists()) {
-                    // 如果目标文件所在的目录不存在，则创建父目录
                     newFile.getParentFile().mkdirs();
                 }
                 //存入
                 applyPaper.transferTo(newFile);
-                if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
-                    parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + newFile.getName()});
-                }else if (newFile.getName().endsWith(".doc")||newFile.getName().endsWith(".DOC")||newFile.getName().endsWith(".docx")||newFile.getName().endsWith(".DOCX")){
-                    String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
-                    String pdfPath = outFilePath + "/" + pdfName;
-                    Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
-                    parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + pdfName});
-                }else {
-                    parameterMap.put("pdfPath",new String[]{""});
+                if (newFile.getName().endsWith(".pdf") || newFile.getName().endsWith(".PDF")) {
+                    paramsMap.put("pdfPath", httpPath + "/filePath/" + newFile.getName());
+                } else if (newFile.getName().endsWith(".doc") || newFile.getName().endsWith(".DOC") || newFile.getName().endsWith(".docx") || newFile.getName().endsWith(".DOCX")) {
+                    String pdfName = realFileName.substring(0, realFileName.lastIndexOf(".")) + ".pdf";
+                    String pdfPath = outFilePath + File.separator + pdfName;
+                    Doc2PDF.doc2pdf(outFilePath + File.separator + realFileName, pdfPath);
+                    paramsMap.put("pdfPath", httpPath + "/filePath/" + pdfName);
+                } else {
+                    paramsMap.put("pdfPath", "");
                 }
             }
-            ResultT add = userService.addBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
-            return add;
+            return userService.addBizUser(paramsMap, newFile == null ? "" : newFile.getPath());
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    public Map<String, String> mapConvert(Map<String, String[]> parameterMap){
+        Map<String, String> paramsMap = new HashMap<>(parameterMap.size());
+        for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+            String valueStr = (entry.getValue() == null) ? null : entry.getValue()[0];
+            paramsMap.put(entry.getKey(), valueStr);
+        }
+        return paramsMap;
     }
 
     @PostMapping(value = "/updateBiz")
@@ -224,33 +233,34 @@ public class UserController {
     @ApiOperation(value = "注册用户申请", notes = "注册用户申请")
     public ResultT updateBiz(HttpServletRequest request, @RequestParam(value = "applyPaper", required = false) MultipartFile applyPaper) {
         try {
-            Map<String, String[]> parameterMap = request.getParameterMap();
+
+            Map<String, String> paramsMap = mapConvert(request.getParameterMap());
             File newFile = null;
             if (applyPaper != null) {
-                String originalFileName1 = applyPaper.getOriginalFilename();//旧的文件名(用户上传的文件名称)
-                if(StringUtils.isNotEmpty(originalFileName1)){
+                //旧的文件名(用户上传的文件名称)
+                String originalFileName = applyPaper.getOriginalFilename();
+                if (StringUtils.isNotEmpty(originalFileName)) {
                     //新的文件名
-                    String newFileName1 = UUID.randomUUID().toString() + originalFileName1.substring(originalFileName1.lastIndexOf("."));
-                    newFile = new File(outFilePath + File.separator + newFileName1);
+                    String realFileName = UUID.randomUUID().toString() + originalFileName.substring(originalFileName.lastIndexOf("."));
+                    newFile = new File(outFilePath + File.separator + realFileName);
                     // 判断目标文件所在目录是否存在
                     if (!newFile.getParentFile().exists()) {
-                        // 如果目标文件所在的目录不存在，则创建父目录
                         newFile.getParentFile().mkdirs();
                     }
                     //存入
                     applyPaper.transferTo(newFile);
-                    if (newFile.getName().endsWith(".pdf")||newFile.getName().endsWith(".PDF")){
-                        parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + newFile.getName()});
-                    }else{
-                        String pdfName = newFileName1.substring(0, newFileName1.lastIndexOf(".")) + ".pdf";
+                    if (newFile.getName().endsWith(".pdf") || newFile.getName().endsWith(".PDF")) {
+                        paramsMap.put("pdfPath", httpPath + "/filePath/" + newFile.getName());
+                    } else {
+                        String pdfName = realFileName.substring(0, realFileName.lastIndexOf(".")) + ".pdf";
                         String pdfPath = outFilePath + "/" + pdfName;
-                        Doc2PDF.doc2pdf(outFilePath + File.separator + newFileName1, pdfPath);
-                        parameterMap.put("pdfPath",new String[]{httpPath + "/filePath/" + pdfName});
+                        Doc2PDF.doc2pdf(outFilePath + File.separator + realFileName, pdfPath);
+                        paramsMap.put("pdfPath", httpPath + "/filePath/" + pdfName);
                     }
                 }
             }
-            ResultT add = userService.updateBizUser(parameterMap, newFile == null ? "" : newFile.getPath());
-            return add;
+
+            return userService.updateBizUser(paramsMap, newFile == null ? "" : newFile.getPath());
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
@@ -285,7 +295,7 @@ public class UserController {
         }
         JSONObject jo = JSONObject.parseObject(body);
         String bizUserid = jo.getString("bizUserid");
-        String checked =  jo.getString("checked");
+        String checked = jo.getString("checked");
         UserDto user = new UserDto();
         user.setUserName(bizUserid);
         user.setChecked(checked);
@@ -299,16 +309,7 @@ public class UserController {
 //    @RequiresPermissions("system:user:editBase")
     @Log(title = "用户管理--业务用户审核", businessType = BusinessType.UPDATE)
     @GetMapping("/editBaseSod")
-    public ResultT<String> editBaseSod(String bizUserid, String checked,String reason) {
-//        String body = null;
-//        try {
-//            body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        JSONObject jo = JSONObject.parseObject(body);
-//        String bizUserid = jo.getString("bizUserid");
-//        String checked =  jo.getString("checked");
+    public ResultT<String> editBaseSod(String bizUserid, String checked, String reason) {
         UserDto user = new UserDto();
         user.setUserName(bizUserid);
         user.setChecked(checked);
@@ -337,28 +338,28 @@ public class UserController {
         try {
             String body = StreamUtils.copyToString(request.getInputStream(), Charset.forName("UTF-8"));
             JSONObject jo = JSONObject.parseObject(body);
-        String bizUserid = jo.getString("bizUserid");
-        String newPwd = jo.getString("newPwd");
-        String oldPwd = jo.getString("oldPwd");
-        UserDto userDto = this.userService.selectUserByUserName(bizUserid);
-        if (userDto==null){
-            return ResultT.failed("用户不存在");
-        }
-        String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
-        if (pwd.equals(oldPwd)) {
-            UserDto user = new UserDto();
-            user.setUserName(bizUserid);
-            try {
-                String s = AESUtil.aesEncrypt(newPwd).trim();
-                user.setPassword(s);
-                return userService.editPwd(user);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return ResultT.failed(e.getMessage());
+            String bizUserid = jo.getString("bizUserid");
+            String newPwd = jo.getString("newPwd");
+            String oldPwd = jo.getString("oldPwd");
+            UserDto userDto = this.userService.selectUserByUserName(bizUserid);
+            if (userDto == null) {
+                return ResultT.failed("用户不存在");
             }
-        } else {
-            return ResultT.failed("旧密码不正确！");
-        }
+            String pwd = AESUtil.aesDecrypt(userDto.getPassword()).trim();
+            if (pwd.equals(oldPwd)) {
+                UserDto user = new UserDto();
+                user.setUserName(bizUserid);
+                try {
+                    String s = AESUtil.aesEncrypt(newPwd).trim();
+                    user.setPassword(s);
+                    return userService.editPwd(user);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return ResultT.failed(e.getMessage());
+                }
+            } else {
+                return ResultT.failed("旧密码不正确！");
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return ResultT.failed("参数不正确！");
@@ -380,12 +381,11 @@ public class UserController {
     @RequiresPermissions("system:dict:findAllBizUser")
     @GetMapping("/findAllBizUser")
     public ResultT<PageBean> findAllBizUser(UserDto userDto,
-                                  @HtParam(value="pageNum",defaultValue="1") int pageNum,
-                                  @HtParam(value="pageSize",defaultValue="10") int pageSize)
-    {
-        ResultT<PageBean> resultT=new ResultT();
-        PageForm<UserDto> pageForm=new PageForm<>(pageNum,pageSize,userDto);
-        PageBean pageBean=userService.findAllBizUser(pageForm);
+                                            @HtParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                            @HtParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        ResultT<PageBean> resultT = new ResultT();
+        PageForm<UserDto> pageForm = new PageForm<>(pageNum, pageSize, userDto);
+        PageBean pageBean = userService.findAllBizUser(pageForm);
         resultT.setData(pageBean);
         return resultT;
     }
@@ -393,8 +393,7 @@ public class UserController {
     @RequiresPermissions("system:user:getUserByType")
     @GetMapping(value = "/getUserByType")
     @ApiOperation(value = "根据类型获取用户", notes = "根据类型获取用户")
-    public ResultT getAllPortalUser(String userType)
-    {
+    public ResultT getAllPortalUser(String userType) {
         List<UserDto> userDtos = this.userService.findByUserType(userType);
         return ResultT.success(userDtos);
     }
@@ -403,17 +402,15 @@ public class UserController {
     @RequiresPermissions("system:user:getBizUserByName")
     @GetMapping(value = "/getBizUserByName")
     @ApiOperation(value = "根据用户名查询业务用户", notes = "根据用户名查询业务用户")
-    public ResultT getBizUserByName(String userName)
-    {
+    public ResultT getBizUserByName(String userName) {
         List<UserDto> userDtos = this.userService.getBizUserByName(userName);
         return ResultT.success(userDtos);
     }
 
     @GetMapping(value = "/delBizUser")
     @ApiOperation(value = "删除业务用户", notes = "删除业务用户")
-    public ResultT delBizUser(String bizUserid)
-    {
-       this.userService.delBizUser(bizUserid);
+    public ResultT delBizUser(String bizUserid) {
+        this.userService.delBizUser(bizUserid);
         return ResultT.success();
     }
 

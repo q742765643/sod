@@ -217,12 +217,6 @@ public class UserEntity extends BaseEntity {
     private String sodApi;
 
     /**
-     * 是否申请资料
-     */
-    @Column(name="SOD_DATA", length = 1)
-    private String sodData;
-
-    /**
      * 存储系统数据库申请
      */
     @Column(name="DB_IDS", length = 200)
