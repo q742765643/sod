@@ -24,7 +24,7 @@ public class DatabaseSpecialDbsDto  extends BaseDto {
     /**
      * 已用空间(GB)
      */
-    private Integer usedSpace;
+    private String usedSpace;
 
     /**
      * 专题库类型(DB,NAS两种)

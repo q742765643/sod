@@ -938,7 +938,7 @@
         d.table_name,c.data_class_id,t2.class_name,
         t2.d_data_id,d.table_type,
         t.data_class_id,t.class_name,t.d_data_id,
-        db.database_name,db.id,db.database_define_id,db.schema_name
+        db.SCHEMA_NAME_CN,db.id,db.database_define_id,db.schema_name
         ORDER BY DATA_CLASS_ID
     </select>
     <select id="getGroupConcat" resultType="java.util.Map" parameterType="java.util.List">
