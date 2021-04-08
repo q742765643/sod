@@ -38,4 +38,10 @@ public class DatabaseSpecialDbsEntity extends BaseEntity   {
      */
     @Column(name = "db_type")
     private String dbType;
+
+    /**
+     * NAS路径
+     */
+    @Column(name = "nas_route")
+    private String nasRoute;
 }

@@ -25,7 +25,7 @@ public class ReviewLogDto extends BaseDto {
     private String userId;
 
     /**
-     * 状态信息
+     * 状态信息，1-申请，2-通过，3-拒绝，4-修改
      */
     private String statusInfo;
 

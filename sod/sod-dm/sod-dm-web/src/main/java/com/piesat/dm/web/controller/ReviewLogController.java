@@ -2,6 +2,7 @@ package com.piesat.dm.web.controller;
 
 import com.piesat.dm.entity.ReviewLogEntity;
 import com.piesat.dm.rpc.api.ReviewLogService;
+import com.piesat.dm.rpc.dto.ReviewLogDto;
 import com.piesat.dm.rpc.service.ImportData;
 import com.piesat.util.ResultT;
 import io.swagger.annotations.Api;
@@ -9,9 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,5 +42,17 @@ public class ReviewLogController {
         }
     }
 
+    @PostMapping(value = "/saveLog")
+    @RequiresPermissions("dm:product:saveLog")
+    @ApiOperation(value = "添加变更",notes = "添加变更")
+    public ResultT save(@RequestBody ReviewLogDto reviewLogDto) {
+        try {
+            ReviewLogDto save = this.reviewLogService.saveDto(reviewLogDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
 }
