@@ -1284,11 +1284,13 @@
 
     <!-- 查询用户可申请资料 -->
     <select id="getApplyDataInfo" parameterType="java.lang.String" resultType="java.util.Map">
-        SELECT * FROM (SELECT
-        C.DATABASE_ID,C.TABLE_NAME,B.DATABASE_CLASSIFY,B.SCHEMA_NAME,B.SCHEMA_NAME_CN,BB.DATABASE_NAME,C.ID
+        SELECT C.DATABASE_ID,C.TABLE_NAME,B.DATABASE_CLASSIFY,B.SCHEMA_NAME,B.SCHEMA_NAME_CN,BB.DATABASE_NAME,C.ID
         TABLE_ID,(
         SELECT WM_CONCAT(CLASS_NAME) FROM T_SOD_DATA_CLASS D INNER JOIN T_SOD_DATACLASS_TABLE E ON D."DATA_CLASS_ID" =
         E."DATA_CLASS_ID" WHERE E."TABLE_ID" = C.ID
+        <if test="className != null and className != ''">
+            AND CLASS_NAME LIKE '%${className}%'
+        </if>
         ) CLASS_NAME,B.DATABASE_DEFINE_ID,F.USER_ID OWNER FROM T_SOD_DATABASE_AUTHORIZED A
         INNER JOIN T_SOD_DATABASE B ON A."DATABASE_ID" = B."DATABASE_DEFINE_ID"
         INNER JOIN T_SOD_DATABASE_DEFINE BB ON B."DATABASE_DEFINE_ID" = BB."ID"
@@ -1308,18 +1310,13 @@
             <if test="schemaId != null and schemaId != ''">
                 AND B.ID = #{schemaId}
             </if>
+
             <if test="tableName != null and tableName != ''">
                 AND C.TABLE_NAME LIKE '%${tableName}%'
             </if>
         </where>
-        )
-        <where>
-            <if test="className != null and className != ''">
-                CLASS_NAME LIKE '%${className}%'
-            </if>
-        </where>
         order by
-        DATABASE_ID asc
+        C.DATABASE_ID asc
     </select>
 
     <select id="getDataClassInfo" resultType="java.util.LinkedHashMap">
