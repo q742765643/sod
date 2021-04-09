@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.api.datatable;
 
 import com.piesat.common.grpc.annotation.GrpcHthtService;
 import com.piesat.common.grpc.constant.SerializeType;
+import com.piesat.dm.entity.datatable.DataTableApplyEntity;
 import com.piesat.dm.rpc.dto.dataclass.DataClassLabelDefDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableApplyDto;
 import com.piesat.util.ResultT;
@@ -61,4 +62,11 @@ public interface DataTableApplyService {
      */
     ResultT review(DataTableApplyDto dataTableApplyDto);
 
+
+    /**
+     * 根据申请id查询
+     * @param applyId
+     * @return
+     */
+    List<DataTableApplyDto> findByApplyId(String applyId);
 }

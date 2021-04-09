@@ -1,5 +1,6 @@
 package com.piesat.dm.rpc.dto.dataclass;
 
+import com.piesat.dm.rpc.dto.datatable.DataTableApplyDto;
 import com.piesat.util.BaseDto;
 import lombok.Data;
 
@@ -84,6 +85,11 @@ public class DataClassInfoDto extends BaseDto {
      * 资料标签关系
      */
     private List<DataClassLabelDto> dataClassLabelList;
+
+    /**
+     * 申请表信息
+     */
+    private List<DataTableApplyDto> dataTableApplyDtoList;
 
     /**
      * 辅助参数

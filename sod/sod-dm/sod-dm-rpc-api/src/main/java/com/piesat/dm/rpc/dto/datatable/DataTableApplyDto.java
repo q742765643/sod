@@ -11,7 +11,12 @@ import java.util.LinkedHashSet;
  */
 @Data
 public class DataTableApplyDto extends BaseDto {
+
+    private String applyId;
+
+
     private String databaseId;
+
 
     private String databasePid;
 
@@ -51,9 +56,9 @@ public class DataTableApplyDto extends BaseDto {
     private String userId;
 
     /**
-     * 状态(01：待审核，02，通过；03 拒绝)
+     * 状态(1：待审核，2，通过；3 拒绝)
      */
-    private String status;
+    private Integer status;
 
     /**
      * 描述

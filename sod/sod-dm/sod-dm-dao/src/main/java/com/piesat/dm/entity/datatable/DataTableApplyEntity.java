@@ -19,6 +19,9 @@ import java.util.Set;
 public class DataTableApplyEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
+    @Column(name = "apply_id", length = 255)
+    private String applyId;
+
     /**
      * 数据库id
      */
@@ -71,7 +74,7 @@ public class DataTableApplyEntity extends BaseEntity {
      * 状态
      */
     @Column(name = "status")
-    private String status;
+    private Integer status;
 
 
     /**

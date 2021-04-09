@@ -59,7 +59,7 @@ public class DataTableApplyServiceImpl extends BaseService<DataTableApplyEntity>
         dotById.setReview(dataTableApplyDto.getReview());
         DataTableApplyEntity dataTableApplyEntity = this.dataTableApplyMapper.toEntity(dotById);
         DataTableApplyEntity save = this.save(dataTableApplyEntity);
-        UserDto userDto= (UserDto) SecurityUtils.getSubject().getPrincipal();
+        UserDto userDto = (UserDto) SecurityUtils.getSubject().getPrincipal();
         ReviewLogDto rl = new ReviewLogDto();
         rl.setBindId(dataTableApplyDto.getId());
         rl.setUserId(userDto.getUserName());
@@ -93,16 +93,16 @@ public class DataTableApplyServiceImpl extends BaseService<DataTableApplyEntity>
     @Override
     public ResultT review(DataTableApplyDto dataTableApplyDto) {
         try {
-            UserDto userDto= (UserDto) SecurityUtils.getSubject().getPrincipal();
+            UserDto userDto = (UserDto) SecurityUtils.getSubject().getPrincipal();
             ReviewLogDto rl = new ReviewLogDto();
             rl.setBindId(dataTableApplyDto.getId());
             rl.setUserId(userDto.getUserName());
-            if (StatusEnum.match(dataTableApplyDto.getStatus())==StatusEnum.审核通过){
+            if (StatusEnum.match(dataTableApplyDto.getStatus()) == StatusEnum.审核通过) {
                 DataTableInfoDto dti = new DataTableInfoDto();
                 BeanUtils.copyProperties(dataTableApplyDto, dti);
                 DataTableInfoDto dataTableInfoDto = dataTableService.saveDto(dti);
                 rl.setStatusInfo(StatusEnum.matchStatus(2));
-            }else if (StatusEnum.match(dataTableApplyDto.getStatus())==StatusEnum.审核未通过){
+            } else if (StatusEnum.match(dataTableApplyDto.getStatus()) == StatusEnum.审核未通过) {
                 rl.setRemark(dataTableApplyDto.getReview());
                 rl.setStatusInfo(StatusEnum.matchStatus(3));
             }
@@ -113,6 +113,11 @@ public class DataTableApplyServiceImpl extends BaseService<DataTableApplyEntity>
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
         }
+    }
+
+    @Override
+    public List<DataTableApplyDto> findByApplyId(String applyId) {
+        return this.dataTableApplyMapper.toDto(this.dataTableApplyDao.findByApplyId(applyId));
     }
 
 }

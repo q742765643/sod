@@ -14,17 +14,11 @@ import com.piesat.dm.rpc.api.ReviewLogService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.api.dataclass.DataClassInfoService;
-import com.piesat.dm.rpc.api.datatable.DataTableService;
-import com.piesat.dm.rpc.api.datatable.ShardingService;
-import com.piesat.dm.rpc.api.datatable.TableColumnService;
-import com.piesat.dm.rpc.api.datatable.TableIndexService;
+import com.piesat.dm.rpc.api.datatable.*;
 import com.piesat.dm.rpc.dto.ReviewLogDto;
 import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
-import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
-import com.piesat.dm.rpc.dto.datatable.TableColumnDto;
-import com.piesat.dm.rpc.dto.datatable.TableIndexDto;
-import com.piesat.dm.rpc.dto.datatable.TablePartDto;
+import com.piesat.dm.rpc.dto.datatable.*;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassInfoMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
@@ -69,6 +63,8 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     @Autowired
     private DataTableService dataTableService;
     @Autowired
+    private DataTableApplyService dataTableApplyService;
+    @Autowired
     private SchemaService schemaService;
     @Autowired
     private DataClassLabelDefService dataClassLabelDefService;
@@ -100,11 +96,11 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
                     String dataClassId1 = list.get(0).getDataClassId();
                     String su = dataClassId1.substring(0, 14);
                     String s1 = dataClassId1.substring(15, 19);
-                    if (sf.equals(su)){
+                    if (sf.equals(su)) {
                         int i = Integer.valueOf(s1) + 1;
                         DecimalFormat df = new DecimalFormat("0000");
                         dataClassId = sf + "." + df.format(i);
-                    }else {
+                    } else {
                         dataClassId = sf + ".0001";
                     }
                 }
@@ -113,7 +109,7 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
             List<DataClassLabelDto> dataClassLabelList = dataClassInfoDto.getDataClassLabelList();
             for (DataClassLabelDto dataClassLabelDto : dataClassLabelList) {
                 String labelKey = dataClassLabelDto.getLabelKey();
-                if (StringUtils.isEmpty(labelKey)){
+                if (StringUtils.isEmpty(labelKey)) {
                     DataClassLabelDefDto dl = new DataClassLabelDefDto();
                     dl.setLabelName(dataClassLabelDto.getLabelName());
                     dl.setRemark(dataClassLabelDto.getRemark());
@@ -122,21 +118,27 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
                     DataClassLabelDefDto dataClassLabelDefDto = this.dataClassLabelDefService.saveDto(dl);
                     dataClassLabelDto.setLabelKey(dataClassLabelDefDto.getId());
                 }
-                if (StringUtils.isEmpty(dataClassLabelDto.getDataClassId())){
+                if (StringUtils.isEmpty(dataClassLabelDto.getDataClassId())) {
                     dataClassLabelDto.setDataClassId(dataClassId);
                 }
                 this.dataClassLabelService.saveDto(dataClassLabelDto);
             }
             List<DataClassLogicDto> dataClassLogicList = dataClassInfoDto.getDataClassLogicList();
             for (DataClassLogicDto dataClassLogicDto : dataClassLogicList) {
-                if (StringUtils.isEmpty(dataClassLogicDto.getDataClassId())){
+                if (StringUtils.isEmpty(dataClassLogicDto.getDataClassId())) {
                     dataClassLogicDto.setDataClassId(dataClassId);
                 }
             }
             this.dataLogicService.saveList(dataClassLogicList);
+            List<DataTableApplyDto> dataTableApplyDtoList = dataClassInfoDto.getDataTableApplyDtoList();
+            dataTableApplyDtoList.forEach(e -> {
+                e.setApplyId(dataClassInfoDto.getId());
+                e.setStatus(StatusEnum.待审核.getCode());
+                this.dataTableApplyService.saveDto(e);
+            });
             dataClassInfoDto.setStatus(1);
             this.saveDto(dataClassInfoDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResultT.failed(e.getMessage());
         }
         return ResultT.success();
@@ -161,13 +163,15 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
         DataClassInfoDto dataClassInfoDto = this.dataClassInfoMapper.toDto(this.getById(id));
         List<DataClassLabelDto> dataClassLabelDtoList = this.dataClassLabelService.findByDataClassId(dataClassInfoDto.getDataClassId());
         List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(dataClassInfoDto.getDataClassId());
-        if (dataClassLogicDtoList.size()>0){
+        if (dataClassLogicDtoList.size() > 0) {
             String tableId = dataClassLogicDtoList.get(0).getTableId();
             DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
             dataClassInfoDto.setTableName(dataTableInfoDto.getTableName());
         }
+        List<DataTableApplyDto> dataTableApplyDtoList = this.dataTableApplyService.findByApplyId(id);
         dataClassInfoDto.setDataClassLabelList(dataClassLabelDtoList);
         dataClassInfoDto.setDataClassLogicList(dataClassLogicDtoList);
+        dataClassInfoDto.setDataTableApplyDtoList(dataTableApplyDtoList);
         return dataClassInfoDto;
     }
 
