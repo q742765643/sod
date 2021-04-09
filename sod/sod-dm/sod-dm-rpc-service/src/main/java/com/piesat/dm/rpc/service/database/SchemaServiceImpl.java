@@ -2,6 +2,7 @@ package com.piesat.dm.rpc.service.database;
 
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
+import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.common.constants.Constants;
 import com.piesat.dm.core.action.build.DataBuild;
 import com.piesat.dm.core.enums.DatabaseTypesEnum;
@@ -150,6 +151,7 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
     public ResultT statisticalSpace(String id) {
         ResultT r = new ResultT();
         SchemaDto schemaDto = this.getDotById(id);
+        if(StringUtils.isNotNull(schemaDto)){
         ConnectVo connectVo = schemaDto.getConnectVo();
         if (connectVo.getDatabaseType().equals(DatabaseTypesEnum.XUGU)) {
             String url = connectVo.getUrl();
@@ -171,6 +173,10 @@ public class SchemaServiceImpl extends BaseService<SchemaEntity> implements Sche
             r.setData("未知");
         }
         return r;
+        }else{
+            r.setData("未知");
+            return r;
+        }
     }
 
     @Override
