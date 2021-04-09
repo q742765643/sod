@@ -177,15 +177,15 @@ public interface MybatisQueryMapper {
 
     /**
      * 获取用户可申请资料
-     *
      * @param userId
+     * @param databaseId
+     * @param schemaId
+     * @param className
+     * @param tableName
      * @return
      * @throws Exception
-     * @description
-     * @author wlg
-     * @date 2020年4月22日下午5:07:55
      */
-    List<Map<String, Object>> getApplyDataInfo(String userId, String databaseId, String schemaId, String className, String tableName) throws Exception;
+    List<Map<String, Object>> getApplyDataInfo(@Param("userId") String userId, @Param("databaseId") String databaseId, @Param("schemaId") String schemaId, @Param("className") String className, @Param("tableName") String tableName) throws Exception;
 
     List<LinkedHashMap<String, Object>> getDataClassInfo(String dataClassId);
 
