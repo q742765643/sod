@@ -61,7 +61,7 @@ public interface DataAuthorityApplyService {
      * @return
      * @throws Exception
      */
-    List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
+    List<Map<String,Object>> getApplyDataInfo(String userId,String databaseId,String schemaId,String className,String tableName) throws Exception;
 
     List<Map<String, Object>> getApplyedFileDataInfo(String userId);
 

@@ -44,11 +44,9 @@ public interface MybatisQueryMapper {
     List<Map<String, Object>> getByDatabaseIdAndTableName(@Param("databaseId") String databaseId, @Param("tableName") String tableName);
 
 
-
     List<Map<String, Object>> queryNewdataApplyByApplyId(@Param("id") String id);
 
-    List<Map<String, Object>> querySpecialByUserIdAndUseStatus(@Param("userId")String userId, @Param("useStatus")String useStatus);
-
+    List<Map<String, Object>> querySpecialByUserIdAndUseStatus(@Param("userId") String userId, @Param("useStatus") String useStatus);
 
 
     List<Map<String, Object>> getLogicClassTree();
@@ -64,6 +62,7 @@ public interface MybatisQueryMapper {
 
     /**
      * 归档时间查询
+     *
      * @param ddataid
      * @return
      */
@@ -83,7 +82,7 @@ public interface MybatisQueryMapper {
 
     void updateDataAuthorityRecord(@Param("id") String id, @Param("authorize") Integer authorize, @Param("cause") String cause);
 
-    void updateDataAuthorityApply(@Param("id") String id, @Param("auditStatus") String auditStatus,@Param("examiner") String examiner,@Param("examineTime") Date examineTime);
+    void updateDataAuthorityApply(@Param("id") String id, @Param("auditStatus") String auditStatus, @Param("examiner") String examiner, @Param("examineTime") Date examineTime);
 
     int getDataServiceMaxNum(@Param("data_service_id") String data_service_id);
 
@@ -97,7 +96,7 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> querySpecialReadWriteBySdbId(@Param("sdbId") String sdbId);
 
-    void updateSpecialTreeData(@Param("sdbId") String sdbId,@Param("parentId") String parentId,@Param("typeId") String typeId,@Param("typeName") String typeName);
+    void updateSpecialTreeData(@Param("sdbId") String sdbId, @Param("parentId") String parentId, @Param("typeId") String typeId, @Param("typeName") String typeName);
 
     List<Map<String, Object>> getRecordSpecialByTdbId(@Param("sdbId") String sdbId, @Param("userId") String userId);
 
@@ -123,7 +122,7 @@ public interface MybatisQueryMapper {
 
     List<Map<String, Object>> getDataTypeListPostgresql(@Param("dataClassIds") String dataClassIds);
 
-    List<Map<String, Object>> findByDataServiceId(@Param("dataClassIds") String dataClassIds,@Param("databaseId") String databaseId);
+    List<Map<String, Object>> findByDataServiceId(@Param("dataClassIds") String dataClassIds, @Param("databaseId") String databaseId);
 
     List<Map<String, Object>> findColumnByTableId(@Param("tableId") String tableId);
 
@@ -133,8 +132,9 @@ public interface MybatisQueryMapper {
 
     Map<String, Object> findByDatabaseDefine(@Param("databaseId") String databaseId);
 
-    List<Map<String, Object>> findByUserIdAndDatabaseDefineId1(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
-    List<Map<String, Object>> findByUserIdAndDatabaseDefineId2(@Param("userId")String userId,@Param("databaseDefineId")String databaseDefineId);
+    List<Map<String, Object>> findByUserIdAndDatabaseDefineId1(@Param("userId") String userId, @Param("databaseDefineId") String databaseDefineId);
+
+    List<Map<String, Object>> findByUserIdAndDatabaseDefineId2(@Param("userId") String userId, @Param("databaseDefineId") String databaseDefineId);
 
     List<Map<String, Object>> getSqlList(@Param("databaseId") String databaseId, @Param("dataClassIds") String dataClassIds);
 
@@ -149,9 +149,9 @@ public interface MybatisQueryMapper {
 
     List<Map<String, String>> getSchemaByPhysic(Map<String, Object> param);
 
-    List<Map<String, Object>> getRecordByTdbId(@Param("tdbId")String tdbId, @Param("typeId")String typeId, @Param("status")String status);
+    List<Map<String, Object>> getRecordByTdbId(@Param("tdbId") String tdbId, @Param("typeId") String typeId, @Param("status") String status);
 
-    List<Map<String, Object>> getAuthorizeRecordByTdbId(@Param("tdbId")String tdbId, @Param("typeId")String typeId,@Param("status") String status);
+    List<Map<String, Object>> getAuthorizeRecordByTdbId(@Param("tdbId") String tdbId, @Param("typeId") String typeId, @Param("status") String status);
 
     void changeDataStatus(Map<String, String> dataMap);
 
@@ -174,16 +174,18 @@ public interface MybatisQueryMapper {
     void updateDataAuthorityStatus(String apply_id, String database_id, String data_class_id, Integer authorize);
 
     List<Map<String, Object>> getRecentOnlineTime(String ctsCode);
+
     /**
-     *   获取用户可申请资料
-     * @description
-     * @author wlg
-     * @date 2020年4月22日下午5:07:55
+     * 获取用户可申请资料
+     *
      * @param userId
      * @return
      * @throws Exception
+     * @description
+     * @author wlg
+     * @date 2020年4月22日下午5:07:55
      */
-    List<Map<String,Object>> getApplyDataInfo(String userId) throws Exception;
+    List<Map<String, Object>> getApplyDataInfo(String userId, String databaseId, String schemaId, String className, String tableName) throws Exception;
 
     List<LinkedHashMap<String, Object>> getDataClassInfo(String dataClassId);
 
@@ -193,41 +195,41 @@ public interface MybatisQueryMapper {
 
     List<LinkedHashMap<String, Object>> getDataclassTreeByClassIds(List<String> classIds);
 
-    List<LinkedHashMap<String, Object>> getDataClassByBizUserOrDatabase(@Param("bizUserId")String bizUserId,@Param("database_id")String database_id);
+    List<LinkedHashMap<String, Object>> getDataClassByBizUserOrDatabase(@Param("bizUserId") String bizUserId, @Param("database_id") String database_id);
 
-    List<Map<String,Object>> getDataInfoByUserId(@Param("userId") String userId,@Param("dataClassId") String dataClassId);
+    List<Map<String, Object>> getDataInfoByUserId(@Param("userId") String userId, @Param("dataClassId") String dataClassId);
 
-    List<Map<String,Object>> getSpecialDBData(@Param("sdbId") String sdbId);
+    List<Map<String, Object>> getSpecialDBData(@Param("sdbId") String sdbId);
 
-    List<DataClassEntity> getDataClassTree(@Param("databaseId")String databaseId);
+    List<DataClassEntity> getDataClassTree(@Param("databaseId") String databaseId);
 
-    List<DataClassEntity> getDataClassTreePostgresql(@Param("databaseId")String databaseId);
-
-
-    List<Map<String,Object>> getDatabaseName();
-
-    List<Map<String,Object>>  getByDatabaseDefineId(@Param("id")String id);
-
-    List<Map<String,Object>>  getApplyedRecodeFileDataInfo(@Param("userId") String userId);
-
-    List<Map<String,Object>> findAllOnlineInfo();
-
-    List<Map<String,Object>>  getSpecialReadWriteFileDataInfo(@Param("userId") String userId);
-
-    List<Map<String,Object>> onLineTimeByClassId(@Param("dataClassId")String dataClassId);
+    List<DataClassEntity> getDataClassTreePostgresql(@Param("databaseId") String databaseId);
 
 
+    List<Map<String, Object>> getDatabaseName();
+
+    List<Map<String, Object>> getByDatabaseDefineId(@Param("id") String id);
+
+    List<Map<String, Object>> getApplyedRecodeFileDataInfo(@Param("userId") String userId);
+
+    List<Map<String, Object>> findAllOnlineInfo();
+
+    List<Map<String, Object>> getSpecialReadWriteFileDataInfo(@Param("userId") String userId);
+
+    List<Map<String, Object>> onLineTimeByClassId(@Param("dataClassId") String dataClassId);
 
 
     /**
      * 查询资料被申请权限
+     *
      * @param tableId
      * @return
      */
-    List<Map<String, Object>> findAuthorityList(@Param("tableId")String tableId);
+    List<Map<String, Object>> findAuthorityList(@Param("tableId") String tableId);
 
     /**
      * 查询回收站
+     *
      * @return
      */
     List<Map<String, Object>> getRecycle(@Param("map") Map<String, Object> map);

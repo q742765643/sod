@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/dm/dataAuthorityApply")
-@Api(value="资料访问权限审核",tags= {"资料访问权限审核"})
+@Api(value = "资料访问权限审核", tags = {"资料访问权限审核"})
 public class DataAuthorityApplyController {
 
     @Autowired
@@ -42,7 +42,7 @@ public class DataAuthorityApplyController {
                                   @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
         ResultT<PageBean> resultT = new ResultT<>();
         Map<String, String> map = new HashMap<>();
-        map.put("userId",dataAuthorityApplyDto.getUserId());
+        map.put("userId", dataAuthorityApplyDto.getUserId());
         PageForm<Map<String, String>> pageForm = new PageForm<>(pageNum, pageSize, map);
         PageBean pageBean = dataAuthorityApplyService.selectPageList(pageForm);
         resultT.setData(pageBean);
@@ -204,18 +204,18 @@ public class DataAuthorityApplyController {
         }
     }
 
-    @ApiOperation(value="获取数据分类数据量")
-    @GetMapping(value="/api/dataAuthorityApply/getClassNum")
-    public ResultT getClassNum(String userId){
+    @ApiOperation(value = "获取数据分类数据量")
+    @GetMapping(value = "/api/dataAuthorityApply/getClassNum")
+    public ResultT getClassNum(String userId) {
         try {
             List<Map<String, Object>> map = dataAuthorityApplyService.getClassNum(userId);
             return ResultT.success(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResultT.failed(e.getMessage());
         }
     }
 
-    @ApiOperation(value="根据四级编码获取用户信息")
+    @ApiOperation(value = "根据四级编码获取用户信息")
     @RequiresPermissions("api:dataAuthorityApply:getDataCreator")
     @PostMapping(value = "/api/dataAuthorityApply/getDataCreator")
     public ResultT getDataCreator(String dataClassId) {
@@ -262,9 +262,9 @@ public class DataAuthorityApplyController {
     @ApiOperation(value = "获取可申请资料清单")
     //@RequiresPermissions("dm:dataAuthorityApply:getApplyDataInfo")
     @GetMapping(value = "/getApplyDataInfo")
-    public ResultT getApplyDataInfo(String userId) {
+    public ResultT getApplyDataInfo(String userId, String databaseId, String schemaId, String className, String tableName) {
         try {
-            List<Map<String, Object>> data = dataAuthorityApplyService.getApplyDataInfo(userId);
+            List<Map<String, Object>> data = dataAuthorityApplyService.getApplyDataInfo(userId, databaseId, schemaId, className, tableName);
             return ResultT.success(data);
         } catch (Exception e) {
             e.printStackTrace();

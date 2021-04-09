@@ -143,9 +143,9 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         Map<String, List<DataAuthorityRecordDto>> map = dataAuthorityRecordList.stream()
                 .collect(Collectors.groupingBy(DataAuthorityRecordDto::getSchema));
 
-        map.forEach((k,v)->{
+        map.forEach((k, v) -> {
             String flowId = IdUtils.serialNumber("SOD", dataAuthorityApplyDto.getUserId(), k);
-            if ("USR_SOD".equalsIgnoreCase(k)){
+            if ("USR_SOD".equalsIgnoreCase(k)) {
                 dataAuthorityApplyDto.setOwner("admin");
             }
             dataAuthorityApplyDto.setFlowId(flowId);
@@ -510,7 +510,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
      * @date 2020-04-22 17:06
      */
     @Override
-    public List<Map<String, Object>> getApplyDataInfo(String userId) throws Exception {
+    public List<Map<String, Object>> getApplyDataInfo(String userId, String databaseId, String schemaId, String className, String tableName) throws Exception {
 
         List<DatabaseAuthorizedDto> da = this.databaseAuthorizedService.findByDatabaseUsername(userId);
         if (da.isEmpty()) {
@@ -521,14 +521,14 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                 .map(DatabaseAuthorizedDto::getDatabaseId)
                 .collect(Collectors.toList());
         //查询所有不属于该用户的资料
-        List<Map<String, Object>> result = mybatisQueryMapper.getApplyDataInfo(userId);
+        List<Map<String, Object>> result = mybatisQueryMapper.getApplyDataInfo(userId, databaseId, schemaId, className, tableName);
         //查询可用物理库里已建的表
         Map<String, List<String>> databaseTables = dataLogicService.getDatabaseTables(dbs);
         //剔除还没在物理库建表的资料
         result = result.stream().filter(e -> {
             String dbId = String.valueOf(e.get(this.DATABASE_DEFINE_ID));
-            String tableName = String.valueOf(e.get(this.TABLE_NAME));
-            return databaseTables.get(dbId).contains(tableName.toUpperCase());
+            String tn = String.valueOf(e.get(this.TABLE_NAME));
+            return databaseTables.get(dbId).contains(tn.toUpperCase());
         }).collect(Collectors.toList());
         return result;
     }
