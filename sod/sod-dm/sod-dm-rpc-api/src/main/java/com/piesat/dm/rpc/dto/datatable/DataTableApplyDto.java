@@ -75,4 +75,6 @@ public class DataTableApplyDto extends BaseDto {
     private LinkedHashSet<TableColumnDto> columns;
 
     private LinkedHashSet<TableIndexDto> tableIndexList;
+
+    private TablePartDto tablePartDto;
 }

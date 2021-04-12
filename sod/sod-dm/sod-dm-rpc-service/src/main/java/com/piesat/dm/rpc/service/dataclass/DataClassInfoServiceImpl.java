@@ -132,9 +132,14 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
             this.dataLogicService.saveList(dataClassLogicList);
             List<DataTableApplyDto> dataTableApplyDtoList = dataClassInfoDto.getDataTableApplyDtoList();
             dataTableApplyDtoList.forEach(e -> {
+                TablePartDto tablePartDto = e.getTablePartDto();
                 e.setApplyId(dataClassInfoDto.getId());
                 e.setStatus(StatusEnum.待审核.getCode());
-                this.dataTableApplyService.saveDto(e);
+                DataTableApplyDto dataTableApplyDto = this.dataTableApplyService.saveDto(e);
+                if (tablePartDto != null) {
+                    tablePartDto.setId(dataTableApplyDto.getId());
+                    this.shardingService.saveDto(tablePartDto);
+                }
             });
             dataClassInfoDto.setStatus(1);
             this.saveDto(dataClassInfoDto);
@@ -169,6 +174,12 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
             dataClassInfoDto.setTableName(dataTableInfoDto.getTableName());
         }
         List<DataTableApplyDto> dataTableApplyDtoList = this.dataTableApplyService.findByApplyId(id);
+        dataTableApplyDtoList.forEach(e -> {
+            TablePartDto tablePartDto = this.shardingService.getDotById(e.getId());
+            if (tablePartDto != null) {
+                e.setTablePartDto(tablePartDto);
+            }
+        });
         dataClassInfoDto.setDataClassLabelList(dataClassLabelDtoList);
         dataClassInfoDto.setDataClassLogicList(dataClassLogicDtoList);
         dataClassInfoDto.setDataTableApplyDtoList(dataTableApplyDtoList);
