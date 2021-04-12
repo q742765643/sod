@@ -94,7 +94,6 @@
             size="mini"
             type="text"
             @click="editRole(scope.row)"
-            v-show="sysLevel"
           >角色</el-button>
           <el-button icon="el-icon-delete" size="mini" type="text" @click="deleteRow(scope.row)" v-show="sysLevel">删除</el-button>
         </template>
