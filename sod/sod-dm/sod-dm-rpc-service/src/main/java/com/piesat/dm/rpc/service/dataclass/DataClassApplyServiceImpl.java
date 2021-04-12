@@ -24,6 +24,7 @@ import com.piesat.dm.rpc.mapper.dataclass.DataClassApplyMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -153,7 +154,8 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核未通过) {
             dca_ = this.save(dca_);
         } else if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核通过) {
-            DataClassInfoDto dataClassInfo = dca.getDataClassInfo();
+            DataClassInfoDto dataClassInfo = new DataClassInfoDto();
+            BeanUtils.copyProperties(dca, dataClassInfo);
             dataClassInfo.setStatus(StatusEnum.审核通过.getCode());
             this.dataClassInfoService.saveDto(dataClassInfo);
             List<DataTableApplyDto> dataTableApplyDtoList = dca.getDataTableApplyDtoList();
