@@ -116,5 +116,10 @@ public class DataClassApplyDto extends BaseDto {
      */
     private String tableName;
 
+    public DataClassInfoDto getDataClassInfo() {
+        DataClassInfoDto d = new DataClassInfoDto();
+        BeanUtils.copyProperties(this, d);
+        return d;
+    }
 
 }

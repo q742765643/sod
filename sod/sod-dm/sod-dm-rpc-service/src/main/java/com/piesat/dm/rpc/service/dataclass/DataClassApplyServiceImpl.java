@@ -24,13 +24,13 @@ import com.piesat.dm.rpc.mapper.dataclass.DataClassApplyMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,7 +129,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
             }
             this.dataLogicService.saveList(dataClassLogicList);
             List<DataTableApplyDto> dataTableApplyDtoList = dataClassApplyDto.getDataTableApplyDtoList();
-            dataTableApplyDtoList.forEach(e -> {
+            Optional.ofNullable(dataTableApplyDtoList).ifPresent(d -> d.forEach(e -> {
                 TablePartDto tablePartDto = e.getTablePartDto();
                 e.setApplyId(dataClassApplyDto.getId());
                 e.setStatus(StatusEnum.待审核.getCode());
@@ -138,9 +138,9 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                     tablePartDto.setId(dataTableApplyDto.getId());
                     this.shardingService.saveDto(tablePartDto);
                 }
-            });
+            }));
             dataClassApplyDto.setStatus(1);
-            this.saveDto(dataClassApplyDto);
+            this.save(this.dataClassApplyMapper.toEntity(dataClassApplyDto));
         } catch (Exception e) {
             return ResultT.failed(e.getMessage());
         }
@@ -154,8 +154,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核未通过) {
             dca_ = this.save(dca_);
         } else if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核通过) {
-            DataClassInfoDto dataClassInfo = new DataClassInfoDto();
-            BeanUtils.copyProperties(dca, dataClassInfo);
+            DataClassInfoDto dataClassInfo = dca.getDataClassInfo();
             dataClassInfo.setStatus(StatusEnum.审核通过.getCode());
             this.dataClassInfoService.saveDto(dataClassInfo);
             List<DataTableApplyDto> dataTableApplyDtoList = dca.getDataTableApplyDtoList();
