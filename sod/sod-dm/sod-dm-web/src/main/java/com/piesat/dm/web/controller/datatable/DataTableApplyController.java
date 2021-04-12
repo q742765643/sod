@@ -106,8 +106,7 @@ public class DataTableApplyController {
     @PostMapping(value = "/review")
     public ResultT review(@RequestBody DataTableApplyDto dataTableApplyDto) {
         try {
-            DataTableApplyDto save = this.dataTableApplyService.saveDto(dataTableApplyDto);
-            return ResultT.success(save);
+            return this.dataTableApplyService.review(dataTableApplyDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

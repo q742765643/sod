@@ -22,85 +22,74 @@ public class DataClassApplyEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 四级编码
-     */
-    @Column(name = "d_data_id")
-    private String dDataId;
-
-    /**
      * 存储编码
+     * data_class_id
      */
-    @Column(name = "data_class_id", nullable = false)
+    @Column(name = "data_class_id", length = 255, nullable = false)
     private String dataClassId;
 
+    /**
+     * 数据名称（主要用于中间数据）
+     * data_name
+     */
+    @Column(name = "data_name", length = 255)
+    private String dataName;
 
     /**
-     * 父节点id
+     * 资料状态
+     * status
      */
-    @Column(name = "parent_id")
-    private String parentId;
-
-
-    /**
-     * 序号
-     */
-    @Column(name = "serial")
-    private Integer serial;
-
-    /**
-     * 名称
-     */
-    @Column(name = "class_name")
-    private String className;
-
-    /**
-     * 绑定表id
-     */
-    @Column(name = "table_id")
-    private String tableId;
-    /**
-     * 表英文名称
-     */
-    @Column(name = "table_name", length = 64)
-    private String tableName;
-
-
-    /**
-     * 数据库ID
-     */
-    @Column(name = "database_id", length = 64)
-    private String databaseId;
-
-    /**
-     * 表描述
-     */
-    @Column(name = "table_desc", length = 64)
-    private String tableDesc;
-
-    /**
-     * 是否公开
-     */
-    @Column(name = "is_access", columnDefinition = "integer DEFAULT 1 ")
-    private Integer isAccess;
-
-    /**
-     * 提交类型（1.关联表，2.新增表）
-     */
-    @Column(name = "sub_type")
-    private Integer subType;
-
-    /**
-     * 审核状态
-     * 1-待审核 ,2-审核通过 ,3-审核不通过，4-删除申请中，5-已删除
-     */
-    @Column(name = "status")
+    @Column(name = "status", length = 255)
     private Integer status;
 
     /**
-     * 申请人
+     * 数据等级
+     * data_level
+     */
+    @Column(name = "data_level")
+    private Integer dataLevel;
+
+    /**
+     * 数据描述
+     * data_desc
+     */
+    @Column(name = "data_desc")
+    private String dataDesc;
+
+
+    /**
+     * 是否归档（0：否，1：是）
+     * is_archive
+     */
+    @Column(name = "is_archive")
+    private Integer isArchive;
+
+    /**
+     * 发布状态
+     * published
+     */
+    @Column(name = "published")
+    private Integer published;
+
+    /**
+     * 存储目录
+     * dir
+     */
+    @Column(name = "dir")
+    private String dir;
+
+    /**
+     * 用户id
      */
     @Column(name = "user_id")
     private String userId;
+
+    /**
+     * 数据类型（0：业务数据，1：业务中间数据）
+     * data_type
+     */
+    @Column(name = "data_type")
+    private Integer dataType;
 
     /**
      * 审核人
