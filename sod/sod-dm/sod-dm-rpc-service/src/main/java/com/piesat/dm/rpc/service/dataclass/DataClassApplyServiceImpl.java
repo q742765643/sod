@@ -1,11 +1,13 @@
 package com.piesat.dm.rpc.service.dataclass;
 
+import com.alibaba.fastjson.JSONObject;
 import com.piesat.common.jpa.BaseDao;
 import com.piesat.common.jpa.BaseService;
 import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
+import com.piesat.common.utils.http.HttpClientUtil;
 import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.common.enums.StatusEnum;
 import com.piesat.dm.dao.dataclass.DataClassApplyDao;
@@ -25,14 +27,13 @@ import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 资料申请
@@ -45,6 +46,10 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
 
     private final String MLDT = "MLDT.";
     private final String FORMAT = "yyyy.MMdd";
+
+
+    @Value("${portal_callback}")
+    private String portalCallback;
 
     @Autowired
     private DataClassApplyDao dataClassApplyDao;
@@ -162,20 +167,35 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultT review(DataClassApplyDto dca) {
+        ResultT r = new ResultT();
         DataClassApplyEntity dca_ = this.dataClassApplyMapper.toEntity(dca);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", "sod");
+        jsonObject.put("id", dca.getId());
         if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核未通过) {
-            dca_ = this.save(dca_);
+            jsonObject.put("status", 3);
         } else if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核通过) {
             DataClassInfoDto dataClassInfo = dca.getDataClassInfo();
             dataClassInfo.setStatus(StatusEnum.审核通过.getCode());
             this.dataClassInfoService.saveDto(dataClassInfo);
-            List<DataTableApplyDto> dataTableApplyDtoList = dca.getDataTableApplyDtoList();
+            DataClassApplyDto dotById = this.getDotById(dca.getId());
+            List<DataTableApplyDto> dataTableApplyDtoList = dotById.getDataTableApplyDtoList();
             dataTableApplyDtoList.forEach(e -> {
                 e.setStatus(StatusEnum.审核通过.getCode());
-                this.dataTableApplyService.review(e);
+                ResultT review = this.dataTableApplyService.review(e);
+                if (review.isSuccess()){
+                    r.setErrorMessage(review.getProcessMsg().toString());
+                }
             });
+            jsonObject.put("status", 2);
+            jsonObject.put("msg", dca.getReviewNotes());
         }
-        return ResultT.success(dca_);
+        dca_.setReviewTime(new Date());
+        dca_ = this.saveNotNull(dca_);
+        HashMap<String, String> headers = new HashMap<>();
+        ResultT<DataClassApplyEntity> s = ResultT.success(dca_);
+        s.setMessage("PORTAL回调信息：" + r);
+        return s;
     }
 
     @Override
