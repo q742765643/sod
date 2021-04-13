@@ -179,8 +179,10 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
             dataClassInfo.setStatus(StatusEnum.审核通过.getCode());
             this.dataClassInfoService.saveDto(dataClassInfo);
             DataClassApplyDto dotById = this.getDotById(dca.getId());
-            List<DataTableApplyDto> dataTableApplyDtoList = dotById.getDataTableApplyDtoList();
-            dataTableApplyDtoList.forEach(e -> {
+            List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(dotById.getDataClassId());
+            dataClassLogicDtoList.forEach(d -> {
+                String tableId = d.getTableId();
+                DataTableApplyDto e = this.dataTableApplyService.getDotById(tableId);
                 e.setStatus(StatusEnum.审核通过.getCode());
                 ResultT review = this.dataTableApplyService.review(e);
                 if (review.isSuccess()){
