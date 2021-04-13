@@ -87,6 +87,8 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     public ResultT saveDto(DataClassApplyDto dataClassApplyDto) {
         try {
             String dataClassId = dataClassApplyDto.getDataClassId();
+
+            //生成中间数据的编码
             if (StringUtils.isEmpty(dataClassId)) {
                 String sf = MLDT + DateUtils.dateTimeNow(FORMAT);
                 List<DataClassInfoEntity> list = this.dataClassInfoDao.findByDataTypeOrderByDataClassIdDesc(1);
@@ -104,6 +106,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                 }
                 dataClassApplyDto.setDataClassId(dataClassId);
             }
+            //保存标签信息
             List<DataClassLabelDto> dataClassLabelList = dataClassApplyDto.getDataClassLabelList();
             for (DataClassLabelDto dataClassLabelDto : dataClassLabelList) {
                 String labelKey = dataClassLabelDto.getLabelKey();
@@ -121,24 +124,33 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                 }
                 this.dataClassLabelService.saveDto(dataClassLabelDto);
             }
-            List<DataClassLogicDto> dataClassLogicList = dataClassApplyDto.getDataClassLogicList();
+            List<DataClassLogicDto> dataClassLogicDtos = dataClassApplyDto.getDataClassLogicList();
+            List<DataClassLogicDto> dataClassLogicList = dataClassLogicDtos == null
+                    ? new ArrayList<>() : dataClassLogicDtos;
+            List<DataTableApplyDto> dataTableApplyDtoList = dataClassApplyDto.getDataTableApplyDtoList();
+            //保存申请表信息
+            Optional.ofNullable(dataTableApplyDtoList).ifPresent(d -> d.forEach(e -> {
+                TablePartDto tablePartDto = e.getTablePartDto();
+                e.setApplyId(dataClassApplyDto.getId());
+                e.setStatus(StatusEnum.待审核.getCode());
+                DataTableApplyDto dataTableApplyDto = this.dataTableApplyService.saveDto(e);
+                DataClassLogicDto dcl = new DataClassLogicDto();
+                dcl.setDataClassId(dataClassApplyDto.getDataClassId());
+                dcl.setTableId(dataTableApplyDto.getId());
+                dataClassLogicList.add(dcl);
+                if (tablePartDto != null) {
+                    tablePartDto.setId(dataTableApplyDto.getId());
+                    this.shardingService.saveDto(tablePartDto);
+                }
+            }));
+            //保存关联信息
             for (DataClassLogicDto dataClassLogicDto : dataClassLogicList) {
                 if (StringUtils.isEmpty(dataClassLogicDto.getDataClassId())) {
                     dataClassLogicDto.setDataClassId(dataClassId);
                 }
             }
             this.dataLogicService.saveList(dataClassLogicList);
-            List<DataTableApplyDto> dataTableApplyDtoList = dataClassApplyDto.getDataTableApplyDtoList();
-            Optional.ofNullable(dataTableApplyDtoList).ifPresent(d -> d.forEach(e -> {
-                TablePartDto tablePartDto = e.getTablePartDto();
-                e.setApplyId(dataClassApplyDto.getId());
-                e.setStatus(StatusEnum.待审核.getCode());
-                DataTableApplyDto dataTableApplyDto = this.dataTableApplyService.saveDto(e);
-                if (tablePartDto != null) {
-                    tablePartDto.setId(dataTableApplyDto.getId());
-                    this.shardingService.saveDto(tablePartDto);
-                }
-            }));
+
             dataClassApplyDto.setStatus(1);
             this.save(this.dataClassApplyMapper.toEntity(dataClassApplyDto));
         } catch (Exception e) {
@@ -170,10 +182,19 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     public ResultT list(PageForm<DataClassApplyDto> pageForm) {
         DataClassApplyDto t = pageForm.getT();
         SimpleSpecificationBuilder specificationBuilder = new SimpleSpecificationBuilder();
-        if (StringUtils.isEmpty(t.getUserId())) {
-            return ResultT.failed(ConstantsMsg.MSG16);
+        if (!StringUtils.isEmpty(t.getUserId())) {
+            specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(), t.getUserId());
         }
-        specificationBuilder.add("userId", SpecificationOperator.Operator.eq.name(), t.getUserId());
+        if (!StringUtils.isEmpty(t.getDataName())) {
+            specificationBuilder.add("dataName", SpecificationOperator.Operator.likeAll.name(), t.getDataName());
+        }
+        if (!StringUtils.isEmpty(t.getDataClassId())) {
+            specificationBuilder.add("dataClassId", SpecificationOperator.Operator.likeAll.name(), t.getDataClassId());
+        }
+        if (t.getDataType() != null) {
+            specificationBuilder.add("dataType", SpecificationOperator.Operator.eq.name(), t.getDataType());
+        }
+
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime", "reviewTime");
         PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<DataClassApplyEntity> list = (List<DataClassApplyEntity>) pageBean.getPageData();
@@ -181,8 +202,15 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
 
         dataClassApplyDtos.forEach(e -> {
             if (e.getDataType().equals(1)) {
-                List<DataClassLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(e.getDataClassId());
-                e.setDataClassLogicList(byDataClassId);
+                List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(e.getDataClassId());
+                e.setDataClassLogicList(dataClassLogicDtoList);
+                List<DataTableApplyDto> l = new ArrayList<>();
+                dataClassLogicDtoList.forEach(d -> {
+                    String tableId = d.getTableId();
+                    DataTableApplyDto dataTableApplyDto = this.dataTableApplyService.getDotById(tableId);
+                    l.add(dataTableApplyDto);
+                });
+                e.setDataTableApplyDtoList(l);
             }
         });
         pageBean.setPageData(dataClassApplyDtos);
