@@ -173,7 +173,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         jsonObject.put("type", "sod");
         jsonObject.put("id", dca.getId());
         if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核未通过) {
-            jsonObject.put("status", 3);
+            jsonObject.put("status", "3");
         } else if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核通过) {
             DataClassInfoDto dataClassInfo = dca.getDataClassInfo();
             dataClassInfo.setStatus(StatusEnum.审核通过.getCode());
@@ -189,15 +189,15 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                     r.setErrorMessage(review.getProcessMsg().toString());
                 }
             });
-            jsonObject.put("status", 2);
+            jsonObject.put("status", "2");
             jsonObject.put("msg", dca.getReviewNotes());
         }
         dca_.setReviewTime(new Date());
         dca_ = this.saveNotNull(dca_);
         HashMap<String, String> headers = new HashMap<>();
-        ResultT<DataClassApplyEntity> s = ResultT.success(dca_);
-        s.setMessage("PORTAL回调信息：" + r);
-        return s;
+        String result = HttpClientUtil.doPost(portalCallback,jsonObject.toString(),headers);
+        r.setMessage("PORTAL回调信息：" + result);
+        return r;
     }
 
     @Override
