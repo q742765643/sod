@@ -214,6 +214,9 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         if (t.getDataType() != null) {
             specificationBuilder.add("dataType", SpecificationOperator.Operator.eq.name(), t.getDataType());
         }
+        if (t.getStatus() != null) {
+            specificationBuilder.add("status", SpecificationOperator.Operator.eq.name(), t.getStatus());
+        }
 
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime", "reviewTime");
         PageBean pageBean = this.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
