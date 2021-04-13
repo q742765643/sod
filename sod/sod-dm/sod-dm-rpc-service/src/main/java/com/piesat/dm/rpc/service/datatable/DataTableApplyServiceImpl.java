@@ -75,10 +75,15 @@ public class DataTableApplyServiceImpl extends BaseService<DataTableApplyEntity>
     @Override
     public DataTableApplyDto getDotById(String id) {
         DataTableApplyEntity dataTableApplyEntity = this.getById(id);
-        DataTableApplyDto dataTableApplyDto = this.dataTableApplyMapper.toDto(dataTableApplyEntity);
-        SchemaDto schemaDto = this.schemaService.getDotById(dataTableApplyDto.getDatabaseId());
-        dataTableApplyDto.setDatabasePid(schemaDto.getDatabase().getId());
-        return dataTableApplyDto;
+        if (dataTableApplyEntity != null) {
+            DataTableApplyDto dataTableApplyDto = this.dataTableApplyMapper.toDto(dataTableApplyEntity);
+            SchemaDto schemaDto = this.schemaService.getDotById(dataTableApplyDto.getDatabaseId());
+            dataTableApplyDto.setDatabasePid(schemaDto.getDatabase().getId());
+            return dataTableApplyDto;
+        } else {
+            return null;
+        }
+
     }
 
     @Override

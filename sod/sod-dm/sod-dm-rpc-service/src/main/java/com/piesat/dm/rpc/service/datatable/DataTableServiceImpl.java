@@ -126,6 +126,7 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
         if (schemaDto != null) {
             dataTableInfoDto.setDatabaseType(schemaDto.getDatabase().getDatabaseType());
             dataTableInfoDto.setDatabaseName(schemaDto.getDatabase().getDatabaseName());
+            dataTableInfoDto.setDatabasePid(schemaDto.getDatabase().getId());
         }
         return dataTableInfoDto;
     }

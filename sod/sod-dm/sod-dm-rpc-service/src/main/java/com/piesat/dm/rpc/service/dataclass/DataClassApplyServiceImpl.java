@@ -26,6 +26,7 @@ import com.piesat.dm.rpc.mapper.dataclass.DataClassApplyMapper;
 import com.piesat.util.ResultT;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
@@ -184,9 +185,12 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                 String tableId = d.getTableId();
                 DataTableApplyDto e = this.dataTableApplyService.getDotById(tableId);
                 e.setStatus(StatusEnum.审核通过.getCode());
-                ResultT review = this.dataTableApplyService.review(e);
-                if (review.isSuccess()){
-                    r.setErrorMessage(review.getProcessMsg().toString());
+                DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(e.getId());
+                if (dataTableInfoDto == null) {
+                    ResultT review = this.dataTableApplyService.review(e);
+                    if (review.isSuccess()) {
+                        r.setErrorMessage(review.getProcessMsg().toString());
+                    }
                 }
             });
             jsonObject.put("status", "2");
@@ -195,7 +199,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         dca_.setReviewTime(new Date());
         dca_ = this.saveNotNull(dca_);
         HashMap<String, String> headers = new HashMap<>();
-        String result = HttpClientUtil.doPost(portalCallback,jsonObject.toString(),headers);
+        String result = HttpClientUtil.doPost(portalCallback, jsonObject.toString(), headers);
         r.setMessage("PORTAL回调信息：" + result);
         return r;
     }
@@ -233,7 +237,15 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
                 dataClassLogicDtoList.forEach(d -> {
                     String tableId = d.getTableId();
                     DataTableApplyDto dataTableApplyDto = this.dataTableApplyService.getDotById(tableId);
-                    l.add(dataTableApplyDto);
+                    if (dataTableApplyDto != null) {
+                        l.add(dataTableApplyDto);
+                    } else {
+                        DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
+                        if (dataTableInfoDto != null) {
+                            dataTableApplyDto = new DataTableApplyDto();
+                            BeanUtils.copyProperties(dataTableInfoDto, dataTableApplyDto);
+                        }
+                    }
                 });
                 e.setDataTableApplyDtoList(l);
             }
