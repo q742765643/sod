@@ -17,9 +17,14 @@ public class DatabaseSpecialDbsDto  extends BaseDto {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 申请空间(GB)
+     * 已有空间(GB)
      */
     private Integer sizeOfSpace;
+
+    /**
+     * 申请空间(GB)
+     */
+    private Integer applyOfSpace;
 
     /**
      * 已用空间(GB)

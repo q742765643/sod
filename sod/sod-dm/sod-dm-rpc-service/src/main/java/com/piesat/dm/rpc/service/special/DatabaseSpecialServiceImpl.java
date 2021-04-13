@@ -229,22 +229,25 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
         DatabaseSpecialDto databaseSpecialDto = this.databaseSpecialMapper.toDto(databaseSpecialEntity);
         //为数据库中午名称赋值
         if (databaseSpecialDto != null) {
-            String[] databaseArray = databaseSpecialDto.getDatabaseId().split(",");
-            //查询数据库信息列表
-            List<DatabaseEntity> databaseEntityList = databaseDao.findAll();
-            String databaseName = "";
-            for (String databaseId : databaseArray) {
-                for (DatabaseEntity databaseEntity : databaseEntityList) {
-                    //根据数据库ID判断数据库名称
-                    if (databaseId.equals(databaseEntity.getId())) {
-                        databaseName += databaseEntity.getDatabaseName() + ",";
+            if(StringUtils.isNotNull(databaseSpecialDto.getDatabaseId())){
+                String[] databaseArray = databaseSpecialDto.getDatabaseId().split(",");
+                //查询数据库信息列表
+                List<DatabaseEntity> databaseEntityList = databaseDao.findAll();
+                String databaseName = "";
+                for (String databaseId : databaseArray) {
+                    for (DatabaseEntity databaseEntity : databaseEntityList) {
+                        //根据数据库ID判断数据库名称
+                        if (databaseId.equals(databaseEntity.getId())) {
+                            databaseName += databaseEntity.getDatabaseName() + ",";
+                        }
                     }
                 }
+                if (databaseName.length() > 0) {
+                    databaseName = databaseName.substring(0, databaseName.length() - 1);
+                }
+                databaseSpecialDto.setDatabaseName(databaseName);
             }
-            if (databaseName.length() > 0) {
-                databaseName = databaseName.substring(0, databaseName.length() - 1);
-            }
-            databaseSpecialDto.setDatabaseName(databaseName);
+
 
             //调接口查申请人详情
             UserEntity userEntity = userDao.findByUserName(databaseSpecialDto.getUserId());
@@ -252,6 +255,7 @@ public class DatabaseSpecialServiceImpl extends BaseService<DatabaseSpecialEntit
                 databaseSpecialDto.setUserName(userEntity.getWebUsername());
                 databaseSpecialDto.setUserPhone(userEntity.getTutorPhone());
                 databaseSpecialDto.setDepartment(userEntity.getDeptName());
+                databaseSpecialDto.setAppName(userEntity.getAppName());
             }
         }
         return databaseSpecialDto;

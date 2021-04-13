@@ -1,375 +1,202 @@
 <template>
   <section class="handleLiberyDialog">
-    <el-tabs type="border-card" v-model.trim="activeName">
-      <el-tab-pane label="基本信息" name="first">
-        <el-form
-          ref="ruleForm"
-          :model="msgFormDialog"
-          label-width="100px"
-          :rules="rules"
-        >
-          <el-form-item label="图标" v-if="!handleObj.pageName">
-            <img v-if="sdbImg" :src="sdbImg" style="width: 40px" alt />
-          </el-form-item>
-          <el-form-item label="专题库名称" prop="sdbName">
-            <el-input
-              clearable
-              size="small"
-              v-model.trim="msgFormDialog.sdbName"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="用途" prop="uses">
-            <el-input
-              clearable
-              size="small"
-              v-model.trim="msgFormDialog.uses"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="创建人" v-if="!handleObj.pageName">
-            <el-input
-              clearable
-              size="small"
-              :disabled="true"
-              v-model.trim="msgFormDialog.userName"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="机构" v-if="!handleObj.pageName">
-            <el-input
-              clearable
-              size="small"
-              :disabled="true"
-              v-model.trim="msgFormDialog.department"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="联系方式" v-if="!handleObj.pageName">
-            <el-input
-              clearable
-              size="small"
-              :disabled="true"
-              v-model.trim="msgFormDialog.userPhone"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="申请材料" v-if="!handleObj.pageName">
-            <el-button
-              clearable
-              size="small"
-              type="success"
-              @click="handleExport"
-              icon="el-icon-document"
-              >下载</el-button
-            >
-          </el-form-item>
-          <el-form-item label="排序">
-            <el-input-number
-              v-model.trim="msgFormDialog.sortNo"
-              :min="0"
-            ></el-input-number>
-          </el-form-item>
-          <div class="dialog-footer">
-            <el-button type="primary" @click="trueDialog('ruleForm')"
-              >保 存</el-button
-            >
-            <el-button
-              type="danger"
-              @click="cancleDialog('ruleForm')"
-              v-if="!handleObj.pageName"
-              >拒 绝</el-button
-            >
-          </div>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="数据库授权" name="second" v-if="flagBase">
-        <el-form>
-          <el-row class="center">
-            <el-col :span="24">
-              <span>专题库名称:</span>
-              <span style="font-weight: bold">{{
-                this.msgFormDialog.sdbName
-              }}</span>
-            </el-col>
-          </el-row>
-          <el-row class="center">
-            <el-col :span="24">
-              <span>专题库英文简称:</span>
-              <span>{{ this.msgFormDialog.databaseSchema }}</span>
-            </el-col>
-          </el-row>
-          <el-table border :data="databaseList" stripe style="width: 100%">
-            <el-table-column prop="databaseId" label="数据库"></el-table-column>
-            <el-table-column label="权限">
-              <template slot-scope="scope">
-                <el-checkbox-group v-model.trim="scope.row.checkList">
-                  <el-checkbox label="createTable">创建</el-checkbox>
-                  <el-checkbox label="deleteTable">删除</el-checkbox>
-                  <el-checkbox label="tableDataAccess">读写</el-checkbox>
-                </el-checkbox-group>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-row>
-            <el-col style="text-align: center; margin-top: 10px">
-              <el-button
-                type="primary"
-                size="small"
-                icon="el-icon-thumb"
-                @click="addPhysicsDefine"
-                >数据库授权</el-button
-              >
-            </el-col>
-          </el-row>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane
-        label="专题库资料"
-        name="third"
-        v-if="!handleObj.pageName && flagPower"
-      >
-        <!-- 查询条件 -->
-        <section class="searchCon">
-          <el-form
-            :inline="true"
-            :model="searchLibraryObj"
-            ref="modelForm"
-            class="funLoad selSearchCon"
-          >
-            <el-form-item label="关键字查询">
-              <el-select size="small" v-model.trim="searchLibraryObj.key">
-                <el-option label="资料分类" value="typeName"></el-option>
-                <el-option label="资料名称" value="dataName"></el-option>
-                <el-option label="表名称" value="tableName"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label>
+    <!--<el-tabs type="border-card" v-model.trim="activeName">-->
+      <!--<el-tab-pane label="基本信息" name="first"></el-tab-pane>-->
+      <!---->
+    <!--</el-tabs>-->
+    <el-form
+      :rules="rules"
+      ref="ruleForm"
+      :model="msgFormDialog"
+      label-width="150px"
+      label-position="right">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>基本信息</span>
+        </div>
+        <el-row type="flex" class="row-bg" justify="center">
+          <el-col :span="8" >
+            <el-form-item label="应用系统" prop="userId">
               <el-input
-                clearable
+                v-model.trim="msgFormDialog.userId"
+                :disabled="true"
+                size="small"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="用户ID" prop="userId">
+              <el-input
+                :disabled="true"
                 size="small"
-                v-model.trim="searchLibraryObj.valueText"
-                type="text"
+                v-model.trim="msgFormDialog.userId">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="责任人" prop="userName">
+              <el-input
+                :disabled="true"
+                size="small"
+                v-model.trim="msgFormDialog.userName"
               ></el-input>
             </el-form-item>
-            <el-form-item class="handleSearchBtn">
-              <el-button
-                size="small"
-                type="primary"
-                @click="searchLibraryFun"
-                icon="el-icon-search"
-                >查询</el-button
-              >
-            </el-form-item>
-          </el-form>
-        </section>
-        <!-- 列表 -->
-        <section class="loadTable">
-          <el-table border :data="tableLibraryData" style="width: 100%">
-            <el-table-column
-              type="index"
-              label="序号"
-              width="50"
-            ></el-table-column>
-            <el-table-column
-              prop="typeName"
-              label="资料分类"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="dataName"
-              label="资料名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="ddataId"
-              label="四级编码"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="tableName"
-              label="表名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="databaseName"
-              label="数据库"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="applyAuthority"
-              label="申请权限"
-              width="80"
-              :formatter="applyAuthFormatter"
-            ></el-table-column>
-          </el-table>
-        </section>
-      </el-tab-pane>
-      <el-tab-pane
-        label="基础库资料"
-        name="fourth"
-        v-if="!handleObj.pageName && flagPower"
-      >
-        <!-- 查询条件 -->
-        <section class="searchCon">
-          <el-form
-            :inline="true"
-            :model="searchBaseLibraryObj"
-            ref="modelForm"
-            class="funLoad selSearchCon"
-          >
-            <el-form-item label="关键字查询">
-              <el-select size="small" v-model.trim="searchBaseLibraryObj.key">
-                <el-option label="资料分类" value="typeName"></el-option>
-                <el-option label="资料名称" value="dataName"></el-option>
-                <el-option label="表名称" value="tableName"></el-option>
-                <el-option
-                  label="申请权限"
-                  value="applyAuthorityString"
-                ></el-option>
-                <el-option
-                  label="审核状态"
-                  value="examineStatusString"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label>
+          </el-col>
+        </el-row>
+        <el-row type="flex" class="row-bg" justify="left">
+          <el-col :span="8">
+            <el-form-item label="部门" prop="department">
               <el-input
-                clearable
+                :disabled="true"
                 size="small"
-                v-model.trim="searchBaseLibraryObj.valueText"
-                type="text"
+                v-model.trim="msgFormDialog.department"
               ></el-input>
             </el-form-item>
-
-            <el-form-item class="handleSearchBtn">
-              <el-button
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="联系方式" prop="userPhone">
+              <el-input
+                :disabled="true"
                 size="small"
-                type="primary"
-                @click="loadReadList"
-                icon="el-icon-search"
-                >查询</el-button
-              >
-              <el-button
-                type="primary"
-                size="small"
-                @click="batchUpdatePower('1')"
-                icon="el-icon-thumb"
-                >授权</el-button
-              >
-              <el-button
-                type="danger"
-                size="small"
-                @click="batchUpdatePower('2')"
-                icon="el-icon-close"
-                >拒绝</el-button
-              >
+                v-model.trim="msgFormDialog.userPhone"
+              ></el-input>
             </el-form-item>
-          </el-form>
-        </section>
-        <!-- 列表 -->
-        <section class="loadTable">
-          <el-table
-            border
-            :data="baseTableLibraryData"
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" width="45"></el-table-column>
-            <el-table-column
-              prop="typeName"
-              label="资料分类"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="dataName"
-              label="资料名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="ddataId"
-              label="四级编码"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="tableName"
-              label="表名称"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="databaseName"
-              label="数据库"
-              :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column
-              prop="applyAuthority"
-              width="80px"
-              label="申请权限"
-              :formatter="applyAuthFormatter"
-            ></el-table-column>
+          </el-col>
+          <el-col :span="8" >
+            <el-form-item label="用途" prop="uses">
+              <el-input
+                v-model.trim="msgFormDialog.uses"
+                :disabled="true"
+                size="small"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-card>
 
-            <el-table-column prop="examineStatus" label="审核状态">
-              <template slot-scope="scope">
-                <el-link
-                  :underline="false"
-                  size="small"
-                  v-if="
-                    scope.row.examineStatus == '1'
-                  "
-                  type="success"
-                  icon="el-icon-check"
-                  >已授权</el-link
-                >
-                <el-link
-                  :underline="false"
-                  size="small"
-                  v-if="
-                    scope.row.examineStatus == '3'
-                  "
-                  type="warning"
-                  icon="el-icon-s-finance"
-                  >待审核</el-link
-                >
-                <el-link
-                  :underline="false"
-                  size="small"
-                  v-if="scope.row.examineStatus == '2'"
-                  type="danger"
-                  icon="el-icon-close"
-                  >拒绝</el-link
-                >
-              </template>
-            </el-table-column>
-            <el-table-column prop="examine_status" label="备注">
-              <template slot-scope="scope">
-                <el-popover
-                  trigger="hover"
-                  placement="top"
-                  v-if="scope.row.failureReason"
-                >
-                  <p>{{ scope.row.failureReason }}</p>
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag size="medium">查看</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="240px">
-              <template slot-scope="scope">
-                <el-button
-                  type="text"
-                  size="mini"
-                  icon="el-icon-thumb"
-                  @click="updatePower(scope.row, '1')"
-                  >授权</el-button
-                >
-                <el-button
-                  type="text"
-                  size="mini"
-                  icon="el-icon-close"
-                  @click="updatePower(scope.row, '2')"
-                  >拒绝</el-button
-                >
-              </template>
-            </el-table-column>
-          </el-table>
-        </section>
-      </el-tab-pane>
-    </el-tabs>
+      <el-card class="box-card" style="margin-top: 20px">
+        <div slot="header" class="clearfix">
+          <span>审核信息</span>
+        </div>
+        <el-row type="flex" class="row-bg" justify="center">
+          <el-col :span="8">
+            <el-form-item label="审核状态" prop="examineStatus">
+              <el-radio-group
+                v-model.trim="msgFormDialog.examineStatus"
+                @change="statusChange">
+                <el-radio label="2" >允许</el-radio>
+                <el-radio label="3" >拒绝</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="审核人" prop="examiner">
+              <el-input
+                :disabled="true"
+                size="small"
+                v-model.trim="msgFormDialog.examiner"
+                placeholder="审核人"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="申请材料" prop="examineMaterial">
+              <label slot="label">
+                <i style="color:red;">*</i>&nbsp;申请材料
+              </label>
+              <el-button @click="handleExport" size="small" type="success">下载查看申请材料</el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row type="flex" class="row-bg" justify="center">
+          <el-col :span="24">
+            <el-form-item label="意见" prop="failureReason">
+              <el-input
+                size="small"
+                v-model.trim="msgFormDialog.failureReason"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-card>
+
+      <el-card class="box-card" style="margin-top: 20px" v-if="!isReason">
+        <div slot="header" class="clearfix">
+          <span>资源信息</span>
+        </div>
+        <el-row :gutter="12">
+          <el-col :span="8">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>结构化数据库(STDB)</span>
+                <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                <span style="float: right; padding: 3px 0; color: #67C23A" v-if="dbsLists.STDB != 0">已开通</span>
+                <span style="float: right; padding: 3px 0; color: #F56C6C" v-else>未开通</span>
+              </div>
+              <div v-for="" :key="" class="text item">
+                {{'存储空间:   '+dbsLists.oldSTDB+'GB  >>  '+dbsLists.STDB+'GB  变更  '+dbsLists.newSTDB}}
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>文件索引库(FIDB)</span>
+                <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                <span style="float: right; padding: 3px 0; color: #67C23A" v-if="dbsLists.FIDB != 0">已开通</span>
+                <span style="float: right; padding: 3px 0; color: #F56C6C" v-else>未开通</span>
+              </div>
+              <div v-for="" :key="" class="text item">
+                {{'存储空间:   '+dbsLists.oldFIDB+'GB  >>  '+dbsLists.FIDB+'GB  变更  '+dbsLists.newFIDB}}
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>历史分析库(HADB)</span>
+                <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                <span style="float: right; padding: 3px 0; color: #67C23A" v-if="dbsLists.HADB != 0">已开通</span>
+                <span style="float: right; padding: 3px 0; color: #F56C6C" v-else>未开通</span>
+              </div>
+              <div v-for="" :key="" class="text item">
+                {{'存储空间:   '+dbsLists.oldHADB+'GB  >>  '+dbsLists.HADB+'GB  变更  '+dbsLists.newHADB}}
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+        <el-row :gutter="12" style="margin-top: 25px">
+          <el-col :span="8">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>文件存储(NAS)</span>
+                <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                <span style="float: right; padding: 3px 0; color: #67C23A" v-if="dbsLists.NAS != 0">已开通</span>
+                <span style="float: right; padding: 3px 0; color: #F56C6C" v-else>未开通</span>
+              </div>
+              <div v-for="" :key="" class="text item">
+                {{'存储空间:   '+dbsLists.oldNAS+'GB  >>  '+dbsLists.NAS+'GB  变更  '+dbsLists.newNAS}}
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="8">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>对象存储</span>
+                <!--<el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                <span style="float: right; padding: 3px 0; color: #67C23A" v-if="dbsLists.objectSave != 0">已开通</span>
+                <span style="float: right; padding: 3px 0; color: #F56C6C" v-else>未开通</span>
+              </div>
+              <div v-for="" :key="" class="text item">
+                {{'存储空间:   '+dbsLists.oldobjectSave+'GB  >>  '+dbsLists.objectSave+'GB  变更 '+dbsLists.newobjectSave}}
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-form>
+    <div slot="footer" style="margin-top: 20px" class="dialog-footer">
+      <el-button type="primary" @click="trueDialog('ruleForm')">确 定</el-button>
+      <!--<el-button @click="cancelDialog('ruleForm')">取 消</el-button>-->
+    </div>
   </section>
 </template>
 
@@ -396,7 +223,8 @@ export default {
   },
   data() {
     return {
-      activeName: "first",
+      // activeName: "first",
+      isReason:false,
       flagBase: false,
       flagPower: false,
       msgFormDialog: {},
@@ -407,6 +235,23 @@ export default {
       searchBaseLibraryObj: {
         key: "typeName",
         valueText: "",
+      },
+      dbsLists:{
+        STDB:0,
+        FIDB:0,
+        HADB:0,
+        NAS:0,
+        objectSave:0,
+        newSTDB:0,
+        newFIDB:0,
+        newHADB:0,
+        newNAS:0,
+        newobjectSave:0,
+        oldSTDB:0,
+        oldFIDB:0,
+        oldHADB:0,
+        oldNAS:0,
+        oldobjectSave:0,
       },
       baseTableLibraryData: [],
       tableLibraryData: [],
@@ -457,6 +302,7 @@ export default {
 
     this.searchLibraryFun();
     this.loadReadList();
+
   },
   methods: {
     applyAuthFormatter(row, column) {
@@ -464,6 +310,15 @@ export default {
         return "只读";
       } else if (row.applyAuthority == "2") {
         return "读写";
+      }
+    },
+    statusChange(val) {
+      if (val == "2") {
+        this.isReason = false;
+        this.msgFormDialog.failureReason = "同意";
+      } else {
+        this.isReason = true;
+        this.msgFormDialog.failureReason = "拒绝";
       }
     },
     // 下载
@@ -487,7 +342,60 @@ export default {
       // 基本信息
       getById({ id: this.handleObj.id }).then((res) => {
         if (res.code == 200) {
+          debugger
           this.msgFormDialog = res.data;
+          this.msgFormDialog.examiner = this.$store.getters.name;
+          this.msgFormDialog.examineStatus = "2";
+          this.msgFormDialog.failureReason = "同意";
+          var list = this.msgFormDialog.dbsList
+          for(var i=0;i<list.length;i++){
+
+            if(list[i].databaseId == "STDB"){
+              this.dbsLists.oldSTDB = list[i].sizeOfSpace;
+              if(list[i].applyOfSpace != null){
+                this.dbsLists.newSTDB = list[i].applyOfSpace;
+                this.dbsLists.STDB = this.dbsLists.oldSTDB + this.dbsLists.newSTDB;
+              }else{
+                this.dbsLists.STDB = this.dbsLists.oldSTDB
+              }
+            }
+            if(list[i].databaseId == "FIDB"){
+              this.dbsLists.oldFIDB = list[i].sizeOfSpace;
+              if(list[i].applyOfSpace != null){
+                this.dbsLists.newFIDB = list[i].applyOfSpace;
+                this.dbsLists.FIDB = this.dbsLists.oldFIDB + this.dbsLists.newFIDB;
+              }else{
+                this.dbsLists.FIDB = this.dbsLists.oldFIDB
+              }
+            }
+            if(list[i].databaseId == "HADB"){
+              this.dbsLists.oldHADB = list[i].sizeOfSpace;
+              if(list[i].applyOfSpace != null){
+                this.dbsLists.newHADB = list[i].applyOfSpace;
+                this.dbsLists.HADB = this.dbsLists.oldHADB + this.dbsLists.newHADB;
+              }else{
+                this.dbsLists.HADB = this.dbsLists.oldHADB
+              }
+            }
+            if(list[i].databaseId == "NAS"){
+              this.dbsLists.oldNAS = list[i].sizeOfSpace;
+              if(list[i].applyOfSpace != null){
+                this.dbsLists.newNAS = list[i].applyOfSpace;
+                this.dbsLists.NAS = this.dbsLists.oldNAS + this.dbsLists.newNAS;
+              }else{
+                this.dbsLists.NAS = this.dbsLists.oldNAS
+              }
+            }
+            if(list[i].databaseId == "objectSave"){
+              this.dbsLists.oldobjectSave = list[i].sizeOfSpace;
+              if(list[i].applyOfSpace != null){
+                this.dbsLists.newobjectSave = list[i].applyOfSpace;
+                this.dbsLists.objectSave = this.dbsLists.oldobjectSave + this.dbsLists.newobjectSave;
+              }else{
+                this.dbsLists.objectSave = this.dbsLists.oldobjectSave
+              }
+            }
+          }
         }
       });
       // 数据库授权
@@ -691,6 +599,8 @@ export default {
         }
       });
     },
+
+
   },
 };
 </script>

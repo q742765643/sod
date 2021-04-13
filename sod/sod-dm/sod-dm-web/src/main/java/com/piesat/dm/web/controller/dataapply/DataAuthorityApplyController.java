@@ -286,7 +286,6 @@ public class DataAuthorityApplyController {
     }
 
     @GetMapping(value = "/getReadAuthority")
-    //@RequiresPermissions("dm:dataAuthorityApply:getReadAuthority")
     @ApiOperation(value = "读权限默认通过，查询", notes = "读权限默认通过，查询")
     public ResultT getReadAuthority() {
         try {

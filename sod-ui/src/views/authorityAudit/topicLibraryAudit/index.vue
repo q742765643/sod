@@ -13,16 +13,16 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="专题库名称">
-        <el-input clearable v-model.trim="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>
-      </el-form-item>
+      <!--<el-form-item label="专题库名称">-->
+        <!--<el-input clearable v-model.trim="queryParams.sdbName" type="text" placeholder="专题库名称"></el-input>-->
+      <!--</el-form-item>-->
       <el-form-item label="申请用户">
         <el-input clearable v-model.trim="queryParams.userName" type="text" placeholder="申请用户"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button size="small" type="primary" @click="handleQuery" icon="el-icon-search">查询</el-button>
         <el-button size="small" @click="resetQuery" icon="el-icon-refresh-right">重置</el-button>
-        <el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>
+        <!--<el-button size="small" type="success" @click="handleExport" icon="el-icon-download">导出</el-button>-->
       </el-form-item>
     </el-form>
     <el-table
@@ -36,8 +36,8 @@
       @current-change="handleCurrentChange"
     >
       <el-table-column type="index" label="序号" width="50" :index="table_index"></el-table-column>
-      <el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column prop="databaseSchema" label="专题库简称"></el-table-column>
+      <!--<el-table-column prop="sdbName" label="专题名" :show-overflow-tooltip="true"></el-table-column>-->
+      <!--<el-table-column prop="databaseSchema" label="专题库简称"></el-table-column>-->
       <el-table-column prop="userName" label="用户名"></el-table-column>
       <el-table-column prop="department" label="部门"></el-table-column>
       <el-table-column prop="userPhone" label="联系方式"></el-table-column>
@@ -46,33 +46,33 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="serverStatus" label="用途" width="100px">
-        <template slot-scope="scope">
-          <el-popover
-            placement="top"
-            effect="dark"
-            trigger="hover"
-            width="200"
-            popper-class="darkPopover"
-          >
-            <p>{{ scope.row.uses}}</p>
-            <div slot="reference" class="name-wrapper">
-              <el-link :underline="false" type="primary">查看用途</el-link>
-            </div>
-          </el-popover>
-        </template>
-      </el-table-column>
+      <!--<el-table-column prop="serverStatus" label="用途" width="100px">-->
+        <!--<template slot-scope="scope">-->
+          <!--<el-popover-->
+            <!--placement="top"-->
+            <!--effect="dark"-->
+            <!--trigger="hover"-->
+            <!--width="200"-->
+            <!--popper-class="darkPopover"-->
+          <!--&gt;-->
+            <!--<p>{{ scope.row.uses}}</p>-->
+            <!--<div slot="reference" class="name-wrapper">-->
+              <!--<el-link :underline="false" type="primary">查看用途</el-link>-->
+            <!--</div>-->
+          <!--</el-popover>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column prop="examineStatus" label="资料状态" width="120px">
         <template slot-scope="scope">
           <span v-if="scope.row.examineStatus=='1'">待审核</span>
           <span v-if="scope.row.examineStatus=='2'">审核通过</span>
-          <span v-if="scope.row.examineStatus=='3'">审核不通过</span>
-          <span v-if="scope.row.examineStatus=='4'">再次审核</span>
+          <span v-if="scope.row.examineStatus=='3'">驳回</span>
+          <!--<span v-if="scope.row.examineStatus=='4'">再次审核</span>-->
         </template>
       </el-table-column>
       <el-table-column label="操作" width="180">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" icon="el-icon-edit" @click="editCell(scope.row)">修改权限</el-button>
+          <el-button type="text" size="mini" icon="el-icon-edit" @click="editCell(scope.row)">审核</el-button>
           <el-button type="text" size="mini" icon="el-icon-delete" @click="deleteCell(scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -90,10 +90,10 @@
       :before-close="closeeditDialog"
       title="专题库资料授权查看"
       :visible.sync="handleDialog"
-      width="1200px"
-      v-dialogDrag
-    >
-      <handleLibrary v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
+      width="90%"
+      top="4vh"
+      v-dialogDrag>
+      <handleLibrary style="overflow-y:scroll; height: 550px" v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
     </el-dialog>
     <el-dialog
       :close-on-click-modal="false"
@@ -202,6 +202,7 @@ export default {
       this.loading = true;
       console.log(this.queryParams);
       pageList(this.queryParams).then((response) => {
+
         this.tableData = response.data.pageData;
         this.total = response.data.totalCount;
         this.loading = false;
@@ -252,6 +253,7 @@ export default {
       this.applyTopicDialog = false;
       this.getList();
     },
+
     // 导出
     handleExport() {
       exportTables(this.queryParams).then((res) => {

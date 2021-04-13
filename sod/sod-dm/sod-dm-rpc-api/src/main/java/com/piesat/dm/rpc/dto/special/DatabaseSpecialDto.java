@@ -71,7 +71,7 @@ public class DatabaseSpecialDto extends BaseDto {
     private Date examineTime;
 
     /**
-     * 拒绝原因
+     * 审核意见
      */
     private String failureReason;
 
@@ -112,6 +112,10 @@ public class DatabaseSpecialDto extends BaseDto {
      * 部门
      */
     private String department;
+    /**
+     * 应用系统
+     */
+    private String appName;
     /**
      * 联系方式
      */

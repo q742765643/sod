@@ -21,11 +21,18 @@ import javax.persistence.Table;
 public class DatabaseSpecialDbsEntity extends BaseEntity   {
 
     /**
+     * 已有空间(GB)
+     */
+    @Excel(name = "已有空间")
+    @Column(name = "size_of_space")
+    private Integer sizeOfSpace;
+
+    /**
      * 申请空间(GB)
      */
     @Excel(name = "申请空间")
-    @Column(name = "size_of_space")
-    private Integer sizeOfSpace;
+    @Column(name = "apply_of_space")
+    private Integer applyOfSpace;
 
     /**
      * 数据库ID
