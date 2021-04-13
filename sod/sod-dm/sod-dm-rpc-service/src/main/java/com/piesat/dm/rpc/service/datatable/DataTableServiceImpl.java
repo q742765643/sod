@@ -103,21 +103,6 @@ public class DataTableServiceImpl extends BaseService<DataTableInfoEntity> imple
     @Override
     @Transactional(rollbackFor = Exception.class)
     public DataTableInfoDto saveDto(DataTableInfoDto dataTableDto) {
-        if (dataTableDto.getId() != null) {
-            DataTableInfoDto dotById = this.getDotById(dataTableDto.getId());
-            List<DataClassAndTableEntity> dataClassLogic = this.dataLogicDao.findByTableId(dataTableDto.getId());
-            if (dataClassLogic != null && !dataClassLogic.isEmpty()) {
-                String dataClassId = dataClassLogic.get(0).getDataClassId();
-                List<NewdataApplyDto> NewdataApplyDtos = this.newdataApplyService
-                        .findByDataClassIdAndUserId(dataClassId, dotById.getUserId());
-                if (NewdataApplyDtos != null && !NewdataApplyDtos.isEmpty()) {
-                    NewdataApplyDto newdataApplyDto = NewdataApplyDtos.get(0);
-                    newdataApplyDto.setTableName(dataTableDto.getTableName());
-                    this.newdataApplyService.saveDto(newdataApplyDto);
-                }
-            }
-        }
-
         DataTableInfoEntity dataTableEntity = this.dataTableMapper.toEntity(dataTableDto);
         UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         dataTableEntity.setCreator(loginUser.getUserName());
