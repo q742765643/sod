@@ -91,15 +91,20 @@
         </template>
       </el-table-column>
       <el-table-column prop="userId" label="申请人"> </el-table-column>
-      <el-table-column label="操作" width="300">
+      <el-table-column prop="userId" label="存储结构">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="mini"
-            icon="el-icon-view"
-            @click="viewCell(scope.row)"
-            >详情</el-button
+          <div
+            v-for="(item, index) in scope.row.dataTableApplyDtoList"
+            :key="index"
           >
+            <el-button plain size="mini" @click="viewCell(scope.row, index)"
+              >存储结构</el-button
+            >
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="240">
+        <template slot-scope="scope">
           <el-button
             v-if="scope.row.status == 1"
             type="text"
@@ -231,20 +236,20 @@ export default {
       };
       this.handleQuery();
     },
-    viewCell(row) {
+    viewCell(row, index) {
       this.rowData = {
         MYDISABLED: true,
         CLASS_NAME: row.dataName,
         DATA_CLASS_ID: row.dataClassId,
-        DATABASE_ID: row.dataTableApplyDtoList[0].databaseId,
-        STORAGE_TYPE: row.dataTableApplyDtoList[0].storageType,
-        TABLE_ID: row.dataTableApplyDtoList[0].id,
-        USER_ID: row.dataTableApplyDtoList[0].userId,
-        STORAGE_TYPE: row.dataTableApplyDtoList[0].storageType,
+        DATABASE_ID: row.dataTableApplyDtoList[index].databaseId,
+        STORAGE_TYPE: row.dataTableApplyDtoList[index].storageType,
+        TABLE_ID: row.dataTableApplyDtoList[index].id,
+        USER_ID: row.dataTableApplyDtoList[index].userId,
+        STORAGE_TYPE: row.dataTableApplyDtoList[index].storageType,
         dataTableApplyDtoList: row.dataTableApplyDtoList,
         formPage: "数据注册审核",
       };
-      this.tableBaseInfo = row.dataTableApplyDtoList[0];
+      this.tableBaseInfo = row.dataTableApplyDtoList[index];
       this.structureManageTitle = row.dataName;
       this.structureManageVisible = true;
     },
