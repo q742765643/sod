@@ -192,6 +192,9 @@ businessParameters:
 
 fidbDownloadUrl: http://10.40.17.34:8028/fileApi
 
+#PORTAL回调URL
+portal_callback: http://10.40.17.44:58088/cmadaas/api/rest/dataRegisterRemote/callback?key=sodCF5881E4AA6D4235D16
+
 product:
   enable: true
   mmdneed: true
