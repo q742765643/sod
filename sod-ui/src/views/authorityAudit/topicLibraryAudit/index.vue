@@ -93,7 +93,7 @@
       width="90%"
       top="4vh"
       v-dialogDrag>
-      <handleLibrary style="overflow-y:scroll; height: 550px" v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
+      <handleLibrary style="overflow-y:scroll; height: 550px" @handleDialogClose="handleDialogClose" v-if="handleDialog" :handleObj="handleObj" ref="myHandleServer" />
     </el-dialog>
     <el-dialog
       :close-on-click-modal="false"
@@ -253,7 +253,10 @@ export default {
       this.applyTopicDialog = false;
       this.getList();
     },
-
+    handleDialogClose() {
+      this.handleDialog = false;
+      this.handleObj = {};
+    },
     // 导出
     handleExport() {
       exportTables(this.queryParams).then((res) => {

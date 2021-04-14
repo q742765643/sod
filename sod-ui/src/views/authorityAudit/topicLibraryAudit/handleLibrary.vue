@@ -420,14 +420,16 @@ export default {
       });
     },
     trueDialog() {
+      this.msgFormDialog.examineStatus = "2"
       saveBase(this.msgFormDialog).then((res) => {
         if (res.code == 200) {
           this.$message({
             type: "success",
             message: "保存成功",
           });
-          this.flagBase = true;
-          this.activeName = "second";
+          this.$emit("handleDialogClose");
+          // this.flagBase = true;
+          // this.activeName = "second";
         } else {
           this.$message({
             type: "error",

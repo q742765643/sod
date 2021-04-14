@@ -275,6 +275,7 @@ export default {
       this.loading = true;
       queryList(this.addDateRange(this.queryParams, this.dateRange)).then(
         (response) => {
+          debugger
           this.tableData = response.data.pageData;
           this.total = response.data.totalCount;
           this.loading = false;
