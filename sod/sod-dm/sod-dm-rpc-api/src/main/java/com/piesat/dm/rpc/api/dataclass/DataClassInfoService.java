@@ -54,4 +54,11 @@ public interface DataClassInfoService {
      * @return
      */
     List<DataClassInfoDto> all();
+
+    /**
+     * 根据存储编码查询
+     * @param id
+     * @return
+     */
+    List<DataClassInfoDto> getDotByClassId(String id);
 }

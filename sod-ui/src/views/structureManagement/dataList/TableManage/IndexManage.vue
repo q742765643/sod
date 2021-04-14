@@ -276,7 +276,12 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() {
+    if (this.rowData.formPage == "数据注册审核") {
+      this.indexItem = this.tableInfo.tableIndexList;
+      this.columnData = this.tableInfo.columns;
+    }
+  },
   watch: {
     async tableInfo(val) {
       this.indexItem = this.tableInfo.tableIndexList;

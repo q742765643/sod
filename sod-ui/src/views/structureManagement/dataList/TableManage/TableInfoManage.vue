@@ -41,7 +41,10 @@
             </el-select>
           </el-form-item>
         </div>
-        <div class="el-col el-col-6">
+        <div
+          class="el-col el-col-6"
+          v-if="this.rowData.formPage != '数据注册审核'"
+        >
           <el-form-item label="存储类型">
             <el-select
               size="small"
@@ -62,7 +65,10 @@
     </el-form>
     <el-form v-model.trim="Info" class="elementTableCon" label-width="100px">
       <div class="el-row">
-        <div class="el-col el-col-6">
+        <div
+          class="el-col el-col-6"
+          v-if="this.rowData.formPage != '数据注册审核'"
+        >
           <el-form-item label="表类型">
             <el-select
               :disabled="!isEdit"

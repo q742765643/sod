@@ -171,9 +171,7 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
                 deptName = getAllDeptName(deptName,departManageDtos.get(0));
                 userManageDto.setDeptName(deptName);
             }
-            //获取用户角色
-            List<String> roles = roleManageMapper.selectRoleListByUserId(id);
-            userManageDto.setRoleIds(roles.toArray(new String[roles.size()]));
+
         }else{
             if (StringUtils.isNotEmpty(uaUrl) && StringUtils.isNotEmpty(uaPassword)) {
                 JSONObject jsonObject = getPortalUserInfo(id);
@@ -195,6 +193,9 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
                 }
             }
         }
+        //获取用户角色
+        List<String> roles = roleManageMapper.selectRoleListByUserId(id);
+        userManageDto.setRoleIds(roles.toArray(new String[roles.size()]));
         return userManageDto;
     }
 

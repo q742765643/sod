@@ -855,6 +855,16 @@ export default {
         ],
       },
     };
+    if (this.rowData.formPage == "数据注册审核") {
+      let resData = this.tableInfo.columns;
+      resData.forEach((item, index) => {
+        item.isEdit = false;
+        item.isAdd = false;
+        item.indexNum = index;
+      });
+      this.columnForm.columnData = resData;
+      this.oldColumnData = JSON.parse(JSON.stringify(resData)); //用于是否修改的数据对比
+    }
   },
   methods: {
     handleChange() {},

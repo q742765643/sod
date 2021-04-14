@@ -9,9 +9,11 @@ import com.piesat.dm.dao.datatable.DataTableApplyDao;
 import com.piesat.dm.entity.datatable.DataTableApplyEntity;
 import com.piesat.dm.mapper.MybatisPageMapper;
 import com.piesat.dm.rpc.api.ReviewLogService;
+import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.datatable.DataTableApplyService;
 import com.piesat.dm.rpc.api.datatable.DataTableService;
 import com.piesat.dm.rpc.dto.ReviewLogDto;
+import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableApplyDto;
 import com.piesat.dm.rpc.dto.datatable.DataTableInfoDto;
 import com.piesat.dm.rpc.mapper.datatable.DataTableApplyMapper;
@@ -45,6 +47,8 @@ public class DataTableApplyServiceImpl extends BaseService<DataTableApplyEntity>
     private DataTableService dataTableService;
     @Autowired
     private ReviewLogService reviewLogService;
+    @Autowired
+    private SchemaService schemaService;
 
     @Override
     public BaseDao<DataTableApplyEntity> getBaseDao() {
@@ -70,8 +74,16 @@ public class DataTableApplyServiceImpl extends BaseService<DataTableApplyEntity>
 
     @Override
     public DataTableApplyDto getDotById(String id) {
-        DataTableApplyEntity byId = this.getById(id);
-        return this.dataTableApplyMapper.toDto(byId);
+        DataTableApplyEntity dataTableApplyEntity = this.getById(id);
+        if (dataTableApplyEntity != null) {
+            DataTableApplyDto dataTableApplyDto = this.dataTableApplyMapper.toDto(dataTableApplyEntity);
+            SchemaDto schemaDto = this.schemaService.getDotById(dataTableApplyDto.getDatabaseId());
+            dataTableApplyDto.setDatabasePid(schemaDto.getDatabase().getId());
+            return dataTableApplyDto;
+        } else {
+            return null;
+        }
+
     }
 
     @Override

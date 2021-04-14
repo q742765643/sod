@@ -87,5 +87,16 @@ public class DataClassApplyController {
         }
     }
 
+    @ApiOperation(value = "审核")
+    @RequiresPermissions("dm:dataclassapply:review")
+    @PostMapping(value = "/review")
+    public ResultT review(@RequestBody DataClassApplyDto dca) {
+        try {
+            return this.dataClassApplyService.review(dca);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
 
 }

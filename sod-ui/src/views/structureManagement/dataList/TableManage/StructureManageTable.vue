@@ -152,19 +152,31 @@
             ></foreign-key>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="DDL" name="ddl">
+        <el-tab-pane
+          label="DDL"
+          name="ddl"
+          v-if="this.rowData.formPage != '数据注册审核'"
+        >
           <handle-SQl
             :tableInfo="commonTableObj.tableInfo"
             :rowData="rowData"
           ></handle-SQl>
         </el-tab-pane>
-        <el-tab-pane label="资料类型统计" name="maType">
+        <el-tab-pane
+          label="资料类型统计"
+          name="maType"
+          v-if="this.rowData.formPage != '数据注册审核'"
+        >
           <data-statistics
             :tableInfo="commonTableObj.tableInfo"
             :rowData="rowData"
           ></data-statistics>
         </el-tab-pane>
-        <el-tab-pane label="样例数据查询" name="demoData">
+        <el-tab-pane
+          label="样例数据查询"
+          name="demoData"
+          v-if="this.rowData.formPage != '数据注册审核'"
+        >
           <div>
             <sample-data
               :tableInfo="commonTableObj.tableInfo"
@@ -306,126 +318,136 @@ export default {
       this.tipsFlag = val;
     },
     async getTableInfo(val) {
-      console.log(this.rowData);
-      if ((this.rowData && this.rowData.TABLE_ID) || (val && val != "init")) {
-        let id = "";
-        if (this.rowData && this.rowData.TABLE_ID) {
-          id = this.rowData.TABLE_ID;
+      if (this.rowData.formPage == "数据注册审核") {
+        this.setInfo(this.rowData.dataTableApplyDtoList[0]);
+      } else {
+        if ((this.rowData && this.rowData.TABLE_ID) || (val && val != "init")) {
+          let id = "";
+          if (this.rowData && this.rowData.TABLE_ID) {
+            id = this.rowData.TABLE_ID;
+          } else {
+            id = val;
+          }
+          await dataTableGet({ id: id }).then((res) => {
+            let data = res.data;
+            this.setInfo(data);
+          });
         } else {
-          id = val;
-        }
-        await dataTableGet({ id: id }).then((res) => {
+          //新增
           if (
-            this.rowData.STORAGE_TYPE == "F_table" ||
-            this.rowData.STORAGE_TYPE == "G_table" ||
-            this.rowData.STORAGE_TYPE == "S_table"
+            this.tableBaseInfo.storageType == "F_table" ||
+            this.tableBaseInfo.storageType == "G_table" ||
+            this.tableBaseInfo.storageType == "S_table"
           ) {
             this.tabs = {
               table: { common: false, ka: true },
             };
-            let data = res.data;
-            // isKvK为true的时候，是主键字段，false的时候是属性字段
-            let columnArry = data.columns;
-            let newarryK = [];
-            let newarryE = [];
-            columnArry.forEach((element, index) => {
-              if (element.isKvK === true) {
-                newarryK.push(element);
-              } else if (element.isKvK === false) {
-                newarryE.push(element);
-              }
-            });
+          }
+          return;
+        }
+      }
+    },
 
-            this.keyObj.tableInfo = {
-              columns: newarryK,
-              columnVo: data.columnVo,
-              column_COMMENT: data.column_COMMENT,
-              column_NAME: data.column_NAME,
-              column_TYPE: data.column_TYPE,
-              createBy: data.createBy,
-              createTime: data.createTime,
-              creator: data.creator,
-              databaseId: data.databaseId,
-              databaseName: data.databaseName,
-              databasePid: data.databasePid,
-              databaseType: data.databaseType,
-              delFlag: data.delFlag,
-              id: data.id,
-              idx: data.idx,
-              indexVo: data.indexVo,
-              index_COLUMN: data.index_COLUMN,
-              index_NAME: data.index_NAME,
-              is_NULLABLE: data.is_NULLABLE,
-              nameCn: data.nameCn,
-              non_UNQIUE: data.non_UNQIUE,
-              params: data.params,
-              realColumns: data.realColumns,
-              realTableIndex: data.realTableIndex,
-              storageType: data.storageType,
-              tableDesc: data.tableDesc,
-              tableIndexList: data.tableIndexList,
-              tableName: data.tableName,
-              tableType: data.tableType,
-              uk: data.uk,
-              updateBy: data.updateBy,
-              updateTime: data.updateTime,
-              userId: data.userId,
-            };
-            this.commonTableObj.tableInfo = {
-              columns: newarryE,
-              columnVo: data.columnVo,
-              column_COMMENT: data.column_COMMENT,
-              column_NAME: data.column_NAME,
-              column_TYPE: data.column_TYPE,
-              createBy: data.createBy,
-              createTime: data.createTime,
-              creator: data.creator,
-              databaseId: data.databaseId,
-              databaseName: data.databaseName,
-              databasePid: data.databasePid,
-              databaseType: data.databaseType,
-              delFlag: data.delFlag,
-              id: data.id,
-              idx: data.idx,
-              indexVo: data.indexVo,
-              index_COLUMN: data.index_COLUMN,
-              index_NAME: data.index_NAME,
-              is_NULLABLE: data.is_NULLABLE,
-              nameCn: data.nameCn,
-              non_UNQIUE: data.non_UNQIUE,
-              params: data.params,
-              realColumns: data.realColumns,
-              realTableIndex: data.realTableIndex,
-              storageType: data.storageType,
-              tableDesc: data.tableDesc,
-              tableIndexList: data.tableIndexList,
-              tableName: data.tableName,
-              tableType: data.tableType,
-              uk: data.uk,
-              updateBy: data.updateBy,
-              updateTime: data.updateTime,
-              userId: data.userId,
-            };
-          } else {
-            this.tabs = {
-              table: { common: true, ka: false },
-            };
-            this.commonTableObj.tableInfo = res.data;
-            //this.commonTableObj.ColumnData = res.data.columns;
+    setInfo(data) {
+      if (
+        this.rowData.STORAGE_TYPE == "F_table" ||
+        this.rowData.STORAGE_TYPE == "G_table" ||
+        this.rowData.STORAGE_TYPE == "S_table"
+      ) {
+        this.tabs = {
+          table: { common: false, ka: true },
+        };
+
+        // isKvK为true的时候，是主键字段，false的时候是属性字段
+        let columnArry = data.columns;
+        let newarryK = [];
+        let newarryE = [];
+        columnArry.forEach((element, index) => {
+          if (element.isKvK === true) {
+            newarryK.push(element);
+          } else if (element.isKvK === false) {
+            newarryE.push(element);
           }
         });
+
+        this.keyObj.tableInfo = {
+          columns: newarryK,
+          columnVo: data.columnVo,
+          column_COMMENT: data.column_COMMENT,
+          column_NAME: data.column_NAME,
+          column_TYPE: data.column_TYPE,
+          createBy: data.createBy,
+          createTime: data.createTime,
+          creator: data.creator,
+          databaseId: data.databaseId,
+          databaseName: data.databaseName,
+          databasePid: data.databasePid,
+          databaseType: data.databaseType,
+          delFlag: data.delFlag,
+          id: data.id,
+          idx: data.idx,
+          indexVo: data.indexVo,
+          index_COLUMN: data.index_COLUMN,
+          index_NAME: data.index_NAME,
+          is_NULLABLE: data.is_NULLABLE,
+          nameCn: data.nameCn,
+          non_UNQIUE: data.non_UNQIUE,
+          params: data.params,
+          realColumns: data.realColumns,
+          realTableIndex: data.realTableIndex,
+          storageType: data.storageType,
+          tableDesc: data.tableDesc,
+          tableIndexList: data.tableIndexList,
+          tableName: data.tableName,
+          tableType: data.tableType,
+          uk: data.uk,
+          updateBy: data.updateBy,
+          updateTime: data.updateTime,
+          userId: data.userId,
+        };
+        this.commonTableObj.tableInfo = {
+          columns: newarryE,
+          columnVo: data.columnVo,
+          column_COMMENT: data.column_COMMENT,
+          column_NAME: data.column_NAME,
+          column_TYPE: data.column_TYPE,
+          createBy: data.createBy,
+          createTime: data.createTime,
+          creator: data.creator,
+          databaseId: data.databaseId,
+          databaseName: data.databaseName,
+          databasePid: data.databasePid,
+          databaseType: data.databaseType,
+          delFlag: data.delFlag,
+          id: data.id,
+          idx: data.idx,
+          indexVo: data.indexVo,
+          index_COLUMN: data.index_COLUMN,
+          index_NAME: data.index_NAME,
+          is_NULLABLE: data.is_NULLABLE,
+          nameCn: data.nameCn,
+          non_UNQIUE: data.non_UNQIUE,
+          params: data.params,
+          realColumns: data.realColumns,
+          realTableIndex: data.realTableIndex,
+          storageType: data.storageType,
+          tableDesc: data.tableDesc,
+          tableIndexList: data.tableIndexList,
+          tableName: data.tableName,
+          tableType: data.tableType,
+          uk: data.uk,
+          updateBy: data.updateBy,
+          updateTime: data.updateTime,
+          userId: data.userId,
+        };
       } else {
-        //新增
-        if (
-          this.tableBaseInfo.storageType == "F_table" ||
-          this.tableBaseInfo.storageType == "G_table" ||
-          this.tableBaseInfo.storageType == "S_table"
-        ) {
-          this.tabs = {
-            table: { common: false, ka: true },
-          };
+        this.tabs = {
+          table: { common: true, ka: false },
+        };
+        this.commonTableObj.tableInfo = data;
+        if (data.column) {
+          this.commonTableObj.columns = data.columns;
         }
-        return;
       }
     },
 

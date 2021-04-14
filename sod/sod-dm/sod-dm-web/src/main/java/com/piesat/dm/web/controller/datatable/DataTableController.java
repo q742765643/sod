@@ -70,6 +70,21 @@ public class DataTableController {
         }
     }
 
+
+    @ApiOperation(value = "编辑")
+    @RequiresPermissions("dm:dataTable:edit")
+    @Log(title = "表信息管理(编辑表信息)", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/edit")
+    public ResultT edit(@RequestBody DataTableInfoDto dataTableDto) {
+        try {
+            DataTableInfoDto save = this.dataTableService.saveDto(dataTableDto);
+            return ResultT.success(save);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "新增申请表")
     @RequiresPermissions("dm:dataTable:addApply")
     @Log(title = "表信息管理（新增申请表信息）", businessType = BusinessType.INSERT)
@@ -201,7 +216,7 @@ public class DataTableController {
     @ApiOperation(value = "查询样例数据")
     @RequiresPermissions("dm:dataTable:sample")
     @PostMapping(value = "/sample")
-    public ResultT getSampleData(SampleData sampleData) {
+    public ResultT getSampleData(@RequestBody SampleData sampleData) {
         try {
             return this.dataTableService.getSampleData(sampleData);
         } catch (Exception e) {
