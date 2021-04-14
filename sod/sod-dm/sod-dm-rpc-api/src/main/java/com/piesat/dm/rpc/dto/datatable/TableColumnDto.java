@@ -128,11 +128,11 @@ public class TableColumnDto {
     private Integer version;
 
     public void setDbEleCode(String dbEleCode) {
-        this.dbEleCode = dbEleCode.trim();
+        this.dbEleCode = dbEleCode == null ? null : dbEleCode.trim();
     }
 
     public void setCElementCode(String cElementCode) {
-        this.cElementCode = cElementCode.trim();
+        this.cElementCode = cElementCode == null ? null : cElementCode.trim();
     }
 
     public void setUserEleCode(String userEleCode) {

@@ -17,4 +17,11 @@ public interface DataClassInfoDao extends BaseDao<DataClassInfoEntity> {
      * @return
      */
     List<DataClassInfoEntity> findByDataTypeOrderByDataClassIdDesc(Integer dataType);
+
+    /**
+     * 根据存储编码查询
+     * @param dataclassId
+     * @return
+     */
+    List<DataClassInfoEntity> findByDataClassId(String dataclassId);
 }

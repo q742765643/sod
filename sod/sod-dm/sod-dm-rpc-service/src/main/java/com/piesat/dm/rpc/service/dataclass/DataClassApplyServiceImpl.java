@@ -169,27 +169,38 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
     @Transactional(rollbackFor = Exception.class)
     public ResultT review(DataClassApplyDto dca) {
         ResultT r = new ResultT();
-        DataClassApplyEntity dca_ = this.dataClassApplyMapper.toEntity(dca);
+        DataClassApplyDto dataClassApplyDto = this.getDotById(dca.getId());
+        DataClassApplyEntity dca_ = this.dataClassApplyMapper.toEntity(dataClassApplyDto);
+        dca_.setStatus(dca.getStatus());
+        dca_.setReviewNotes(dca.getReviewNotes());
+        dca_.setReviewer(dca.getReviewer());
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type", "sod");
         jsonObject.put("id", dca.getId());
+        jsonObject.put("dataclassId",dca_.getDataClassId());
         if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核未通过) {
             jsonObject.put("status", "3");
         } else if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核通过) {
-            DataClassInfoDto dataClassInfo = dca.getDataClassInfo();
+            DataClassInfoDto dataClassInfo = dataClassApplyDto.getDataClassInfo();
             dataClassInfo.setStatus(StatusEnum.审核通过.getCode());
-            this.dataClassInfoService.saveDto(dataClassInfo);
+            dataClassInfo.setId(null);
+            List<DataClassInfoDto> dotByClassId = this.dataClassInfoService.getDotByClassId(dca_.getDataClassId());
+            if (dotByClassId==null){
+                this.dataClassInfoService.saveDto(dataClassInfo);
+            }
             DataClassApplyDto dotById = this.getDotById(dca.getId());
             List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(dotById.getDataClassId());
             dataClassLogicDtoList.forEach(d -> {
                 String tableId = d.getTableId();
                 DataTableApplyDto e = this.dataTableApplyService.getDotById(tableId);
-                e.setStatus(StatusEnum.审核通过.getCode());
-                DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(e.getId());
-                if (dataTableInfoDto == null) {
-                    ResultT review = this.dataTableApplyService.review(e);
-                    if (review.isSuccess()) {
-                        r.setErrorMessage(review.getProcessMsg().toString());
+                if (e != null) {
+                    e.setStatus(StatusEnum.审核通过.getCode());
+                    DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(e.getId());
+                    if (dataTableInfoDto == null) {
+                        ResultT review = this.dataTableApplyService.review(e);
+                        if (review.isSuccess()) {
+                            r.setErrorMessage(review.getProcessMsg().toString());
+                        }
                     }
                 }
             });

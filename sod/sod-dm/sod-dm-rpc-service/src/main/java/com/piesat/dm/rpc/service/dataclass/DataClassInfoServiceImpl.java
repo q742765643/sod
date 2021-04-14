@@ -191,4 +191,9 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
         return this.dataClassInfoMapper.toDto(this.getAll());
     }
 
+    @Override
+    public List<DataClassInfoDto> getDotByClassId(String id) {
+        return this.dataClassInfoMapper.toDto(this.dataClassInfoDao.findByDataClassId(id));
+    }
+
 }
