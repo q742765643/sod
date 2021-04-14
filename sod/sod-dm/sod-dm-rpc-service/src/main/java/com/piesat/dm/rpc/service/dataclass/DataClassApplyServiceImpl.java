@@ -177,7 +177,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type", "sod");
         jsonObject.put("id", dca.getId());
-        jsonObject.put("dataclassId",dca_.getDataClassId());
+        jsonObject.put("dataclassId", dca_.getDataClassId());
         if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核未通过) {
             jsonObject.put("status", "3");
         } else if (StatusEnum.match(dca_.getStatus()) == StatusEnum.审核通过) {
@@ -185,7 +185,7 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
             dataClassInfo.setStatus(StatusEnum.审核通过.getCode());
             dataClassInfo.setId(null);
             List<DataClassInfoDto> dotByClassId = this.dataClassInfoService.getDotByClassId(dca_.getDataClassId());
-            if (dotByClassId==null){
+            if (dotByClassId == null) {
                 this.dataClassInfoService.saveDto(dataClassInfo);
             }
             DataClassApplyDto dotById = this.getDotById(dca.getId());
@@ -241,25 +241,24 @@ public class DataClassApplyServiceImpl extends BaseService<DataClassApplyEntity>
         List<DataClassApplyDto> dataClassApplyDtos = this.dataClassApplyMapper.toDto(list);
 
         dataClassApplyDtos.forEach(e -> {
-            if (e.getDataType().equals(1)) {
-                List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(e.getDataClassId());
-                e.setDataClassLogicList(dataClassLogicDtoList);
-                List<DataTableApplyDto> l = new ArrayList<>();
-                dataClassLogicDtoList.forEach(d -> {
-                    String tableId = d.getTableId();
-                    DataTableApplyDto dataTableApplyDto = this.dataTableApplyService.getDotById(tableId);
-                    if (dataTableApplyDto != null) {
+            List<DataClassLogicDto> dataClassLogicDtoList = this.dataLogicService.findByDataClassId(e.getDataClassId());
+            e.setDataClassLogicList(dataClassLogicDtoList);
+            List<DataTableApplyDto> l = new ArrayList<>();
+            dataClassLogicDtoList.forEach(d -> {
+                String tableId = d.getTableId();
+                DataTableApplyDto dataTableApplyDto = this.dataTableApplyService.getDotById(tableId);
+                if (dataTableApplyDto != null) {
+                    l.add(dataTableApplyDto);
+                } else {
+                    DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
+                    if (dataTableInfoDto != null) {
+                        dataTableApplyDto = new DataTableApplyDto();
+                        BeanUtils.copyProperties(dataTableInfoDto, dataTableApplyDto);
                         l.add(dataTableApplyDto);
-                    } else {
-                        DataTableInfoDto dataTableInfoDto = this.dataTableService.getDotById(tableId);
-                        if (dataTableInfoDto != null) {
-                            dataTableApplyDto = new DataTableApplyDto();
-                            BeanUtils.copyProperties(dataTableInfoDto, dataTableApplyDto);
-                        }
                     }
-                });
-                e.setDataTableApplyDtoList(l);
-            }
+                }
+            });
+            e.setDataTableApplyDtoList(l);
         });
         pageBean.setPageData(dataClassApplyDtos);
         return ResultT.success(pageBean);
