@@ -310,36 +310,38 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
     @Override
     public ResultT empower(DatabaseUserDto databaseUserDto) {
-        String[] sysIds = this.sysUsers.toLowerCase().split(",");
+        ResultT r = new ResultT();
+        String[] sysIds = this.sysUsers.toLowerCase().split(Constants.COMMA);
         List<String> sysIdList = Arrays.asList(sysIds);
         String upId = databaseUserDto.getDatabaseUpId().toLowerCase();
         if (sysIdList.contains(upId)) {
             return ResultT.failed(String.format(ConstantsMsg.MSG1, databaseUserDto.getDatabaseUpId()));
         }
         //根据ID获取旧的申请信息
-        DatabaseUserEntity oldDatabaseUserEntity = this.getById(databaseUserDto.getId());
+        DatabaseUserEntity oldDbu = this.getById(databaseUserDto.getId());
         //待授权Id
-        String[] needEmpowerIds = databaseUserDto.getApplyDatabaseId().split(",");
-        List<String> needEmpowerList = Arrays.stream(needEmpowerIds).collect(Collectors.toList());
-        String[] haveEmpowerIdArr = Optional.ofNullable(oldDatabaseUserEntity).map(DatabaseUserEntity::getExamineDatabaseId).map(s -> s.split(",")).orElse(new String[0]);
+        List<String> needEmpowerList = Arrays.stream(databaseUserDto.getApplyDatabaseId().split(Constants.COMMA)).collect(Collectors.toList());
+        String[] haveEmpowerIdArr = Optional.ofNullable(oldDbu)
+                .map(DatabaseUserEntity::getExamineDatabaseId)
+                .map(s -> s.split(Constants.COMMA))
+                .orElse(new String[0]);
         List<String> haveEmpowerIdist = new ArrayList<>(Arrays.asList(haveEmpowerIdArr));
         List<String> thisHaveIds = new ArrayList<>(haveEmpowerIdist);
 
-        StringBuilder sbff = new StringBuilder();
-
+        databaseUserDto.setExamineDatabaseId(StringUtils.join(thisHaveIds, Constants.COMMA));
         //非首次审核通过，授权的id中去掉以前的id
-        if (oldDatabaseUserEntity.getExamineStatus().equals("1")) {
+        if (oldDbu.getExamineStatus().equals("1")) {
             needEmpowerList.removeAll(haveEmpowerIdist);
         }
         //过滤空字符串
         needEmpowerList = needEmpowerList.stream().filter(string -> !string.isEmpty()).collect(Collectors.toList());
-        /**为申请的IP授权**/
-        //待授权IP
+
         String databaseUpIp = databaseUserDto.getDatabaseUpIp();
-        String[] needEmpowerIpArr = Optional.ofNullable(databaseUpIp).map(e -> {
-            e += "," + mngIp;
-            return e.split(",");
-        }).orElse(mngIp.split(","));
+        String needEmpowerIpArr = Optional.ofNullable(databaseUpIp).map(e -> {
+            e += Constants.COMMA + mngIp;
+            return e;
+        }).orElse(mngIp);
+        databaseUserDto.setDatabaseUpIp(needEmpowerIpArr);
         List<DatabaseDto> databaseDtoList = needEmpowerList.stream().map(this.databaseService::getDotById).collect(Collectors.toList());
         for (DatabaseDto d : databaseDtoList) {
             Set<DatabaseAdministratorDto> databaseAdministratorList = d.getDatabaseAdministratorList();
@@ -348,110 +350,30 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                 return ResultT.failed(String.format("%s 数据库管理账户缺失!", d.getDatabaseName()));
             }
         }
-        databaseDtoList.forEach(d -> {
-            DatabaseDcl databaseVO = null;
-            String databaseId = d.getId();
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(d, databaseInfo);
-                if (databaseVO != null) {
-                    databaseVO.addUser(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword(), needEmpowerIpArr);
-                    databaseVO.closeConnect();
-                    if (!thisHaveIds.contains(databaseId)) {
-                        thisHaveIds.add(databaseId);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                String message = e.getMessage();
-                Boolean pass = StringUtils.isNotBlank(message) && (message.contains("已经存在") || message.contains("已存在") || message.contains("already exists"));
-                if (pass) {
-                    if (!thisHaveIds.contains(databaseId)) {
-                        thisHaveIds.add(databaseId);
-                    }
-                } else {
-                    sbff.append(databaseId + "数据库账户创建失败，msg:" + e.getMessage() + "\n");
-                }
-            } finally {
-                Optional.ofNullable(databaseVO).ifPresent(DatabaseDcl::closeConnect);
-            }
-        });
+        if (databaseDtoList.size() > 0) {
+            String addIds = databaseDtoList.stream().map(e -> e.getId()).collect(Collectors.joining(Constants.COMMA));
 
-        /**删除被撤销的数据库**/
-        Arrays.stream(haveEmpowerIdArr).filter(e -> {
-            List<String> stringList = Arrays.stream(needEmpowerIds).collect(Collectors.toList());
-            return !stringList.contains(e);
-        }).filter(StringUtils::isNotEmpty).forEach(s -> {
-            DatabaseDto dotById = this.databaseService.getDotById(s);
-            DatabaseDcl databaseVO = null;
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-                if (databaseVO != null) {
-                    databaseVO.deleteUser(databaseUserDto.getDatabaseUpId());
-                    databaseVO.closeConnect();
-                    thisHaveIds.remove(s);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                sbff.append(s + "数据库用户删除失败，msg:" + e.getMessage() + "\n");
-            } finally {
-                if (databaseVO != null) {
-                    databaseVO.closeConnect();
-                }
-            }
-        });
+            databaseUserDto.setCreateDatabaseIds(addIds);
 
-
-        Arrays.stream(needEmpowerIds).filter(StringUtils::isNotEmpty).forEach(s -> {
-            DatabaseDto dotById = this.databaseService.getDotById(s);
-            DatabaseDcl databaseVO = null;
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-                if (databaseVO != null) {
-                    databaseVO.updateAccount(databaseUserDto.getDatabaseUpId(), databaseUserDto.getDatabaseUpPassword());
-                    databaseVO.closeConnect();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                sbff.append(s + "数据库账户修改失败，msg:" + e.getMessage() + "\n");
-            } finally {
-                if (databaseVO != null) {
-                    databaseVO.closeConnect();
-                }
-            }
-        });
-
-
-        databaseUserDto.setExamineDatabaseId(StringUtils.join(thisHaveIds, ","));
-
-        //修改绑定ip
-        thisHaveIds.forEach(s -> {
-            DatabaseDto dotById = this.databaseService.getDotById(s);
-            DatabaseDcl databaseVO = null;
-            try {
-                databaseVO = DatabaseUtil.getDatabaseDefine(dotById, databaseInfo);
-                if (databaseVO != null) {
-                    databaseVO.bindIp(databaseUserDto.getDatabaseUpId(), needEmpowerIpArr);
-                    databaseVO.closeConnect();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (databaseVO != null) {
-                    databaseVO.closeConnect();
-                }
-            }
-        });
-
-
-        String msg = sbff.toString();
-        if (StringUtils.isNotBlank(msg)) {
-            System.out.println(msg);
-            //前端不需要返回这么详细的错误信息
-            return ResultT.failed(msg);
-        } else {
-            return ResultT.success();
+            this.addDbUser(databaseUserDto, r);
         }
 
+        /**删除被撤销的数据库**/
+        List<String> finalNeedEmpowerList = needEmpowerList;
+        Arrays.stream(haveEmpowerIdArr).filter(e -> !finalNeedEmpowerList.contains(e)
+        ).filter(StringUtils::isNotEmpty).forEach(s -> {
+            databaseUserDto.setDropDatabaseId(s);
+            this.dropDbUser(databaseUserDto, r);
+        });
+
+
+        if (!oldDbu.getDatabaseUpPassword().equals(databaseUserDto.getDatabaseUpPassword())) {
+            this.alterPwd(databaseUserDto, r);
+        }
+        if (StringUtils.isNotEmpty(oldDbu.getDatabaseUpIp()) && !oldDbu.getDatabaseUpIp().equals(databaseUserDto.getDatabaseUpIp())) {
+            this.alterWhitelist(databaseUserDto, r);
+        }
+        return r;
     }
 
     @Override
