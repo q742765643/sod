@@ -352,7 +352,8 @@
             </if>
             <if test='map.userId != null and map.userId  != "" and map.onlyMy == "0"'>
                 AND (C.USER_ID = #{map.userId} OR EXISTS
-                (SELECT TABLE_ID FROM T_SOD_DATA_AUTHORITY_APPLY WHERE TABLE_ID = C.ID AND USER_ID = #{map.userId}))
+                (SELECT TABLE_ID FROM T_SOD_DATA_AUTHORITY_APPLY TSD INNER JOIN T_SOD_DATA_AUTHORITY_APPLY_FLOW TSA ON  TSD.APPLY_ID = TSA.ID
+                WHERE TSD.AUTHORIZE = 1 AND TSD.TABLE_ID = C.ID AND TSA.USER_ID = #{map.userId}))
             </if>
         </where>
         ORDER BY A.DATA_CLASS_ID,C.DATABASE_ID,C.STORAGE_TYPE
