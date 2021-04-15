@@ -32,26 +32,6 @@ public class TableColumnEntity extends BaseEntity {
     @Column(name = "db_ele_code", length = 36, nullable = false)
     private String dbEleCode;
 
-    /**
-     * 字段名称
-     * c_element_code
-     */
-    @Column(name = "c_element_code", length = 36, nullable = false)
-    private String cElementCode;
-
-    /**
-     * 是否管理字段
-     * is_manager
-     */
-    @Column(name = "is_manager", columnDefinition = "Boolean")
-    private Boolean isManager;
-
-    /**
-     * 服务名称
-     * user_ele_code
-     */
-    @Column(name = "user_ele_code", length = 36)
-    private String userEleCode;
 
     /**
      * 中文描述
@@ -89,20 +69,6 @@ public class TableColumnEntity extends BaseEntity {
     private String accuracy;
 
     /**
-     * 英文单位
-     * unit
-     */
-    @Column(name = "unit", length = 136)
-    private String unit;
-
-    /**
-     * 中文单位
-     * unit_cn
-     */
-    @Column(name = "unit_cn", length = 36)
-    private String unitCn;
-
-    /**
      * 是否可为空
      * is_null
      */
@@ -117,13 +83,6 @@ public class TableColumnEntity extends BaseEntity {
     private Boolean isUpdate;
 
     /**
-     * 是否可显示
-     * is_show
-     */
-    @Column(name = "is_show", columnDefinition = "Boolean")
-    private Boolean isShow;
-
-    /**
      * 是否是KV库的键字段
      * is_kv_k
      */
@@ -131,20 +90,11 @@ public class TableColumnEntity extends BaseEntity {
     private Boolean isKvK;
 
     /**
-     * 数据库类型
-     * database_type
-     */
-    @Column(name = "database_type", length = 36)
-    private String databaseType;
-
-    /**
      * 序号
      * serial_number
      */
     @Column(name = "serial_number")
     private Integer serialNumber;
-
-
 
     /**
      * 序号

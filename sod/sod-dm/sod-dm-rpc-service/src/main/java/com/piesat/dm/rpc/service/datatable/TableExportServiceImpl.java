@@ -450,26 +450,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             } else {
                                 map.put("db_ele_code", " ");
                             }
-                            if (exportColumn.contains("c_element_code")) {
-                                String c_element_code = tableColumn.getCElementCode();
-                                if(c_element_code==null){
-                                    map.put("c_element_code", " ");
-                                }else{
-                                    map.put("c_element_code", c_element_code);
-                                }
-                            } else {
-                                map.put("c_element_code", " ");
-                            }
-                            if (exportColumn.contains("user_ele_code")) {
-                                String user_ele_code = tableColumn.getUserEleCode();
-                                if(user_ele_code==null){
-                                    map.put("user_ele_code", " ");
-                                }else{
-                                    map.put("user_ele_code", user_ele_code);
-                                }
-                            } else {
-                                map.put("user_ele_code", " ");
-                            }
+
                             if (exportColumn.contains("ele_name")) {
                                 String ele_name = tableColumn.getEleName();
                                 if(ele_name==null){
@@ -504,27 +485,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             } else {
                                 map.put("accuracy", " ");
                             }
-                            if (exportColumn.contains("unit")) {
-                                String unit = tableColumn.getUnit();
-                                if(unit==null){
-                                    map.put("unit", " ");
-                                }else{
-                                    map.put("unit", unit);
-                                }
-                                map.put("unit", unit);
-                            } else {
-                                map.put("unit", " ");
-                            }
-                            if (exportColumn.contains("unit_cn")) {
-                                String unit_cn = tableColumn.getUnitCn();
-                                if(unit_cn==null){
-                                    map.put("unit_cn", " ");
-                                }else{
-                                    map.put("unit_cn", unit_cn);
-                                }
-                            } else {
-                                map.put("unit_cn", " ");
-                            }
+
                             if (exportColumn.contains("is_null")) {
                                 String Is_null = String.valueOf(tableColumn.getIsNull());
                                 if (Is_null.equals("true")) {
@@ -545,16 +506,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             } else {
                                 map.put("is_update", " ");
                             }
-                            if (exportColumn.contains("is_show")) {
-                                String Is_show = String.valueOf(tableColumn.getIsShow());
-                                if (Is_show.equals("true")) {
-                                    map.put("is_show", "是");
-                                } else {
-                                    map.put("is_show", "否");
-                                }
-                            } else {
-                                map.put("is_show", " ");
-                            }
+
                             if (exportColumn.contains("is_premary_key")) {
                                 String Is_premary_key = String.valueOf(tableColumn.getIsPrimaryKey());
                                 if (Is_premary_key.equals("true")) {
@@ -575,16 +527,7 @@ public class TableExportServiceImpl extends BaseService<TableIndexEntity> implem
                             } else {
                                 map.put("name_cn", " ");
                             }
-                            if (exportColumn.contains("is_manager")) {
-                                String Is_manager = String.valueOf(tableColumn.getIsManager());
-                                if (Is_manager.equals("true")) {
-                                    map.put("is_manager", "是");
-                                } else {
-                                    map.put("is_manager", "否");
-                                }
-                            } else {
-                                map.put("is_manager", " ");
-                            }
+
                             if (exportColumn.contains("serial_number")) {
                                 map.put("serial_number", tableColumn.getSerialNumber());
                             } else {

@@ -319,15 +319,6 @@ public class GrpcService {
     public int syncServiceName(List<TableColumnDto> tableColumnDtoList) {
         List<ServiceCodeDto> serviceCodeDtos = this.serviceCodeService.queryAll();
         int un = 0;
-        for (ServiceCodeDto sc : serviceCodeDtos) {
-            for (TableColumnDto tc : tableColumnDtoList) {
-                if (sc.getDbEleCode().equals(tc.getCElementCode()) && !sc.getUserEleCode().equalsIgnoreCase(tc.getUserEleCode())) {
-                    tc.setUserEleCode(sc.getUserEleCode());
-                    this.tableColumnDao.saveNotNull(this.tableColumnMapper.toEntity(tc));
-                    un++;
-                }
-            }
-        }
         return un;
     }
 

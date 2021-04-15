@@ -68,10 +68,7 @@ public class NewdataTableColumnDto extends BaseDto {
 
     public TableColumnDto toTableColumn() {
         TableColumnDto tc = new TableColumnDto();
-        tc.setCElementCode(this.cElementCode);
-        tc.setDbEleCode(this.cElementCode);
         tc.setEleName(this.eleName);
-        tc.setUserEleCode(this.cElementCode);
         tc.setType(this.type);
         String t = this.type.toUpperCase();
         int length = ColumnEnum.getLength(t);
@@ -82,7 +79,6 @@ public class NewdataTableColumnDto extends BaseDto {
         } else {
             tc.setAccuracy(this.accuracy);
         }
-        tc.setUnit(this.unit);
         tc.setIsNull(this.isNull);
         tc.setIsPrimaryKey(this.isPrimaryKey);
         tc.setSerialNumber(this.serialNumber);

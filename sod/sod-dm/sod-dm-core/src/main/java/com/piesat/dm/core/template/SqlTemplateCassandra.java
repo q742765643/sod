@@ -25,4 +25,6 @@ public class SqlTemplateCassandra extends SqlTemplateComm {
     public String ALTER_COLUMN_DROP_DEFAULT = "";
     public String ALTER_COLUMN_SET_NOTNULL = "";
     public String ALTER_COLUMN_DROP_NOTNULL = "";
+    public String ALTER_USER_WHITELIST = "";
+    public String QUERY_ALL_TABLES = "SELECT TABLE_NAME FROM SYSTEM_SCHEMA.TABLES";
 }

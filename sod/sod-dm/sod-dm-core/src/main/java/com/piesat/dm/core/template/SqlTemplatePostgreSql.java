@@ -31,4 +31,6 @@ public class SqlTemplatePostgreSql extends SqlTemplateComm {
             "LEFT OUTER JOIN PG_DESCRIPTION D ON C.INDEXRELID = D.OBJOID, PG_INDEXES A " +
             "WHERE A.SCHEMANAME = E.SCHEMANAME AND A.TABLENAME = E.RELNAME and A.INDEXNAME = E.INDEXRELNAME " +
             "AND E.SCHEMANAME = '${schema}' and E.RELNAME = '${tableName}'";
+
+    public String ALTER_USER_WHITELIST = "";
 }

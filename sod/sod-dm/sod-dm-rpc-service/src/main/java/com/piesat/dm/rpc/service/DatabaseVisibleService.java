@@ -267,21 +267,14 @@ public class DatabaseVisibleService {
                 column.put("COLUMN_ID", c.getId());
                 column.put("TABLE_ID", c.getTableId());
                 column.put("DB_ELE_CODE", c.getDbEleCode());
-                column.put("C_ELEMENT_CODE", c.getCElementCode());
-                column.put("IS_MANAGER", c.getIsManager());
-                column.put("USER_ELE_CODE", c.getUserEleCode());
                 column.put("NAME_CN", c.getNameCn());
                 column.put("ELE_NAME", c.getEleName());
                 column.put("TYPE", c.getType());
                 column.put("ACCURACY", c.getAccuracy());
-                column.put("UNIT", c.getUnit());
-                column.put("UNIT_CN", c.getUnitCn());
                 column.put("IS_NULL", c.getIsNull());
                 column.put("IS_UPDATE", c.getIsUpdate());
-                column.put("IS_SHOW", c.getIsShow());
                 column.put("IS_PREMARY_KEY", c.getIsPrimaryKey());
                 column.put("IS_KV_K", c.getIsKvK());
-                column.put("DATABASE_TYPE", c.getDatabaseType());
                 column.put("SERIAL_NUMBER", c.getSerialNumber());
                 table_structure.add(column);
             }

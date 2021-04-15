@@ -207,46 +207,25 @@ public class TableColumnController {
             style.setAlignment(HorizontalAlignment.CENTER); // 创建一个居中格式
 
             HSSFCell cell = row.createCell((short) 0);
-            cell.setCellValue("公共元数据字段");
-            cell.setCellStyle(style);
-            cell = row.createCell((short) 1);
             cell.setCellValue("字段名称");
             cell.setCellStyle(style);
-            cell = row.createCell((short) 2);
-            cell.setCellValue("服务名称");
-            cell.setCellStyle(style);
-            cell = row.createCell((short) 3);
+            cell = row.createCell((short) 1);
             cell.setCellValue("中文简称");
             cell.setCellStyle(style);
-            cell = row.createCell((short) 4);
+            cell = row.createCell((short) 2);
             cell.setCellValue("数据类型");
             cell.setCellStyle(style);
-            cell = row.createCell((short) 5);
+            cell = row.createCell((short) 3);
             cell.setCellValue("数据精度");
             cell.setCellStyle(style);
-            cell = row.createCell((short) 6);
-            cell.setCellValue("要素单位（英文）");
-            cell.setCellStyle(style);
-            cell = row.createCell((short) 7);
-            cell.setCellValue("要素单位（中文）");
-            cell.setCellStyle(style);
-            cell = row.createCell((short) 8);
+            cell = row.createCell((short) 4);
             cell.setCellValue("是否可空");
             cell.setCellStyle(style);
-            cell = row.createCell((short) 9);
-            cell.setCellValue("是否可改");
-            cell.setCellStyle(style);
-            cell = row.createCell((short) 10);
-            cell.setCellValue("是否显示");
-            cell.setCellStyle(style);
-            cell = row.createCell((short) 11);
+            cell = row.createCell((short) 5);
             cell.setCellValue("是否主键");
             cell.setCellStyle(style);
-            cell = row.createCell((short) 12);
+            cell = row.createCell((short) 6);
             cell.setCellValue("中文描述");
-            cell.setCellStyle(style);
-            cell = row.createCell((short) 13);
-            cell.setCellValue("是否管理字段");
             cell.setCellStyle(style);
 
             HSSFCellStyle cellStyle = wb.createCellStyle();
@@ -257,23 +236,16 @@ public class TableColumnController {
                 TableColumnDto dataStructure = all.get(i);
                 // 创建单元格，并设置值
                 row.createCell((short) 0).setCellValue(dataStructure.getDbEleCode());
-                row.createCell((short) 1).setCellValue(dataStructure.getCElementCode());
-                row.createCell((short) 2).setCellValue(dataStructure.getUserEleCode());
-                row.createCell((short) 3).setCellValue(dataStructure.getEleName());
-                row.createCell((short) 4).setCellValue(dataStructure.getType());
-                HSSFCell hc = row.createCell((short) 5);
+                row.createCell((short) 1).setCellValue(dataStructure.getEleName());
+                row.createCell((short) 2).setCellValue(dataStructure.getType());
+                HSSFCell hc = row.createCell((short) 3);
                 hc.setCellStyle(cellStyle);
                 hc.setCellValue(dataStructure.getAccuracy());
-                row.createCell((short) 6).setCellValue(dataStructure.getUnit());
-                row.createCell((short) 7).setCellValue(dataStructure.getUnitCn());
-                HSSFCell hc8 = row.createCell((short) 8);
+                HSSFCell hc8 = row.createCell((short) 4);
                 hc8.setCellStyle(cellStyle);
                 hc8.setCellValue(dataStructure.getIsNull());
-                row.createCell((short) 9).setCellValue(dataStructure.getIsUpdate());
-                row.createCell((short) 10).setCellValue(dataStructure.getIsShow());
-                row.createCell((short) 11).setCellValue(dataStructure.getIsPrimaryKey());
-                row.createCell((short) 12).setCellValue(dataStructure.getNameCn());
-                row.createCell((short) 13).setCellValue(dataStructure.getIsManager());
+                row.createCell((short) 5).setCellValue(dataStructure.getIsPrimaryKey());
+                row.createCell((short) 6).setCellValue(dataStructure.getNameCn());
             }
 
             // 将文件存到指定位置

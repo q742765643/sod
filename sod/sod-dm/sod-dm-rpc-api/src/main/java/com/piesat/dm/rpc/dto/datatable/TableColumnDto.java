@@ -28,21 +28,6 @@ public class TableColumnDto {
     private String dbEleCode;
 
     /**
-     * c_element_code
-     */
-    private String cElementCode;
-
-    /**
-     * is_manager
-     */
-    private Boolean isManager;
-
-    /**
-     * user_ele_code
-     */
-    private String userEleCode;
-
-    /**
      * name_cn
      */
     private String nameCn;
@@ -67,30 +52,13 @@ public class TableColumnDto {
      */
     private String accuracy;
 
-    /**
-     * unit
-     */
-    private String unit;
-
-    /**
-     * unit_cn
-     */
-    private String unitCn;
 
     /**
      * is_null
      */
     private Boolean isNull;
 
-    /**
-     * is_update
-     */
-    private Boolean isUpdate;
 
-    /**
-     * is_show
-     */
-    private Boolean isShow;
 
     /**
      * is_kv_k
@@ -129,13 +97,5 @@ public class TableColumnDto {
 
     public void setDbEleCode(String dbEleCode) {
         this.dbEleCode = dbEleCode == null ? null : dbEleCode.trim();
-    }
-
-    public void setCElementCode(String cElementCode) {
-        this.cElementCode = cElementCode == null ? null : cElementCode.trim();
-    }
-
-    public void setUserEleCode(String userEleCode) {
-        this.userEleCode = StringUtils.isNotEmpty(userEleCode) ? userEleCode.trim() : userEleCode;
     }
 }

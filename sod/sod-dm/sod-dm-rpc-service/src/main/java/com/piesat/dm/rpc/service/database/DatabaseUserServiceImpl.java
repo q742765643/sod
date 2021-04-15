@@ -736,7 +736,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         whitelist = StringUtils.isNotBlank(whitelist) ? whitelist + Constants.COMMA + mngIp : Constants.PERCENT;
         //数据库用户信息
         UserInfo u = new UserInfo();
-        u.setUserName(principal.getUserName());
+        u.setUserName(principal.getDatabaseUpId());
         u.setPassword(principal.getDatabaseUpPassword());
         u.setWhitelistStr(whitelist.replaceAll(Constants.COMMA, Constants.SPACE));
         String[] databaseIds = principal.getCreateDatabaseIds().split(Constants.COMMA);
@@ -769,7 +769,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
 
             DatabaseAuthorizedDto da = new DatabaseAuthorizedDto();
             da.setDatabaseId(databaseId);
-            da.setDatabaseUsername(u.getUserName());
+            da.setDbUsername(u.getUserName());
             da.setStatus(r.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_CREATE);
@@ -785,10 +785,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         }
 
         principal.setExamineDatabaseId(e_databaseIds.stream().collect(Collectors.joining(Constants.COMMA)));
-        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
-        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
-        databaseUserDto.setList(list);
-        resultT.setData(databaseUserDto);
+//        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+//        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        principal.setList(list);
+        resultT.setData(principal);
     }
 
     /**
@@ -809,27 +809,27 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             e_databaseIds = Arrays.stream(e_databaseIdStr.split(Constants.COMMA)).collect(Collectors.toList());
         }
         DbUserAlterLogDto dl = new DbUserAlterLogDto();
-        tryDropDbUser(new String[]{databaseId}, principal.getUserName(), resultT);
+        tryDropDbUser(new String[]{databaseId}, principal.getDatabaseUpIp(), resultT);
         if (resultT.isSuccess()) {
             e_databaseIds.remove(databaseId);
             principal.setExamineDatabaseId(e_databaseIds.stream().collect(Collectors.joining(Constants.COMMA)));
-            DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
-            principal = this.databaseUserMapper.toDto(save);
-            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+//            DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+//            principal = this.databaseUserMapper.toDto(save);
+            DatabaseAuthorizedDto databaseAuthorizedDto = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getDatabaseUpId(), databaseId);
             if (databaseAuthorizedDto != null) {
                 this.dbUserAlterLogService.deleteByAuthorizeId(databaseAuthorizedDto.getId());
             }
-            this.databaseAuthorizedService.delete(principal.getUserName(), databaseId);
+            this.databaseAuthorizedService.delete(principal.getDatabaseUpId(), databaseId);
         } else {
-            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getDatabaseUpId(), databaseId);
             String log = String.format(ConstantsMsg.MSG5
                     , databaseId
-                    , principal.getUserName()
+                    , principal.getDatabaseUpId()
                     , resultT.isSuccess()
                             ? ConstantsMsg.SUCCESS
                             : String.format(ConstantsMsg.FAIL, resultT.getProcessMsg()));
             da.setDatabaseId(databaseId);
-            da.setDatabaseUsername(principal.getUserName());
+            da.setDbUsername(principal.getDatabaseUpId());
             da.setStatus(resultT.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_DROP);
@@ -885,7 +885,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         }
         UserDto loginUser = (UserDto) SecurityUtils.getSubject().getPrincipal();
         UserInfo u = new UserInfo();
-        u.setUserName(principal.getUserName());
+        u.setUserName(principal.getDatabaseUpId());
         u.setPassword(principal.getDatabaseUpPassword());
 
         String e_databaseIdStr = principal.getExamineDatabaseId();
@@ -913,12 +913,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     , connectVo.getIp()
                     , u.getUserName()
                     , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
-            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getDatabaseUpId(), databaseId);
             if (da == null) {
                 da = new DatabaseAuthorizedDto();
             }
             da.setDatabaseId(databaseId);
-            da.setDatabaseUsername(u.getUserName());
+            da.setDbUsername(u.getUserName());
             da.setStatus(r.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_ALERT_PWD);
@@ -932,10 +932,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             dl.setUpdateBy(loginUser.getWebUserId());
             this.dbUserAlterLogService.saveDto(dl);
         }
-        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
-        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
-        databaseUserDto.setList(list);
-        resultT.setData(databaseUserDto);
+//        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+//        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        principal.setList(list);
+        resultT.setData(principal);
     }
 
     /**
@@ -953,7 +953,7 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
         String whitelist = principal.getDatabaseUpIp();
         whitelist = StringUtils.isNotBlank(whitelist) ? whitelist + Constants.COMMA + mngIp : Constants.PERCENT;
         UserInfo u = new UserInfo();
-        u.setUserName(principal.getUserName());
+        u.setUserName(principal.getDatabaseUpId());
         u.setWhitelistStr(whitelist.replaceAll(Constants.COMMA, Constants.SPACE));
         String e_databaseIdStr = principal.getExamineDatabaseId();
         String[] databaseIds = null;
@@ -980,12 +980,12 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
                     , connectVo.getIp()
                     , u.getUserName()
                     , r.isSuccess() ? ConstantsMsg.SUCCESS : String.format(ConstantsMsg.FAIL, r.getProcessMsg()));
-            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getUserName(), databaseId);
+            DatabaseAuthorizedDto da = this.databaseAuthorizedService.findByDatabaseUsernameAndDatabaseId(principal.getDatabaseUpId(), databaseId);
             if (da == null) {
                 da = new DatabaseAuthorizedDto();
             }
             da.setDatabaseId(databaseId);
-            da.setDatabaseUsername(u.getUserName());
+            da.setDbUsername(u.getUserName());
             da.setStatus(r.isSuccess() ? 1 : 0);
             da.setMsg(log);
             da.setOpeType(ConstantsMsg.OPE_ALERT_WHITELIST);
@@ -999,10 +999,10 @@ public class DatabaseUserServiceImpl extends BaseService<DatabaseUserEntity> imp
             dl.setUpdateBy(loginUser.getWebUserId());
             this.dbUserAlterLogService.saveDto(dl);
         }
-        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
-        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
-        databaseUserDto.setList(list);
-        resultT.setData(databaseUserDto);
+//        DatabaseUserEntity save = this.databaseUserDao.save(this.databaseUserMapper.toEntity(principal));
+//        DatabaseUserDto databaseUserDto = this.databaseUserMapper.toDto(save);
+        principal.setList(list);
+        resultT.setData(principal);
     }
 
     /**

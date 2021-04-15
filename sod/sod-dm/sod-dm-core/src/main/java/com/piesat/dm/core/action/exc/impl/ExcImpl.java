@@ -108,8 +108,11 @@ public class ExcImpl extends ExcAbs {
         if (!resultT.isSuccess()) {
             return this;
         }
-        String sql = TemplateUtil.rendering(T.getALTER_USER_WHITELIST(), userInfo);
-        this.ba.exe(sql, resultT);
+        String alter_user_whitelist = T.getALTER_USER_WHITELIST();
+        if (StringUtils.isNotEmpty(alter_user_whitelist)){
+            String sql = TemplateUtil.rendering(T.getALTER_USER_WHITELIST(), userInfo);
+            this.ba.exe(sql, resultT);
+        }
         return this;
     }
 

@@ -14,7 +14,7 @@ import javax.persistence.Column;
 @Data
 public class DatabaseAuthorizedDto extends BaseDto {
 
-    private String databaseUsername;
+    private String dbUsername;
 
     private String databaseId;
 
