@@ -46,7 +46,7 @@ export function delByClass(data) {
 // 新增资料或者目录 type = 1 资料，2 目录
 export function save(data) {
   return request({
-    url: baseUrl + '/dm/dataClass/save',
+    url: baseUrl + '/dm/dataclassinfo/save',
     method: 'post',
     data: data
   })
@@ -262,3 +262,13 @@ export function findBySubType(query) {
     params: query
   })
 }
+
+// 查询字段
+export function getServiceCode(query) {
+  return request({
+    url: baseUrl + '/dm/dataclassservicecode/getServiceCode',
+    method: 'get',
+    params: query
+  })
+}
+
