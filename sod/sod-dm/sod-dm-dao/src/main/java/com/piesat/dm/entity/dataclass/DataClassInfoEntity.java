@@ -84,4 +84,11 @@ public class DataClassInfoEntity extends BaseEntity {
      */
     @Column(name = "data_type")
     private Integer dataType;
+
+    /**
+     * 序号
+     */
+    @Column(name = "sn")
+    private Integer sn;
+
 }

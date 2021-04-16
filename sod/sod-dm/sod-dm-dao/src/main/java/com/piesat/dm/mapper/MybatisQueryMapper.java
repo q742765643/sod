@@ -247,5 +247,5 @@ public interface MybatisQueryMapper {
      * 获取最新的资料信息
      * @return
      */
-    List<Map<String, Object>> getNewClassInfo();
+    List<Map<String, Object>> getNewClassInfo(@Param("n") Integer n);
 }

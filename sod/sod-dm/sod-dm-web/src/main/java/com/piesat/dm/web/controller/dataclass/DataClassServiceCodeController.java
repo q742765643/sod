@@ -44,19 +44,6 @@ public class DataClassServiceCodeController {
         }
     }
 
-    @ApiOperation(value = "新增List")
-    @RequiresPermissions("dm:dataclassservicecode:savelist")
-    @Log(title = "资料服务编码管理", businessType = BusinessType.INSERT)
-    @PostMapping(value = "/saveList")
-    public ResultT saveList(@RequestBody DataClassServiceCodeList dataClassServiceCodeDto) {
-        try {
-            DataClassServiceCodeList d = this.dataClassServiceCodeService.saveDtoList(dataClassServiceCodeDto);
-            return ResultT.success(d);
-        } catch (Exception e) {
-            return ResultT.failed(e.getMessage());
-        }
-    }
-
 
     @ApiOperation(value = "根据id查询")
     @RequiresPermissions("dm:dataclassservicecode:get")

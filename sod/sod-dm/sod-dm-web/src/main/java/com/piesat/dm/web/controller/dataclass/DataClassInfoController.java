@@ -94,12 +94,12 @@ public class DataClassInfoController {
         }
     }
 
-    @ApiOperation(value = "查询最新十条资料信息")
+    @ApiOperation(value = "查询最新资料信息")
     @RequiresPermissions("dm:dataclassinfo:newclassinfo")
     @GetMapping(value = "/getNewClassInfo")
-    public ResultT getNewClassInfo() {
+    public ResultT getNewClassInfo(Integer n) {
         try {
-            List<Map<String, Object>> newClassInfo = this.dataClassInfoService.getNewClassInfo();
+            List<Map<String, Object>> newClassInfo = this.dataClassInfoService.getNewClassInfo(n);
             return ResultT.success(newClassInfo);
         } catch (Exception e) {
             e.printStackTrace();

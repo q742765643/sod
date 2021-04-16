@@ -85,13 +85,11 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
     }
 
     @Override
-    public DataClassServiceCodeList saveDtoList(DataClassServiceCodeList dataClassServiceCodeList) {
-        List<DataClassServiceCodeDto> serviceCodeList = dataClassServiceCodeList.getServiceCodeList();
+    public List<DataClassServiceCodeDto> saveDtoList(List<DataClassServiceCodeDto> serviceCodeList) {
         List<DataClassServiceCodeEntity> dataClassServiceCodeEntities = this.dataClassServiceCodeMapper.toEntity(serviceCodeList);
         List<DataClassServiceCodeEntity> save = this.save(dataClassServiceCodeEntities);
-        List<DataClassServiceCodeDto> dataClassServiceCodeDtos = this.dataClassServiceCodeMapper.toDto(save);
-        dataClassServiceCodeList.setServiceCodeList(dataClassServiceCodeDtos);
-        return dataClassServiceCodeList;
+        serviceCodeList = this.dataClassServiceCodeMapper.toDto(save);
+        return serviceCodeList;
     }
 
     @Override

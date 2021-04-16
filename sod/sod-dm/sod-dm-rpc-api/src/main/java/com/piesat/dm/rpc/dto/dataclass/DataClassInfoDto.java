@@ -77,6 +77,11 @@ public class DataClassInfoDto extends BaseDto {
     private Integer dataType;
 
     /**
+     * 序号
+     */
+    private Integer sn;
+
+    /**
      * 资料表关系
      */
     private List<DataClassLogicDto> dataClassLogicList;
@@ -90,6 +95,11 @@ public class DataClassInfoDto extends BaseDto {
      * 申请表信息
      */
     private List<DataTableApplyDto> dataTableApplyDtoList;
+
+    /**
+     * 服务编码
+     */
+    private List<DataClassServiceCodeDto> serviceCodeList;
 
     /**
      * 辅助参数

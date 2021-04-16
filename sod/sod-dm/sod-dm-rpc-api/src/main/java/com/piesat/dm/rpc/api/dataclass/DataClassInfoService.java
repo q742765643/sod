@@ -63,5 +63,5 @@ public interface DataClassInfoService {
      */
     List<DataClassInfoDto> getDotByClassId(String id);
 
-    List<Map<String, Object>> getNewClassInfo();
+    List<Map<String, Object>> getNewClassInfo(Integer n);
 }

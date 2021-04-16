@@ -1640,6 +1640,6 @@
                                       from tab_omin_cm_cc_apply b
                                       where a.C_DATA_ID = b.C_DATA_ID)) f on b.C_COREMETA_ID = f.C_DATA_ID
         where aaa.type = 2
-        order by aaa.CREATE_TIME desc limit 10
+        order by aaa.CREATE_TIME desc limit ${n}
     </select>
 </mapper>

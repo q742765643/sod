@@ -96,6 +96,8 @@ public class DataClassDto {
 
     private List<DataClassUserDto> dataClassUserList;
 
+    private List<DataClassServiceCodeDto> serviceCodeList;
+
     //portal申请id
     private String applyId;
 

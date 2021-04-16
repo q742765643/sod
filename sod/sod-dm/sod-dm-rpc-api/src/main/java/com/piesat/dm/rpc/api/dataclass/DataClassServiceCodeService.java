@@ -24,7 +24,7 @@ public interface DataClassServiceCodeService {
      */
     DataClassServiceCodeDto saveDto(DataClassServiceCodeDto dataClassServiceCodeDto);
 
-    DataClassServiceCodeList saveDtoList(DataClassServiceCodeList dataClassServiceCodeList);
+    List<DataClassServiceCodeDto> saveDtoList(List<DataClassServiceCodeDto> dataClassServiceCodeList);
 
     /**
      * 获取
