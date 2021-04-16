@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 资料申请
@@ -98,8 +99,8 @@ public class DataClassInfoController {
     @GetMapping(value = "/getNewClassInfo")
     public ResultT getNewClassInfo() {
         try {
-            List<DataClassInfoDto> all = this.dataClassInfoService.all();
-            return ResultT.success(all);
+            List<Map<String, Object>> newClassInfo = this.dataClassInfoService.getNewClassInfo();
+            return ResultT.success(newClassInfo);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());
