@@ -104,6 +104,11 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
     }
 
     @Override
+    public void deleteByClassId(String classId) {
+        this.dataClassServiceCodeDao.deleteByDataClassId(classId);
+    }
+
+    @Override
     public List<DataClassServiceCodeDto> all() {
         List<DataClassServiceCodeEntity> all = this.getAll();
         return this.dataClassServiceCodeMapper.toDto(all);
@@ -126,7 +131,7 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
             d.setVersion(getValue(e, "VERSION") == null ? 0 : Integer.valueOf(getValue(e, "VERSION")));
             d.setTableColumnId(tableId);
             d.setIsManager(getValue(e, "IS_MANAGER") == null ? 0 : Integer.valueOf(getValue(e, "IS_MANAGER")));
-            d.setIsShow(getValue(e, "IS_SHOW") == null ? 0 : Integer.valueOf(getValue(e, "IS_SHOW")));
+            d.setIsShow(getValue(e, "IS_SHOW") == null ? 1 : Integer.valueOf(getValue(e, "IS_SHOW")));
             d.setUnit(getValue(e, "UNIT"));
             d.setUnitCn(getValue(e, "UNIT_CN"));
             d.setUserEleCode(getValue(e, "USER_ELE_CODE"));

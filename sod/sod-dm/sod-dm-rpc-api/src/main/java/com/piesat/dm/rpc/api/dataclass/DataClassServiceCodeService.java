@@ -42,6 +42,12 @@ public interface DataClassServiceCodeService {
     void deleteById(String id);
 
     /**
+     * 按存储编码删除
+     * @param classId
+     */
+    void deleteByClassId(String classId);
+
+    /**
      * 查询所有
      *
      * @return

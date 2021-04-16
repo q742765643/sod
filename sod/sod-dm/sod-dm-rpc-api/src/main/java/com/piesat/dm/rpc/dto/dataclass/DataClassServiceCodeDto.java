@@ -28,7 +28,7 @@ public class DataClassServiceCodeDto extends BaseDto {
     /**
      * 字段id
      */
-    private String TableColumnId;
+    private String tableColumnId;
 
 
     private String dbEleCode;

@@ -84,7 +84,7 @@ public class DataClassInfoDto extends BaseDto {
     /**
      * 资料表关系
      */
-    private List<DataClassLogicDto> dataClassLogicList;
+    private List<DataClassLogicDto> dataLogicList;
 
     /**
      * 资料标签关系

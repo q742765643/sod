@@ -32,7 +32,7 @@ public class DataClassServiceCodeEntity extends BaseEntity {
      * 字段id
      */
     @Column(name = "table_column_id", length = 255, nullable = false)
-    private String TableColumnId;
+    private String tableColumnId;
 
     /**
      * 服务名称

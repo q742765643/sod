@@ -17,5 +17,5 @@ public class DataClassServiceCodeList {
 
     private static final long serialVersionUID = 1L;
 
-    private List<DataClassServiceCodeDto> serviceCodeList;
+    private List<DataClassServiceCodeDto> columnData;
 }
