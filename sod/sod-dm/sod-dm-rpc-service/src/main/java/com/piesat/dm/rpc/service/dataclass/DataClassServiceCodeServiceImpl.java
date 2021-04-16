@@ -67,6 +67,8 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
     @Autowired
     private DataClassServiceCodeDao dataClassServiceCodeDao;
     @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
     private DataClassServiceCodeMapper dataClassServiceCodeMapper;
 
     @Override
@@ -80,6 +82,16 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
         DataClassServiceCodeEntity dataClassServiceCodeEntity = this.dataClassServiceCodeMapper.toEntity(dataClassServiceCodeDto);
         dataClassServiceCodeEntity = this.saveNotNull(dataClassServiceCodeEntity);
         return this.dataClassServiceCodeMapper.toDto(dataClassServiceCodeEntity);
+    }
+
+    @Override
+    public DataClassServiceCodeList saveDtoList(DataClassServiceCodeList dataClassServiceCodeList) {
+        List<DataClassServiceCodeDto> serviceCodeList = dataClassServiceCodeList.getServiceCodeList();
+        List<DataClassServiceCodeEntity> dataClassServiceCodeEntities = this.dataClassServiceCodeMapper.toEntity(serviceCodeList);
+        List<DataClassServiceCodeEntity> save = this.save(dataClassServiceCodeEntities);
+        List<DataClassServiceCodeDto> dataClassServiceCodeDtos = this.dataClassServiceCodeMapper.toDto(save);
+        dataClassServiceCodeList.setServiceCodeList(dataClassServiceCodeDtos);
+        return dataClassServiceCodeList;
     }
 
     @Override
@@ -97,5 +109,48 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
     public List<DataClassServiceCodeDto> all() {
         List<DataClassServiceCodeEntity> all = this.getAll();
         return this.dataClassServiceCodeMapper.toDto(all);
+    }
+
+    @Override
+    public List<DataClassServiceCodeDto> getServiceCode(String tableId, String dataclassId) {
+        List<Map<String, Object>> serviceCode = this.mybatisQueryMapper.getServiceCode(tableId, dataclassId);
+        return serviceCode.stream().map(e -> {
+            DataClassServiceCodeDto d = new DataClassServiceCodeDto();
+            d.setDataClassId(dataclassId);
+            d.setId(getValue(e, "ID"));
+            d.setDbEleCode(getValue(e, "DB_ELE_CODE"));
+            d.setEleName(getValue(e, "ELE_NAME"));
+            d.setCreateBy(getValue(e, "CREATE_BY"));
+            d.setCreateTime(getDate(e, "CREATE_TIME"));
+            d.setDelFlag(getValue(e, "DEL_FLAG"));
+            d.setUpdateBy(getValue(e, "UPDATE_BY"));
+            d.setUpdateTime(getDate(e, "UPDATE_TIME"));
+            d.setVersion(getValue(e, "VERSION") == null ? 0 : Integer.valueOf(getValue(e, "VERSION")));
+            d.setTableColumnId(tableId);
+            d.setIsManager(getValue(e, "IS_MANAGER") == null ? 0 : Integer.valueOf(getValue(e, "IS_MANAGER")));
+            d.setIsShow(getValue(e, "IS_SHOW") == null ? 0 : Integer.valueOf(getValue(e, "IS_SHOW")));
+            d.setUnit(getValue(e, "UNIT"));
+            d.setUnitCn(getValue(e, "UNIT_CN"));
+            d.setUserEleCode(getValue(e, "USER_ELE_CODE"));
+            return d;
+        }).collect(Collectors.toList());
+    }
+
+    public String getValue(Map<String, Object> map, String key) {
+        Object o = map.get(key);
+        if (o == null) {
+            return null;
+        } else {
+            return String.valueOf(o);
+        }
+    }
+
+    public Date getDate(Map<String, Object> map, String key) {
+        Object o = map.get(key);
+        if (o == null) {
+            return null;
+        } else {
+            return (Date) o;
+        }
     }
 }

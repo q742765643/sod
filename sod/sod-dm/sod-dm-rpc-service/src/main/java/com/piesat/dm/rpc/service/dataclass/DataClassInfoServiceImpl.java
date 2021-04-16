@@ -10,6 +10,7 @@ import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.common.enums.StatusEnum;
 import com.piesat.dm.dao.dataclass.DataClassInfoDao;
 import com.piesat.dm.entity.dataclass.DataClassInfoEntity;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.ReviewLogService;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.*;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +72,8 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     private DataClassLabelDefService dataClassLabelDefService;
     @Autowired
     private DataClassLabelService dataClassLabelService;
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
 
 
     @Override
@@ -194,6 +198,11 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     @Override
     public List<DataClassInfoDto> getDotByClassId(String id) {
         return this.dataClassInfoMapper.toDto(this.dataClassInfoDao.findByDataClassId(id));
+    }
+
+    @Override
+    public List<Map<String, Object>> getNewClassInfo() {
+        return this.mybatisQueryMapper.getNewClassInfo();
     }
 
 }

@@ -93,5 +93,18 @@ public class DataClassInfoController {
         }
     }
 
+    @ApiOperation(value = "查询最新十条资料信息")
+    @RequiresPermissions("dm:dataclassinfo:newclassinfo")
+    @GetMapping(value = "/getNewClassInfo")
+    public ResultT getNewClassInfo() {
+        try {
+            List<DataClassInfoDto> all = this.dataClassInfoService.all();
+            return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
 
 }

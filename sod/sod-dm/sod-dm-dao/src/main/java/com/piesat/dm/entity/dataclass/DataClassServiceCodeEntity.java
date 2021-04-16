@@ -16,7 +16,7 @@ import javax.persistence.Table;
  * @createTime 2021年04月15日 14:22:00
  */
 @Data
-@Table(name = "T_SOD_DATA_CLASS_SERVICE_CODE")
+@Table(name = "T_SOD_DATACLASS_SERVICE_CODE")
 @Entity
 public class DataClassServiceCodeEntity extends BaseEntity {
     private static final long serialVersionUID = 1L;
@@ -59,16 +59,16 @@ public class DataClassServiceCodeEntity extends BaseEntity {
      * 是否可显示
      * is_show
      */
-    @Column(name = "is_show", columnDefinition = "Boolean")
-    private Boolean isShow;
+    @Column(name = "is_show")
+    private Integer isShow;
 
 
     /**
      * 是否管理字段
      * is_manager
      */
-    @Column(name = "is_manager", columnDefinition = "Boolean")
-    private Boolean isManager;
+    @Column(name = "is_manager")
+    private Integer isManager;
 
 
 }
