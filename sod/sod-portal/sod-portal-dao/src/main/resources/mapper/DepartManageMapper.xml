@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piesat.portal.mapper.DepartManageMapper">
+    <resultMap id="BaseResultMap" type="com.piesat.portal.entity.DepartManageEntity" >
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="CREATE_BY" jdbcType="VARCHAR" property="createBy" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="DEL_FLAG" jdbcType="VARCHAR" property="delFlag" />
+        <result column="UPDATE_BY" jdbcType="VARCHAR" property="updateBy" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="VERSION" jdbcType="INTEGER" property="version" />
+
+        <result column="DEPTUNICODE" jdbcType="VARCHAR" property="deptunicode" />
+        <result column="DEPTCODE" jdbcType="VARCHAR" property="deptcode" />
+        <result column="DEPTNAME" jdbcType="VARCHAR" property="deptname" />
+    </resultMap>
+
+    <select id="findSupDepart" parameterType="String" resultMap="BaseResultMap">
+        select ppd.* from T_SOD_PORTAL_DEPART ppd
+           start with ppd.DEPTUNICODE = #{deptunicode}
+        connect by prior ppd.parent_code = ppd.deptcode
+    </select>
+
+</mapper>
