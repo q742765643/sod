@@ -6,17 +6,14 @@ import com.piesat.common.jpa.specification.SimpleSpecificationBuilder;
 import com.piesat.common.jpa.specification.SpecificationOperator;
 import com.piesat.common.utils.DateUtils;
 import com.piesat.common.utils.StringUtils;
-import com.piesat.dm.common.constants.ConstantsMsg;
 import com.piesat.dm.common.enums.StatusEnum;
 import com.piesat.dm.dao.dataclass.DataClassInfoDao;
 import com.piesat.dm.entity.dataclass.DataClassInfoEntity;
-import com.piesat.dm.rpc.api.ReviewLogService;
+import com.piesat.dm.mapper.MybatisQueryMapper;
 import com.piesat.dm.rpc.api.database.SchemaService;
 import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.api.dataclass.DataClassInfoService;
 import com.piesat.dm.rpc.api.datatable.*;
-import com.piesat.dm.rpc.dto.ReviewLogDto;
-import com.piesat.dm.rpc.dto.database.SchemaDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.dto.datatable.*;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassInfoMapper;
@@ -30,9 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 /**
  * 资料申请
@@ -70,7 +65,10 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     private DataClassLabelDefService dataClassLabelDefService;
     @Autowired
     private DataClassLabelService dataClassLabelService;
-
+    @Autowired
+    private MybatisQueryMapper mybatisQueryMapper;
+    @Autowired
+    private DataClassServiceCodeService serviceCodeService;
 
     @Override
     public BaseDao<DataClassInfoEntity> getBaseDao() {
@@ -80,6 +78,28 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultT saveDto(DataClassInfoDto dataClassInfoDto) {
+        List<DataClassLabelDto> dataClassLabelList = dataClassInfoDto.getDataClassLabelList();
+        for (DataClassLabelDto dataClassLabelDto : dataClassLabelList) {
+            String labelKey = dataClassLabelDto.getLabelKey();
+            dataClassLabelDto.setDataClassId(dataClassInfoDto.getDataClassId());
+            if (StringUtils.isEmpty(labelKey)) {
+                DataClassLabelDefDto dl = new DataClassLabelDefDto();
+                dl.setLabelName(dataClassLabelDto.getLabelName());
+                dl.setRemark(dataClassLabelDto.getRemark());
+                dl.setStatus(StatusEnum.审核通过.getCode());
+                dl.setUserId(dataClassInfoDto.getUserId());
+                DataClassLabelDefDto dataClassLabelDefDto = this.dataClassLabelDefService.saveDto(dl);
+                dataClassLabelDto.setLabelKey(dataClassLabelDefDto.getId());
+            }
+            this.dataClassLabelService.saveDto(dataClassLabelDto);
+        }
+        List<DataClassLogicDto> dataClassLogicList = dataClassInfoDto.getDataLogicList();
+        this.dataLogicService.deleteByDataClassId(dataClassInfoDto.getDataClassId());
+        this.dataLogicService.saveList(dataClassLogicList);
+        List<DataClassServiceCodeDto> serviceCodeList = dataClassInfoDto.getServiceCodeList();
+        this.serviceCodeService.deleteByClassId(dataClassInfoDto.getDataClassId());
+        this.serviceCodeService.saveDtoList(serviceCodeList);
+        dataClassInfoDto.setStatus(StatusEnum.审核通过.getCode());
         this.saveNotNull(this.dataClassInfoMapper.toEntity(dataClassInfoDto));
         return ResultT.success();
     }
@@ -123,7 +143,7 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
                 }
                 this.dataClassLabelService.saveDto(dataClassLabelDto);
             }
-            List<DataClassLogicDto> dataClassLogicList = dataClassInfoDto.getDataClassLogicList();
+            List<DataClassLogicDto> dataClassLogicList = dataClassInfoDto.getDataLogicList();
             for (DataClassLogicDto dataClassLogicDto : dataClassLogicList) {
                 if (StringUtils.isEmpty(dataClassLogicDto.getDataClassId())) {
                     dataClassLogicDto.setDataClassId(dataClassId);
@@ -141,8 +161,8 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
                     this.shardingService.saveDto(tablePartDto);
                 }
             });
-            dataClassInfoDto.setStatus(1);
-            this.saveDto(dataClassInfoDto);
+            dataClassInfoDto.setStatus(StatusEnum.待审核.getCode());
+            this.saveNotNull(this.dataClassInfoMapper.toEntity(dataClassInfoDto));
         } catch (Exception e) {
             return ResultT.failed(e.getMessage());
         }
@@ -181,7 +201,7 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
             }
         });
         dataClassInfoDto.setDataClassLabelList(dataClassLabelDtoList);
-        dataClassInfoDto.setDataClassLogicList(dataClassLogicDtoList);
+        dataClassInfoDto.setDataLogicList(dataClassLogicDtoList);
         dataClassInfoDto.setDataTableApplyDtoList(dataTableApplyDtoList);
         return dataClassInfoDto;
     }
@@ -194,6 +214,11 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     @Override
     public List<DataClassInfoDto> getDotByClassId(String id) {
         return this.dataClassInfoMapper.toDto(this.dataClassInfoDao.findByDataClassId(id));
+    }
+
+    @Override
+    public List<Map<String, Object>> getNewClassInfo(Integer n) {
+        return this.mybatisQueryMapper.getNewClassInfo(n);
     }
 
 }

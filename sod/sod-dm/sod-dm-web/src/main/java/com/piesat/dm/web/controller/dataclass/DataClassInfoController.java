@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 资料申请
@@ -87,6 +88,19 @@ public class DataClassInfoController {
         try {
             List<DataClassInfoDto> all = this.dataClassInfoService.all();
             return ResultT.success(all);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询最新资料信息")
+    @RequiresPermissions("dm:dataclassinfo:newclassinfo")
+    @GetMapping(value = "/getNewClassInfo")
+    public ResultT getNewClassInfo(Integer n) {
+        try {
+            List<Map<String, Object>> newClassInfo = this.dataClassInfoService.getNewClassInfo(n);
+            return ResultT.success(newClassInfo);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

@@ -177,6 +177,7 @@ public interface MybatisQueryMapper {
 
     /**
      * 获取用户可申请资料
+     *
      * @param userId
      * @param databaseId
      * @param schemaId
@@ -233,4 +234,18 @@ public interface MybatisQueryMapper {
      * @return
      */
     List<Map<String, Object>> getRecycle(@Param("map") Map<String, Object> map);
+
+    /**
+     * 获取服务编码
+     * @param tableId
+     * @param dataclassId
+     * @return
+     */
+    List<Map<String, Object>> getServiceCode(@Param("tableId") String tableId, @Param("dataclassId") String dataclassId);
+
+    /**
+     * 获取最新的资料信息
+     * @return
+     */
+    List<Map<String, Object>> getNewClassInfo(@Param("n") Integer n);
 }

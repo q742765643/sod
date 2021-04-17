@@ -10,7 +10,7 @@
         :label-width="labelWidth"
       >
         <!-- 公共元数据信息 -->
-        <div class="publicData" v-if="tableStructureManageContral">
+        <!--  <div class="publicData" v-if="tableStructureManageContral">
           <div class="publicDataTitle">
             <i class="el-icon-price-tag"></i>公共元数据信息
           </div>
@@ -42,37 +42,34 @@
               ></el-input>
             </el-form-item>
           </div>
-        </div>
+        </div> -->
         <!-- 存储元数据信息 -->
         <div class="storageData">
           <div class="storageDataTitle">
             <i class="el-icon-price-tag"></i>存储元数据信息
           </div>
           <div class="storageInfo">
-            <el-form-item label="资料名称" prop="className">
-              <el-input
-                clearable
-                placeholder="资料名称"
-                v-model.trim="materialData.className"
-              ></el-input>
+            <el-form-item label="资料名称" prop="dataClassId">
+              <treeselect
+                @select="getStorageCheckNode"
+                v-model.trim="materialData.dataClassId"
+                :options="storageTree"
+                :normalizer="normalizer"
+                :show-count="true"
+                placeholder="请选择资料名称"
+              />
             </el-form-item>
             <el-form-item label="存储编码" prop="dataClassId">
               <el-input
                 clearable
-                :disabled="isDisabledEdit"
+                disabled
                 placeholder="存储编码"
                 v-model.trim="materialData.dataClassId"
               ></el-input>
             </el-form-item>
-            <el-form-item label="父节点" prop="parentId">
-              <!--  <el-input
-                placeholder="请选择存储元数据父节点"
-                :readonly="true"
-                v-model.trim="materialData.parentId"
-                class="styleCursor"
-                @click.native="showStorageTree"
-              ></el-input>-->
+            <!--   <el-form-item label="父节点" prop="parentId">
               <treeselect
+                v-if="isSourceTree"
                 @select="getStorageCheckNode"
                 v-model.trim="materialData.parentId"
                 :options="storageTree"
@@ -80,12 +77,22 @@
                 :show-count="true"
                 placeholder="请选择存储元数据父节点"
               />
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="类型" v-if="isSourceTree">
               <el-input
                 v-model.trim="materialData.typeText"
                 :readonly="true"
               ></el-input>
+            </el-form-item>
+            <el-form-item label="数据分级" v-if="!isSourceTree">
+              <el-select v-model.trim="materialData.dataLevel">
+                <el-option :value="1" label="L1"></el-option>
+                <el-option :value="2" label="L2"></el-option>
+                <el-option :value="3" label="L3"></el-option>
+                <el-option :value="4" label="L4"></el-option>
+                <el-option :value="5" label="L5"></el-option>
+                <el-option :value="6" label="L6"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="访问控制" v-if="!isSourceTree">
               <el-select v-model.trim="materialData.isAccess">
@@ -93,12 +100,12 @@
                 <el-option :value="2" label="限制"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="排序" prop="serialNo">
+            <el-form-item label="排序" prop="sn">
               <el-input-number
-                v-model.trim="materialData.serialNo"
+                v-model.trim="materialData.sn"
                 :min="0"
               ></el-input-number>
-              <!-- <el-input type="number" v-model.trim="materialData.serialNo" :min="0"></el-input> -->
+              <!-- <el-input type="number" v-model.trim="materialData.sn" :min="0"></el-input> -->
             </el-form-item>
             <el-form-item
               label="是否发布"
@@ -233,6 +240,64 @@
           </div>
         </div>
       </div>
+      <!-- 服务编码 -->
+      <div class="editDataUse" v-show="multipleSelectionTabs.length > 0">
+        <h4>服务编码</h4>
+      </div>
+      <el-tabs v-model="activeTabsName" @tab-click="handleTabsClick">
+        <el-tab-pane
+          :label="item.DATABASE_NAME"
+          :name="item.DATABASE_NAME"
+          v-for="(item, index) in multipleSelectionTabs"
+          :key="index"
+        >
+          <!-- 字段表格 -->
+          <el-table
+            :data="item.columnData"
+            border
+            stripe
+            @selection-change="(res) => (selColumnData = res)"
+            ref="selectionTable"
+            @row-click="handleClickTableRow"
+            class="columnTable"
+          >
+            <el-table-column
+              :label="column.label"
+              v-for="(column, field) of tableTem1"
+              :key="field"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row[field] }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="服务名称" align="center">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.userEleCode"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="要素单位" align="center">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.unit"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column label="要素单位(中文名)" align="center">
+              <template slot-scope="scope">
+                <el-input v-model="scope.row.unitCn"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+              width="120"
+              :label="column.label"
+              v-for="(column, field) of tableTem3"
+              :key="field"
+            >
+              <template slot-scope="scope">
+                <el-checkbox v-model="scope.row[field]"></el-checkbox>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
     </div>
     <div class="dialog-footer" slot="footer" v-if="isFooterShow">
       <el-button type="primary" @click="makeSureSave('materialForm')"
@@ -286,6 +351,7 @@ import {
   getCanShowDatabaseDefineList,
   findTablesByTableName,
   findAllETables,
+  getServiceCode,
 } from "@/api/structureManagement/dataList/index";
 import { getDictByType } from "@/api/structureManagement/dataList/StructureManageTable";
 import { dataClassAll } from "@/api/structureManagement/dataList/StructureClassify";
@@ -327,7 +393,62 @@ export default {
     },
   },
   data() {
+    var nameValidate = (rule, value, callback) => {
+      let msg = "";
+      if (rule.field == "dbEleCode" || rule.field.indexOf("dbEleCode") > -1) {
+        msg = "字段编码";
+      } else if (
+        rule.field == "celementCode" ||
+        rule.field.indexOf("celementCode") > -1
+      ) {
+        msg = "字段编码";
+      }
+      if (value === "") {
+        callback(new Error("请输入" + msg));
+      } else if (!codeVer(value)) {
+        callback(
+          new Error(msg + "不允许输入小写字母和中文，且需以大写字母开头")
+        );
+      } else {
+        callback();
+      }
+    };
+
+    const tableNumValidate = (rule, value, callback) => {
+      if (value === "" || value === null || value === undefined) {
+        callback(new Error("请输入序号"));
+      }
+    };
+
+    const accuracyValidate = (rule, value, callback) => {
+      if (value === null || value === "") {
+        callback();
+      } else {
+        if (value > 0) {
+          callback();
+        } else {
+          callback(new Error("不是正整数"));
+        }
+      }
+    };
+    const lengthValidate = (rule, value, callback) => {
+      if (value === null || value === "") {
+        callback();
+      } else {
+        if (value > 0) {
+          callback();
+        } else {
+          callback(new Error("不是正整数"));
+        }
+      }
+    };
     return {
+      selColumnData: [], //选中的表格值
+      multipleSelectionTabs: [],
+      multipleSelectionTabsArry: [],
+      activeTabsName: "", //服务编码tab
+      tableTem1: {}, //新增表格模板1
+      tableTem3: {}, //新增表格模板3
       //关联表信息-start
       tableDataLink: [],
       multipleSelection: [],
@@ -359,14 +480,14 @@ export default {
       materialData: {
         ddataId: "",
         ddataId: null,
-        dataClassId: "",
-        className: "",
+        dataClassId: null,
+        dataName: null,
         parentId: null,
         typeText: "资料",
         ifStopUse: true,
         isAccess: 1,
         useBaseInfo: 0,
-        serialNo: 0,
+        sn: 0,
         dataLogicListTable: [], //数据用途回显的树
         labelKeyFrom: [],
         dataClassLabelList: [],
@@ -396,7 +517,7 @@ export default {
             trigger: "change",
           },
         ],
-        className: [
+        dataName: [
           {
             required: true,
             message: "资料名称不能为空",
@@ -410,7 +531,7 @@ export default {
             trigger: "change",
           },
         ],
-        serialNo: [
+        sn: [
           {
             required: true,
             message: "排序不能为空",
@@ -418,9 +539,65 @@ export default {
           },
         ],
       },
+      dataClassIdWatch: "",
     };
   },
   async created() {
+    this.tableTem1 = {
+      dbEleCode: {
+        label: "字段编码",
+        type: "text",
+        rules: {
+          required: true,
+          message: "字段编码不能为空",
+        },
+      },
+      eleName: {
+        label: "中文简称",
+        type: "text",
+        rules: {
+          required: true,
+          message: "中文简称不能为空",
+        },
+      },
+      /*   dbEleCode: {
+        label: "公共元数据字段",
+        type: "input",
+        width: 200,
+        rules: {
+          required: true,
+          message: "公共元数据字段不能为空",
+        },
+      }, */
+    };
+
+    this.tableTem3 = {
+      /*  isUpdate: {
+        label: "是否可改",
+        type: "radio",
+        options: [
+          { text: "是", value: true },
+          { text: "否", value: false },
+        ],
+      }, */
+      isShow: {
+        label: "是否显示",
+        type: "radio",
+        options: [
+          { text: "是", value: 1 },
+          { text: "否", value: 0 },
+        ],
+      },
+
+      /*  isManager: {
+        label: "是否管理字段",
+        type: "radio",
+        options: [
+          { text: "是", value: true },
+          { text: "否", value: false },
+        ],
+      }, */
+    };
     await getCanShowDatabaseDefineList().then((res) => {
       this.DatabaseDefineList = res.data;
     });
@@ -438,7 +615,6 @@ export default {
     await datumTypeGetTree().then((response) => {
       this.resetData(response.data);
       this.publicTreeOptions = response.data;
-      console.log(this.publicTreeOptions);
     });
     // 父节点树
     await dataClassAll().then((response) => {
@@ -475,7 +651,24 @@ export default {
     // 初始化
     await this.initMaterialForm();
   },
+  watch: {
+    dataClassIdWatch: function () {
+      this.$nextTick(function () {
+        /*现在数据已经渲染完毕*/
+        this.multipleSelectionTabsArry = [];
+        this.getServiceCodeMethods();
+      });
+    },
+  },
   methods: {
+    // tabclick
+    handleTabsClick(tab, event) {
+      console.log(tab, event);
+    },
+    // 选中就勾选
+    handleClickTableRow(row, event, column) {
+      row.isEdit = true;
+    },
     getLinkTable(val) {
       this.linTableName = val;
       //关联表信息
@@ -486,7 +679,32 @@ export default {
       );
     },
     handleSelectionChange(val) {
+      console.log(val);
       this.multipleSelection = val;
+      this.multipleSelectionTabsArry = [];
+      this.multipleSelectionTabsArry = val;
+      this.multipleSelectionTabsArry.forEach((element) => {
+        element.columnData = [];
+      });
+      if (this.multipleSelection.length > 0) {
+        this.activeTabsName = this.multipleSelection[0].DATABASE_NAME;
+        this.getServiceCodeMethods();
+      }
+    },
+    // 获取字段
+    async getServiceCodeMethods() {
+      for (var i = 0; i < this.multipleSelectionTabsArry.length; i++) {
+        await getServiceCode({
+          dataclassId: this.materialData.dataClassId,
+          tableId: this.multipleSelectionTabsArry[i].ID,
+        }).then((res) => {
+          if (res.code == 200) {
+            this.multipleSelectionTabsArry[i].columnData = res.data;
+          }
+        });
+      }
+      this.multipleSelectionTabs = this.multipleSelectionTabsArry;
+      console.log(this.multipleSelectionTabs);
     },
     setSelectDictdataTypes(val) {
       this.SelectDictdataTypes = [];
@@ -544,6 +762,7 @@ export default {
                   this.materialData.dataClassId = checkNode.id;
                 }
               }
+              this.dataClassIdWatch = this.materialData.dataClassId;
             }
           }
         );
@@ -638,8 +857,8 @@ export default {
             }
           });
         }
-
-        this.materialData.className = checkNode.className;
+        this.dataClassIdWatch = this.materialData.dataClassId;
+        this.materialData.dataName = checkNode.className;
       }
 
       this.materialData.ddataId = checkNode.id;
@@ -659,15 +878,16 @@ export default {
       if (this.isSourceTree) {
         this.materialData.parentId = checkNode.id;
       } else {
-        if (checkNode.id === 0 || checkNode.id.split(".").length == 3) {
-          this.materialData.parentId = checkNode.id;
+        if (checkNode.id === 0 || checkNode.id.split(".").length == 4) {
+          this.materialData.dataName = checkNode.name;
+          this.materialData.dataClassId = checkNode.id;
         } else {
           this.$message({
             type: "error",
-            message: "只能选择三级目录或者主类目",
+            message: "只能选择四级目录或者主类目",
           });
           this.$nextTick(function () {
-            this.materialData.parentId = null;
+            this.materialData.dataName = null;
           });
         }
       }
@@ -679,12 +899,12 @@ export default {
 
     // 保存数据
     makeSureSave(resForm) {
-      if (this.ddataIdFlag && !this.materialData.ddataId) {
+      /*  if (this.ddataIdFlag && !this.materialData.ddataId) {
         this.$message({
           type: "error",
           message: "请选择名称",
         });
-      }
+      } */
       this.$refs["materialForm"].validate((valid) => {
         if (valid) {
           // 1为目录   2为资料
@@ -747,6 +967,10 @@ export default {
               };
               this.materialData.dataLogicList.push(obj);
             });
+            this.multipleSelectionTabs.forEach((element) => {
+              element.dataclassId = this.materialData.dataClassId;
+            });
+            this.materialData.serviceCodeList = this.multipleSelectionTabs;
           }
           console.log(this.materialData);
           //数据注册审核的数据用途只能选一条
@@ -939,6 +1163,9 @@ export default {
         text-align: left;
       }
     }
+  }
+  .dialog-footer {
+    margin-top: 20px;
   }
 }
 </style>

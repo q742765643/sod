@@ -768,7 +768,6 @@
         (select * from tab_omin_cm_cc_apply a where C_UPDATED_DATE = (select max(C_UPDATED_DATE) from
         tab_omin_cm_cc_apply b where a.C_DATA_ID = b.C_DATA_ID ))
         f on b.C_COREMETA_ID = f.C_DATA_ID
-
         <where>
             aa.data_class_id = #{id}
         </where>
@@ -1560,5 +1559,87 @@
         <if test="map.databasePid != null and map.databasePid  != ''">
             AND C.ID = #{map.databasePid}
         </if>
+    </select>
+
+
+    <select id="getServiceCode" resultType="java.util.Map" parameterType="String">
+        SELECT A.DB_ELE_CODE,
+               A.ELE_NAME,
+               B.ID,
+               B.CREATE_BY,
+               B.CREATE_TIME,
+               B.DEL_FLAG
+                ,
+               B.UPDATE_BY,
+               B.UPDATE_TIME,
+               B.VERSION,
+               CASE
+                   WHEN TABLE_COLUMN_ID IS NULL
+                       THEN A.ID
+                   ELSE TABLE_COLUMN_ID END                                                    TABLE_COLUMN_ID,
+               B.IS_MANAGER,
+               B.IS_SHOW,
+               B.UNIT,
+               CASE WHEN UNIT_CN IS NULL THEN ELE_UNIT ELSE UNIT_CN END                        UNIT_CN,
+               CASE WHEN B.USER_ELE_CODE IS NULL THEN C.USER_ELE_CODE ELSE B.USER_ELE_CODE END USER_ELE_CODE
+        FROM T_SOD_DATA_TABLE_COLUMNS A
+                 LEFT JOIN T_SOD_DATACLASS_SERVICE_CODE B
+                           ON A."ID" = B."TABLE_COLUMN_ID" AND DATA_CLASS_ID = #{dataclassId}
+                 LEFT JOIN T_SOD_SERVICE_CODE C ON A."DB_ELE_CODE" = C."DB_ELE_CODE"
+        WHERE A."TABLE_ID" = #{tableId}
+    </select>
+
+
+    <select id="getNewClassInfo" resultType="java.util.Map">
+        select aaa.CLASS_NAME, CONCAT(b.C_IDABS, '') C_IDABS, h.C_RPORGNAME, aaa.CREATE_TIME
+        from T_SOD_DATA_CLASS aaa
+                 left join
+             (select *
+              from TAB_OMIN_CM_CC_DATUMTYPEINFO aa
+              where (aa.C_OPT_TYPE is null or aa.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) a on aa.D_DATA_ID = a.c_datum_code
+                 left join
+             (select *
+              from tab_omin_cm_cc_coremeta bb
+              where (bb.C_OPT_TYPE is null or bb.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) b on a.C_COREMETA_ID = b.C_COREMETA_ID
+                 left join
+             (select *
+              from tab_omin_cm_cc_geoele cc
+              where (cc.C_OPT_TYPE is null or cc.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) c on c.C_COREMETA_ID = b.C_COREMETA_ID
+                 left join
+             (select *
+              from tab_omin_cm_cc_stationnet dd
+              where (dd.C_OPT_TYPE is null or dd.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) d on a.C_NETTYPE = d.C_SNET_ID
+                 left join
+             (select *
+              from tab_omin_cm_cc_tempele ee
+              where (ee.C_OPT_TYPE is null or ee.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) e on c.C_COREMETA_ID = e.C_COREMETA_ID
+                 left join
+             (select *
+              from tab_omin_cm_cc_dddidpocinfo gg
+              where (gg.C_OPT_TYPE is null or gg.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) g on c.C_COREMETA_ID = g.C_COREMETA_ID
+                 left join
+             (select *
+              from TAB_OMIN_CM_CC_IDPOC hh
+              where (hh.C_OPT_TYPE is null or hh.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) h on c.C_COREMETA_ID = h.C_COREMETA_ID
+                 left join
+             (select *
+              from TAB_OMIN_CM_CC_DDDDOCAUTHINFO mm
+              where (mm.C_OPT_TYPE is null or mm.C_OPT_TYPE <![CDATA[ <> ]]>
+        'delete')) m on c.C_COREMETA_ID = m.C_COREMETA_ID
+                 left join
+             (select *
+              from tab_omin_cm_cc_apply a
+              where C_UPDATED_DATE = (select max(C_UPDATED_DATE)
+                                      from tab_omin_cm_cc_apply b
+                                      where a.C_DATA_ID = b.C_DATA_ID)) f on b.C_COREMETA_ID = f.C_DATA_ID
+        where aaa.type = 2
+        order by aaa.CREATE_TIME desc limit ${n}
     </select>
 </mapper>

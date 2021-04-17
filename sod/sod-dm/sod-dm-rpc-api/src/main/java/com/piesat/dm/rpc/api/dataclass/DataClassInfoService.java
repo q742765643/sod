@@ -9,6 +9,7 @@ import com.piesat.util.constant.GrpcConstant;
 import com.piesat.util.page.PageForm;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cuiwenhui
@@ -61,4 +62,6 @@ public interface DataClassInfoService {
      * @return
      */
     List<DataClassInfoDto> getDotByClassId(String id);
+
+    List<Map<String, Object>> getNewClassInfo(Integer n);
 }

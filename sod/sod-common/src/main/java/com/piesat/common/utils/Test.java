@@ -28,9 +28,7 @@ public class Test {
         System.out.println("mmd:"+mmd);
         String are = textEncryptor.encrypt("music#2020");
         System.out.println("are:"+are);
-        String are1 = textEncryptor.decrypt("c6ac59a147fa349f1032c521b7e521a3");
-        System.out.println("are1:"+are1);
-        String pp = textEncryptor.encrypt("Pnmicxg2019");
+        String pp = textEncryptor.encrypt("fve23r087DSWD#!de");
         System.out.println("pp:"+pp);
 
     }

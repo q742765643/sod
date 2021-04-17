@@ -28,7 +28,7 @@ public class DataClassServiceCodeDto extends BaseDto {
     /**
      * 字段id
      */
-    private String TableColumnId;
+    private String tableColumnId;
 
 
     private String dbEleCode;
@@ -62,14 +62,14 @@ public class DataClassServiceCodeDto extends BaseDto {
      * 是否可显示
      * is_show
      */
-    private Boolean isShow;
+    private Integer isShow;
 
 
     /**
      * 是否管理字段
      * is_manager
      */
-    private Boolean isManager;
+    private Integer isManager;
 
 
 }

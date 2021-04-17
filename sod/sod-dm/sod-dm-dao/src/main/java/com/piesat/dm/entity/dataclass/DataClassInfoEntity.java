@@ -2,11 +2,12 @@ package com.piesat.dm.entity.dataclass;
 
 import com.piesat.common.annotation.Excel;
 import com.piesat.common.jpa.entity.BaseEntity;
+import com.piesat.dm.entity.datatable.TableColumnEntity;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Data
 @Table(name = "T_SOD_DATA_CLASS_INFO")
@@ -84,4 +85,11 @@ public class DataClassInfoEntity extends BaseEntity {
      */
     @Column(name = "data_type")
     private Integer dataType;
+
+    /**
+     * 序号
+     */
+    @Column(name = "sn")
+    private Integer sn;
+
 }

@@ -176,20 +176,6 @@
             <span v-else>{{ scope.row.type }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="要素单位" align="center">
-          <template slot-scope="scope">
-            <el-form-item
-              label-width="0px"
-              :prop="'columnData.' + scope.$index + 'unit'"
-              :rules="tableRules.unit"
-              v-if="scope.row.isEdit"
-            >
-              <el-input v-model="scope.row.unit"></el-input>
-            </el-form-item>
-            <span v-else>{{ scope.row.unit }}</span>
-          </template>
-        </el-table-column>
-
         <el-table-column
           :label="column.label"
           v-for="(column, field) of tableTem2"
@@ -769,29 +755,12 @@ export default {
   async created() {
     await this.getDictByTypeMethods("table_column_type");
     this.tableTem1 = {
-      dbEleCode: {
-        label: "公共元数据字段",
-        type: "input",
-        width: 200,
-        rules: {
-          required: true,
-          message: "公共元数据字段不能为空",
-        },
-      },
       celementCode: {
         label: "字段编码",
         type: "input",
         rules: {
           required: true,
           message: "字段编码不能为空",
-        },
-      },
-      userEleCode: {
-        label: "服务名称",
-        type: "input",
-        rules: {
-          required: true,
-          message: "服务名称不能为空",
         },
       },
       eleName: {
@@ -804,12 +773,12 @@ export default {
       },
     };
     this.tableTem2 = {
-      accuracy: {
-        label: "数据精度",
-        type: "number",
-      },
       length: {
         label: "数据长度",
+        type: "number",
+      },
+      accuracy: {
+        label: "数据精度",
         type: "number",
       },
     };
@@ -822,32 +791,8 @@ export default {
           { text: "否", value: false },
         ],
       },
-      isUpdate: {
-        label: "是否可改",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
-      isShow: {
-        label: "是否显示",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
       isPrimaryKey: {
         label: "是否主键",
-        type: "radio",
-        options: [
-          { text: "是", value: true },
-          { text: "否", value: false },
-        ],
-      },
-      isManager: {
-        label: "是否管理字段",
         type: "radio",
         options: [
           { text: "是", value: true },
@@ -978,7 +923,7 @@ export default {
         length: null, //数据长度
         type: "", //数据类型
         unit: "N", //要素单位
-        isManager: false, //是否管理字段
+        isManager: 0, //是否管理字段
         isPrimaryKey: false, //是否主键
         isShow: false, //是否显示
         isUpdate: false, //是否可改
@@ -1564,21 +1509,13 @@ export default {
     },
     getMyExcelData(data, getTableId, gettableType, gettableColumn) {
       let tableJson = [
-        { name: "公共元数据字段", value: "dbEleCode" },
         { name: "字段编码", value: "celementCode" },
-        { name: "服务代码", value: "userEleCode" },
         { name: "中文简称", value: "eleName" },
+        { name: "数据类型", value: "type" },
         { name: "数据精度", value: "accuracy" },
-        { name: "要素单位", value: "unit" },
         { name: "是否可空", value: "isNull" },
-        { name: "是否可改", value: "isUpdate" },
-        { name: "是否显示", value: "isShow" },
         { name: "是否主键", value: "isPrimaryKey" },
         { name: "中文描述", value: "nameCn" },
-        { name: "是否管理字段", value: "isManager" },
-        { name: "数据类型", value: "type" },
-        // { name: "是否修改数据库", value: "updateDatabase" },
-        { name: "默认值", value: "defaultValue" },
         { name: "序号", value: "serialNumber" },
       ];
       let dataJson = [];
@@ -1609,18 +1546,6 @@ export default {
       dataJson.forEach((element) => {
         element.id = "";
         element.tableId = getTableId;
-
-        if (!element.dbEleCode) {
-          flag = true;
-          flagmsg = "公共元数据字段不能为空";
-          return;
-        }
-        if (!codeVer(element.dbEleCode)) {
-          flag = true;
-          flagmsg =
-            "公共元数据字段不允许输入小写字母和中文，且需以大写字母开头";
-          return;
-        }
         if (!element.celementCode) {
           flag = true;
           flagmsg = "字段编码不能为空";
@@ -1639,11 +1564,7 @@ export default {
             return;
           }
         });
-        if (!element.userEleCode) {
-          flag = true;
-          flagmsg = "服务代码不能为空";
-          return;
-        }
+
         if (!element.eleName) {
           flag = true;
           flagmsg = "中文简称不能为空";
@@ -1654,11 +1575,7 @@ export default {
           flagmsg = "数据类型不能为空";
           return;
         }
-        if (!element.unit) {
-          flag = true;
-          flagmsg = "要素单位不能为空";
-          return;
-        }
+
         if (
           element.serialNumber == "" ||
           element.serialNumber == null ||
@@ -1678,21 +1595,6 @@ export default {
         } else if (element.isNull === "否" || element.isNull === "N") {
           element.isNull = "false";
         }
-        if (element.isUpdate === "是" || element.isUpdate === "Y") {
-          element.isUpdate = "true";
-        } else if (element.isUpdate === "否" || element.isUpdate === "N") {
-          element.isUpdate = "false";
-        }
-        if (element.isShow === "是" || element.isShow === "Y") {
-          element.isShow = "true";
-        } else if (element.isShow === "否" || element.isShow === "N") {
-          element.isShow = "false";
-        }
-        if (element.isManager === "是" || element.isManager === "Y") {
-          element.isManager = "true";
-        } else if (element.isManager === "否" || element.isManager === "N") {
-          element.isManager = "false";
-        }
         if (element.isPrimaryKey === "是" || element.isPrimaryKey === "Y") {
           element.isPrimaryKey = "true";
         } else if (
@@ -1706,10 +1608,6 @@ export default {
         } else if (gettableType == "E-Eshow") {
           element.isKvK = false;
         }
-        element.isNull = element.isNull.toLowerCase();
-        element.isUpdate = element.isUpdate.toLowerCase();
-        element.isShow = element.isShow.toLowerCase();
-        element.isManager = element.isManager.toLowerCase();
         element.isPrimaryKey = element.isPrimaryKey.toLowerCase();
       });
       if (flag) {
@@ -1782,10 +1680,7 @@ export default {
           }
           obj.switch = element.switch;
           obj.id = this.tableInfo.id;
-          obj.isManager = false;
-          obj.updateDatabase = false;
           obj.isPrimaryKey = false;
-          obj.isShow = false;
           obj.serialNumber = 0;
 
           newRows.push(obj);
