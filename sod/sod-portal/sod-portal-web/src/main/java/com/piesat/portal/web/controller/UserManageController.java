@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 用户管理
  */
@@ -121,4 +123,30 @@ public class UserManageController {
             return ResultT.failed(e.getMessage());
         }
     }
+
+    @ApiOperation(value = "查询同级部门以及下级部门用户")
+    @GetMapping(value = "/getSubUsers")
+    public ResultT getSubUsers(String id) {
+        try {
+            List<UserManageDto> userManageDtos = this.userManageService.getSubUsers(id);
+            return ResultT.success(userManageDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询同级部门以及上级部门业务处用户")
+    @GetMapping(value = "/getBusinessUser")
+    public ResultT getBusinessUser(String id) {
+        try {
+            List<UserManageDto> userManageDtos = this.userManageService.getBusinessUser(id);
+            return ResultT.success(userManageDtos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
+
 }

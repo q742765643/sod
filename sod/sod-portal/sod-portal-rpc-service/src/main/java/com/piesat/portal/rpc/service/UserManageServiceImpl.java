@@ -183,7 +183,7 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
                     userManageDto.setPost((String) jsonObject.get("positionLevel"));
                     userManageDto.setFixedphone((String) jsonObject.get("officePhone"));
                     String namepath = (String) jsonObject.get("namepath");
-
+                    userManageDto.setDeptName(namepath);
                     if(namepath != null && namepath.lastIndexOf("/") == namepath.length()-1){
                         //eg:中国气象局/减灾司/
                         namepath = namepath.substring(0,namepath.length()-1);
@@ -252,6 +252,56 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         // 新增用户与角色管理
         insertUserRole(userManageDto);
         return null;
+    }
+
+    /**
+     * 查询同级部门以及下级部门用户
+     * @param id
+     * @return
+     */
+    @Override
+    public List<UserManageDto> getSubUsers(String id) {
+        List<UserManageEntity> subUsers = new ArrayList<UserManageEntity>();
+        if("P".equals(sysLevel)){
+            subUsers = userManageMapper.getSubUsersP(id);
+        }else{
+            subUsers = userManageMapper.getSubUsersC(id);
+        }
+        return userManageMapstruct.toDto(subUsers);
+    }
+
+    /**
+     * 查找同级部门以及上级部门中业务处用户
+     * @param id
+     * @return
+     */
+    @Override
+    public List<UserManageDto> getBusinessUser(String id) {
+        UserManageEntity userManageEntity = this.getById(id);
+        List<UserManageEntity> subUsers = new ArrayList<UserManageEntity>();
+        List<String> deptunicodes = new ArrayList<>();
+        if("P".equals(sysLevel)){
+            //获取同级以及上级部门
+            List<DepartManageDto> departManageDtos = departManageService.findSupDepart(userManageEntity.getDeptunicode());
+            if(departManageDtos != null && departManageDtos.size()>0){
+                for(DepartManageDto departManageDto:departManageDtos){
+                    deptunicodes.add(departManageDto.getDeptunicode());
+                }
+            }
+            subUsers = userManageMapper.getBusinessUserP(deptunicodes);
+        }else{
+            String orgCodePath = userManageEntity.getOrgCodePath();//   /001/001004/001004006/  需要改成 /001/    /001/001004/    /001/001004/001004006/
+            if(StringUtils.isNotEmpty(orgCodePath)){
+                String[] splits = orgCodePath.split("/");
+                String pre = "/";
+                for(int i=1;i<splits.length;i++){
+                    pre  = pre +splits[i]+"/";
+                    deptunicodes.add(pre);
+                }
+            }
+            subUsers = userManageMapper.getBusinessUserC(deptunicodes);
+        }
+        return userManageMapstruct.toDto(subUsers);
     }
 
     public void insertUserRole(UserManageDto user) {

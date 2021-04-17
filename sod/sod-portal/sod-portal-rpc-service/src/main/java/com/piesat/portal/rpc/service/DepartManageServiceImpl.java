@@ -8,6 +8,7 @@ import com.piesat.common.utils.IdUtils;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.portal.dao.DepartManageDao;
 import com.piesat.portal.entity.DepartManageEntity;
+import com.piesat.portal.mapper.DepartManageMapper;
 import com.piesat.portal.rpc.api.DepartManageService;
 import com.piesat.portal.rpc.dto.DepartManageDto;
 import com.piesat.portal.rpc.mapstruct.DepartManageMapstruct;
@@ -32,6 +33,9 @@ public class DepartManageServiceImpl extends BaseService<DepartManageEntity> imp
 
     @Autowired
     private DepartManageMapstruct departManageMapstruct;
+
+    @Autowired
+    private DepartManageMapper departManageMapper;
 
     @Override
     public BaseDao<DepartManageEntity> getBaseDao() {
@@ -137,6 +141,12 @@ public class DepartManageServiceImpl extends BaseService<DepartManageEntity> imp
     public List<DepartManageDto> findAllDept() {
         List<DepartManageEntity> departManageEntities = this.getAll();
         return this.departManageMapstruct.toDto(departManageEntities);
+    }
+
+    @Override
+    public List<DepartManageDto> findSupDepart(String deptunicode) {
+        List<DepartManageEntity> supDepart = departManageMapper.findSupDepart(deptunicode);
+        return this.departManageMapstruct.toDto(supDepart);
     }
 
     public List buildDeptTreeSelect(List<DepartManageDto> depts)

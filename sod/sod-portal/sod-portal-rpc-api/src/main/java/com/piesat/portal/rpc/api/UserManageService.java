@@ -4,6 +4,8 @@ import com.piesat.portal.rpc.dto.UserManageDto;
 import com.piesat.util.page.PageBean;
 import com.piesat.util.page.PageForm;
 
+import java.util.List;
+
 /**
  * 用户管理
  */
@@ -21,5 +23,9 @@ public interface UserManageService {
     UserManageDto resetPwd(UserManageDto userManageDto);
 
     UserManageDto editUserRole(UserManageDto userManageDto);
+
+    List<UserManageDto> getSubUsers(String id);
+
+    List<UserManageDto> getBusinessUser(String id);
 
 }

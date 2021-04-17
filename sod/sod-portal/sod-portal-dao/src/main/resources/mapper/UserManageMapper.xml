@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.piesat.portal.mapper.UserManageMapper">
+    <resultMap id="BaseResultMap" type="com.piesat.portal.entity.UserManageEntity" >
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="CREATE_BY" jdbcType="VARCHAR" property="createBy" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="DEL_FLAG" jdbcType="VARCHAR" property="delFlag" />
+        <result column="UPDATE_BY" jdbcType="VARCHAR" property="updateBy" />
+        <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="VERSION" jdbcType="INTEGER" property="version" />
+
+        <result column="USER_NAME" jdbcType="VARCHAR" property="userName" />
+        <result column="LOGIN_NAME" jdbcType="VARCHAR" property="loginName" />
+    </resultMap>
     <update id="updateUser" parameterType="userManageEntity">
         update T_SOD_PORTAL_USER
         <set>
@@ -16,4 +28,42 @@
         </set>
         where  id = #{id}
     </update>
+
+    <select id="getSubUsersC" parameterType="String" resultMap="BaseResultMap">
+        select pu.*
+        from T_SOD_PORTAL_USER pu
+                 left join T_SOD_PORTAL_USER ppu on pu.ORG_CODE_PATH like ppu.ORG_CODE_PATH + '%'
+        where ppu.id = #{userId} order by pu.ORG_CODE_PATH;
+    </select>
+
+    <select id="getSubUsersP" parameterType="String" resultMap="BaseResultMap">
+        select ppu.*
+        from T_SOD_PORTAL_USER ppu where ppu.DEPTUNICODE in
+            (select ppd.DEPTUNICODE from T_SOD_PORTAL_DEPART ppd
+            start with ppd.deptcode = (select pd.deptcode from T_SOD_PORTAL_DEPART pd, T_SOD_PORTAL_USER pu where pd.DEPTUNICODE = pu.DEPTUNICODE and pu.id = #{userId})
+        connect by prior ppd.deptcode = ppd.parent_code)
+    </select>
+
+    <select id="getBusinessUserP" parameterType="String" resultMap="BaseResultMap">
+        select pu.*
+        from T_SOD_PORTAL_USER pu
+          left join T_SOD_PORTAL_DEPART pd on pu.DEPTUNICODE = pd.DEPTUNICODE and pd.DEPTUNICODE in
+          <foreach collection="list" item="deptunicode" open="(" close=")" separator=",">
+            #{deptunicode}
+          </foreach>
+          left join T_SOD_PORTAL_USER_ROLE  pur on pu.id = pur.USER_ID
+          left join T_SOD_PORTAL_ROLE pr on pr.id = pur.ROLE_ID and pr.roleKey='business'
+    </select>
+
+    <select id="getBusinessUserC" parameterType="String" resultMap="BaseResultMap">
+        select pu.*
+        from T_SOD_PORTAL_USER pu
+        left join T_SOD_PORTAL_USER_ROLE  pur on pu.id = pur.USER_ID
+        left join T_SOD_PORTAL_ROLE pr on pr.id = pur.ROLE_ID and pr.roleKey='business'
+        <where>
+            <foreach collection="list" item="orgCodePath" open="pu.orgCodePath IN (" close=")" separator=",">
+                #{orgCodePath}
+            </foreach>
+        </where>
+    </select>
 </mapper>

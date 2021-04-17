@@ -147,6 +147,13 @@ public class UserManageEntity extends BaseEntity {
     @Column(name="LOGIN_AUTHO")
     String loginAutho;
 
+    /**
+     * 通过统一认证平台登录时接入
+     * 用户部门编码
+     */
+    @Column(name="ORG_CODE_PATH")
+    String orgCodePath;
+
     /** 角色组 */
     @Transient
     private String[] roleIds;

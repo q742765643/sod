@@ -120,5 +120,11 @@ public class UserManageDto extends BaseDto {
      */
     String loginAutho;
 
+    /**
+     * 通过统一认证平台登录时接入
+     * 用户部门编码
+     */
+    String orgCodePath;
+
     private String[] roleIds;
 }

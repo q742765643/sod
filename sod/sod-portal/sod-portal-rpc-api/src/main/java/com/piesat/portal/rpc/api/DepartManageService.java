@@ -33,4 +33,6 @@ public interface DepartManageService {
     void delete(String id);
 
     List<DepartManageDto> findAllDept();
+
+    List<DepartManageDto> findSupDepart(String deptunicode);
 }
