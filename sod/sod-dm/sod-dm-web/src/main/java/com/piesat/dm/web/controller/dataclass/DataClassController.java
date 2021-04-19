@@ -239,6 +239,19 @@ public class DataClassController {
         }
     }
 
+    @ApiOperation(value = "查询可申请资料分类树")
+    @RequiresPermissions("dm:dataClass:getApplyClassTree")
+    @GetMapping(value = "/getApplyClassTree")
+    public ResultT getApplyClassTree() {
+        try {
+            JSONArray tree = this.dataClassService.getApplyClassTree();
+            return ResultT.success(tree);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultT.failed(e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "根据目录查询资料")
     @RequiresPermissions("dm:dataClass:getListBYIn")
     @GetMapping(value = "/getListBYIn")

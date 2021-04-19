@@ -358,6 +358,7 @@ import {
 import { getDictByType } from '@/api/structureManagement/dataList/StructureManageTable'
 import { dataClassAll } from '@/api/structureManagement/dataList/StructureClassify'
 import { datumTypeGetTree } from '@/api/structureManagement/dataList/StructureClassify'
+import { dataApplyClassAll } from '@/api/structureManagement/dataList/StructureClassify'
 // 公共元数据资料树
 import StructurePublicTree from '@/views/structureManagement/dataList/StructurePublicTree'
 // 存储元数据资料树
@@ -615,7 +616,7 @@ export default {
       }
     })
     // 名称树
-    await datumTypeGetTree().then((response) => {
+    await dataApplyClassAll().then((response) => {
       this.resetData(response.data)
       this.publicTreeOptions = response.data
     })
@@ -883,13 +884,13 @@ export default {
       if (this.isSourceTree) {
         this.materialData.parentId = checkNode.id
       } else {
-        if (checkNode.id.split('.').length == 4) {
+        if (checkNode.id != 0 && checkNode.id.split('.').length == 4) {
           this.materialData.dataName = checkNode.name
           this.materialData.dataClassId = checkNode.id
         } else {
           this.$message({
             type: 'error',
-            message: '只能选择四级目录或者主类目'
+            message: '只能选择四级资料'
           })
           this.$nextTick(function() {
             this.materialData.dataName = null
