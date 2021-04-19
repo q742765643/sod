@@ -1597,7 +1597,7 @@
              (select *
               from TAB_OMIN_CM_CC_DATUMTYPEINFO aa
               where (aa.C_OPT_TYPE is null or aa.C_OPT_TYPE <![CDATA[ <> ]]>
-        'delete')) a on aa.D_DATA_ID = a.c_datum_code
+        'delete')) a on aaa.D_DATA_ID = a.c_datum_code
                  left join
              (select *
               from tab_omin_cm_cc_coremeta bb
