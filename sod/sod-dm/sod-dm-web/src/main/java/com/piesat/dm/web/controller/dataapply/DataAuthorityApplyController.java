@@ -208,7 +208,7 @@ public class DataAuthorityApplyController {
     @GetMapping(value = "/api/dataAuthorityApply/getClassNum")
     public ResultT getClassNum(String userId) {
         try {
-            List<Map<String, Object>> map = dataAuthorityApplyService.getClassNum(userId);
+            Map<String, Object> map = dataAuthorityApplyService.getClassNum(userId);
             return ResultT.success(map);
         } catch (Exception e) {
             return ResultT.failed(e.getMessage());

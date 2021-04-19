@@ -413,7 +413,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
     }
 
     @Override
-    public List<Map<String, Object>> getClassNum(String userId) {
+    public Map<String, Object> getClassNum(String userId) {
         List<DataClassEntity> dataClassIdAsc = this.dataClassDao.findByParentIdAndTypeOrderByDataClassIdAsc("0", 1);
 
         Map<String, Object> paraMap = new HashMap<String, Object>();
@@ -422,6 +422,7 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
         List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 //        Map<String, Object> result = new HashMap<String, Object>();
         int num;
+        int numAll = 0;
         for (DataClassEntity dataClassEntity : dataClassIdAsc) {
             String className = dataClassEntity.getClassName();
             Map<String, Object> mapData = new HashMap<String, Object>();
@@ -432,14 +433,18 @@ public class DataAuthorityApplyServiceImpl extends BaseService<DataAuthorityAppl
                     num++;
                 }
             }
+            numAll += num;
+            mapData.put("value", num);
             mapData.put("name", className);
-            mapData.put("y", num);
+
 //            result.put(className,num);
             result.add(mapData);
-
         }
 
-        return result;
+        Map<String,Object> data = new HashMap<String, Object>();
+        data.put("num",numAll);
+        data.put("data",result);
+        return data;
     }
 
     @Override
