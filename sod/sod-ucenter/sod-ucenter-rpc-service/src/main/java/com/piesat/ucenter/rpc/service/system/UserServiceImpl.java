@@ -360,17 +360,19 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setWebUsername(webUsername);
         userEntity.setDbIds(dbIds);
 
-        DatabaseUserDto d = new DatabaseUserDto();
-        d.setDatabaseUpIp(bizIp);
-        d.setCreateDatabaseIds(dbIds);
-        d.setDatabaseUpId(webUserid);
-        d.setUserId(webUserid);
-        d.setExamineStatus("1");
-        d.setExaminer("PORTAL");
-        d.setDatabaseUpPassword(password1);
-        DatabaseUserDto databaseUserDto = this.databaseUserService.saveDto(d);
-        databaseUserDto.setCreateDatabaseIds(dbIds);
-        this.databaseUserService.addDbUser(databaseUserDto, r);
+        if (StringUtils.isNotEmpty(dbIds) && "1".equals(dbCreate)) {
+            DatabaseUserDto d = new DatabaseUserDto();
+            d.setDatabaseUpIp(bizIp);
+            d.setCreateDatabaseIds(dbIds);
+            d.setDatabaseUpId(webUserid);
+            d.setUserId(webUserid);
+            d.setExamineStatus("1");
+            d.setExaminer("PORTAL");
+            d.setDatabaseUpPassword(password1);
+            DatabaseUserDto databaseUserDto = this.databaseUserService.saveDto(d);
+            databaseUserDto.setCreateDatabaseIds(dbIds);
+            this.databaseUserService.addDbUser(databaseUserDto, r);
+        }
 
         userEntity.setSodApi(sodApi);
         userEntity.setDbCreate(dbCreate);

@@ -136,6 +136,7 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
             d.setUnit(getValue(e, "UNIT"));
             d.setUnitCn(getValue(e, "UNIT_CN"));
             d.setUserEleCode(getValue(e, "USER_ELE_CODE"));
+            d.setSn(getValue(e, "SN") == null ? 0 : Integer.valueOf(getValue(e, "SN")));
             return d;
         }).collect(Collectors.toList());
     }

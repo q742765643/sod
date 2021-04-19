@@ -92,14 +92,6 @@
         @click="importTelplate"
         >导入</el-button
       >
-      <el-button
-        type="primary"
-        size="small"
-        icon="el-icon-s-operation"
-        @click="syncServe"
-        v-if="tableStructureManageContral"
-        >同步服务名称</el-button
-      >
     </el-button-group>
     <!-- 字段表格 -->
     <el-form
@@ -119,21 +111,29 @@
         class="columnTable"
       >
         <el-table-column type="selection" width="55"> </el-table-column>
+        <el-table-column type="index" label="序号" min-width="25"></el-table-column>
 
-        <el-table-column label="排序">
+        <el-table-column
+          width="60"
+          :label="column.label"
+          v-for="(column, field) of tableTem4"
+          :key="field"
+        >
           <template slot-scope="scope">
             <el-form-item
               label-width="0px"
-              :prop="`columnData.${scope.$index}.serialNumber`"
-              :rules="tableRules.serialNumber"
-              v-show="scope.row.isEdit"
+              :prop="`columnData.${scope.$index}.${field}`"
+              :rules="tableRules[field]"
+              v-if="scope.row.isEdit"
             >
-              <el-input
-                type="number"
-                v-model="scope.row.serialNumber"
-              ></el-input>
+              <!-- <el-radio-group v-model="scope.row[field]">
+                <el-radio :label="item.value" v-for="(item,index) in column.options" :key="index">{{item.text}}</el-radio>
+              </el-radio-group> -->
+              <el-checkbox v-model="scope.row[field]"></el-checkbox>
             </el-form-item>
-            <span v-show="!scope.row.isEdit">{{ scope.row.serialNumber }}</span>
+            <span v-else
+            ><el-checkbox v-model="scope.row[field]" disabled></el-checkbox
+            ></span>
           </template>
         </el-table-column>
 
@@ -231,17 +231,17 @@
             <span v-else>{{ scope.row.defaultValue }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="中文描述">
+        <el-table-column label="备注">
           <template slot-scope="scope">
             <el-form-item
               label-width="0px"
-              :prop="`columnData.${scope.$index}.nameCn`"
-              :rules="tableRules.nameCn"
+              :prop="`columnData.${scope.$index}.eleName`"
+              :rules="tableRules.eleName"
               v-if="scope.row.isEdit"
             >
-              <el-input v-model="scope.row.nameCn"></el-input>
+              <el-input v-model="scope.row.eleName"></el-input>
             </el-form-item>
-            <span v-else>{{ scope.row.nameCn }}</span>
+            <span v-else>{{ scope.row.eleName }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -637,25 +637,6 @@ export default {
       }
     };
 
-    const tableNumValidate = (rule, value, callback) => {
-      if (value === "" || value === null || value === undefined) {
-        callback(new Error("请输入序号"));
-      } else {
-        let flag = 0;
-        this.columnForm.columnData.forEach((element) => {
-          if (element.serialNumber == value) {
-            console.log("重复");
-            flag++;
-            return;
-          }
-        });
-        if (flag > 1) {
-          callback(new Error("序号不能重复"));
-        } else {
-          callback();
-        }
-      }
-    };
 
     const accuracyValidate = (rule, value, callback) => {
       if (value === null || value === "") {
@@ -688,6 +669,7 @@ export default {
       tableTem1: {}, //新增表格模板1
       tableTem2: {}, //新增表格模板2
       tableTem3: {}, //新增表格模板3
+      tableTem4: {}, //新增表格模板4
       oldColumnData: [], //存储当前的字段数据
       uploadTableId: "",
       uploadTableType: "",
@@ -721,9 +703,6 @@ export default {
       repeatIndex: 0,
 
       tableRules: {
-        serialNumber: [
-          { required: true, validator: tableNumValidate, trigger: "blur" },
-        ],
         dbEleCode: [
           { required: true, validator: nameValidate, trigger: "blur" },
         ],
@@ -731,7 +710,7 @@ export default {
           { required: true, validator: nameValidate, trigger: "blur" },
         ],
         userEleCode: [
-          { required: true, message: "请输入服务名称", trigger: "blur" },
+          { required: false, message: "请输入服务名称", trigger: "blur" },
         ],
         eleName: [
           { required: true, message: "请输入中文简称", trigger: "blur" },
@@ -756,43 +735,37 @@ export default {
     await this.getDictByTypeMethods("table_column_type");
     this.tableTem1 = {
       dbEleCode: {
-        label: "字段编码",
+        label: "列名",
         type: "input",
         rules: {
           required: true,
           message: "字段编码不能为空",
         },
       },
-      eleName: {
-        label: "中文简称",
-        type: "input",
-        rules: {
-          required: true,
-          message: "中文简称不能为空",
-        },
-      },
     };
     this.tableTem2 = {
       length: {
-        label: "数据长度",
+        label: "长度",
         type: "number",
       },
       accuracy: {
-        label: "数据精度",
+        label: "精度",
         type: "number",
       },
     };
     this.tableTem3 = {
       isNull: {
-        label: "是否可空",
+        label: "非空",
         type: "radio",
         options: [
           { text: "是", value: true },
           { text: "否", value: false },
         ],
       },
+    };
+    this.tableTem4 = {
       isPrimaryKey: {
-        label: "是否主键",
+        label: "主键",
         type: "radio",
         options: [
           { text: "是", value: true },
