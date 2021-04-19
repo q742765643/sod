@@ -46,6 +46,12 @@ public interface DataClassService {
 
     JSONArray getTree();
 
+    /**
+     * 获取可申请资料树
+     * @return
+     */
+    JSONArray getApplyClassTree();
+
     List<Map<String, Object>> getListBYIn(List<String> classIds, String className, String dDataId,String dataclassId);
 
     List<Map<String, Object>> getDataTypeList();

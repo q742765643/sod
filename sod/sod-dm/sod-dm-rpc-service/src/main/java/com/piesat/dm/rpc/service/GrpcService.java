@@ -67,6 +67,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author yaya
@@ -290,34 +291,21 @@ public class GrpcService {
         PageBean pageBean = this.logicDefineServiceImpl.getPage(specificationBuilder.generateSpecification(), pageForm, sort);
         List<LogicDefineEntity> logicDefineEntities = (List<LogicDefineEntity>) pageBean.getPageData();
         List<LogicDefineDto> logicDefineDtos = logicDefineMapper.toDto(logicDefineEntities);
-        List<DictDataDto> DictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
-        List<DatabaseDto> all = this.databaseService.all();
-        List<SchemaDto> databaseList = this.schemaService.all();
-        for (LogicDefineDto logicDefineDto : logicDefineDtos) {
-            List<LogicStorageTypesDto> logicStorageTypesEntityList = logicDefineDto.getLogicStorageTypesEntityList();
-            for (LogicStorageTypesDto logicStorageTypesDto : logicStorageTypesEntityList) {
-                for (DictDataDto dictDataDto : DictDataDtos) {
-                    if (dictDataDto.getDictValue().equals(logicStorageTypesDto.getStorageType())) {
-                        logicStorageTypesDto.setStorageName(dictDataDto.getDictLabel());
-                    }
-                }
-            }
-            List<LogicDatabaseDto> logicDatabaseEntityList = logicDefineDto.getLogicDatabaseEntityList();
-            for (LogicDatabaseDto logicDatabaseDto : logicDatabaseEntityList) {
-                for (DatabaseDto databaseDto : all) {
-                    if (databaseDto.getId().equals(logicDatabaseDto.getDatabaseId())) {
-                        logicDatabaseDto.setDatabaseName(databaseDto.getDatabaseName());
-                    }
-                }
-            }
-        }
-
+        List<DictDataDto> dictDataDtos = this.dictDataService.selectDictDataByType("sys_storage_type");
+        Map<String, String> dict = dictDataDtos.stream().collect(Collectors.toMap(DictDataDto::getDictValue, DictDataDto::getDictLabel));
+        List<DatabaseDto> databaseDtos = this.databaseService.all();
+        Map<String, String> dbs = databaseDtos.stream().collect(Collectors.toMap(DatabaseDto::getId, DatabaseDto::getDatabaseName));
+        logicDefineDtos.forEach(e -> {
+            List<LogicStorageTypesDto> ls = e.getLogicStorageTypesEntityList();
+            ls.forEach(k -> k.setStorageName(dict.get(k.getStorageType())));
+            List<LogicDatabaseDto> ld = e.getLogicDatabaseEntityList();
+            ld.forEach(n -> n.setDatabaseName(dbs.get(n.getDatabaseId())));
+        });
         pageBean.setPageData(logicDefineDtos);
         return pageBean;
     }
 
     public int syncServiceName(List<TableColumnDto> tableColumnDtoList) {
-        List<ServiceCodeDto> serviceCodeDtos = this.serviceCodeService.queryAll();
         int un = 0;
         return un;
     }
@@ -352,7 +340,7 @@ public class GrpcService {
                 t.setTemplate(sqlTemplate.get(0).getTemplate());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return ResultT.failed("查询模板出错！");
         }
 
         t.setSchema(schemaDto.getSchemaName());

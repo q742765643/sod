@@ -36,6 +36,13 @@ public interface DataClassDao extends BaseDao<DataClassEntity> {
     List<DataClassEntity> findByDataClassIdInOrTypeOrderByDataClassIdAsc(List<String> classIds, Integer type);
 
     /**
+     * 查询未申请的资料
+     * @param classIds
+     * @return
+     */
+    List<DataClassEntity> findByDataClassIdNotIn(List<String> classIds);
+
+    /**
      * 根据表id查询相关资料
      *
      * @param tableId

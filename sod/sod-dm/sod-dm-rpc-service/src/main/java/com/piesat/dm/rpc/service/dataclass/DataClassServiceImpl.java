@@ -106,6 +106,8 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
     private DatabaseSpecialService databaseSpecialService;
     @Autowired
     private DatabaseUserService databaseUserService;
+    @Autowired
+    private DataClassInfoService dataClassInfoService;
 
     @Override
     public BaseDao<DataClassEntity> getBaseDao() {
@@ -333,6 +335,23 @@ public class DataClassServiceImpl extends BaseService<DataClassEntity> implement
             all = this.getAll(sort);
         }
         for (DataClassEntity d : all) {
+            TreeLevel tl = new TreeLevel();
+            tl.setId(d.getDataClassId());
+            tl.setParentId(d.getParentId());
+            tl.setName(d.getClassName());
+            tl.setType(Integer.toString(d.getType()));
+            l.add(tl);
+        }
+        return JSONArray.parseArray(BaseParser.parserListToLevelTree(l));
+    }
+
+    @Override
+    public JSONArray getApplyClassTree() {
+        List l = new ArrayList();
+        List<DataClassInfoDto> all = this.dataClassInfoService.all();
+        List<String> classIds = all.stream().map(DataClassInfoDto::getDataClassId).collect(Collectors.toList());
+        List<DataClassEntity> dataClassEntities = this.dataClassDao.findByDataClassIdNotIn(classIds);
+        for (DataClassEntity d : dataClassEntities) {
             TreeLevel tl = new TreeLevel();
             tl.setId(d.getDataClassId());
             tl.setParentId(d.getParentId());

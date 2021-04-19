@@ -7,6 +7,13 @@ export function dataClassAll() {
     method: 'get',
   })
 }
+// 可申请资料分类树
+export function dataApplyClassAll() {
+  return request({
+    url: baseUrl + '/dm/dataClass/getApplyClassTree',
+    method: 'get',
+  })
+}
 // 按数据库查询资料分类
 export function databaseClass() {
   return request({
