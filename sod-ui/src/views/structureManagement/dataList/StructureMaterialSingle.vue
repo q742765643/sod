@@ -94,10 +94,10 @@
                 <el-option :value="6" label="L6"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="访问控制" v-if="!isSourceTree">
-              <el-select v-model.trim="materialData.isAccess">
-                <el-option :value="1" label="公开"></el-option>
-                <el-option :value="2" label="限制"></el-option>
+            <el-form-item label="是否归档" v-if="!isSourceTree">
+              <el-select v-model.trim="materialData.isArchive">
+                <el-option :value="1" label="是"></el-option>
+                <el-option :value="0" label="否"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="排序" prop="sn">
@@ -111,9 +111,9 @@
               label="是否发布"
               v-if="tableStructureManageContral && !isSourceTree"
             >
-              <el-select v-model.trim="materialData.ifStopUse">
-                <el-option :value="true" label="发布"></el-option>
-                <el-option :value="false" label="不发布"></el-option>
+              <el-select v-model.trim="materialData.published">
+                <el-option :value="1" label="发布"></el-option>
+                <el-option :value="0" label="不发布"></el-option>
                 <!-- <el-option :value="true" label="全部发布"></el-option>
                 <el-option :value="false" label="不发布"></el-option>
                 <el-option :value="3" label="部分发布"></el-option>-->
@@ -129,7 +129,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="备注" v-if="!isSourceTree">
-              <el-input v-model.trim="materialData.remark"></el-input>
+              <el-input v-model.trim="materialData.dataDesc"></el-input>
             </el-form-item>
           </div>
         </div>
@@ -146,14 +146,14 @@
                       <span
                         v-for="(item, index) in SelectDictdataTypes"
                         :key="index"
-                        >{{ item.dictLabel }}
+                      >{{ item.dictLabel }}
                         <span v-show="index != SelectDictdataTypes.length - 1"
-                          >,</span
+                        >,</span
                         >
                       </span>
                     </p>
                     <span v-show="SelectDictdataTypes.length == 0"
-                      >请选择数据标签</span
+                    >请选择数据标签</span
                     >
                   </template>
                   <div>
@@ -165,7 +165,8 @@
                         :label="item.dictValue"
                         v-for="(item, index) in dictdataTypes"
                         :key="index"
-                        >{{ item.dictLabel }}</el-checkbox
+                      >{{ item.dictLabel }}
+                      </el-checkbox
                       >
                     </el-checkbox-group>
                   </div>
@@ -222,7 +223,7 @@
               style="width: 100%"
               @selection-change="handleSelectionChange"
             >
-              <el-table-column type="selection" width="55"> </el-table-column>
+              <el-table-column type="selection" width="55"></el-table-column>
               <el-table-column prop="DATABASE_NAME" label="数据库">
               </el-table-column>
               <el-table-column prop="SCHEMA_NAME" label="专题库">
@@ -301,7 +302,8 @@
     </div>
     <div class="dialog-footer" slot="footer" v-if="isFooterShow">
       <el-button type="primary" @click="makeSureSave('materialForm')"
-        >确认</el-button
+      >确认
+      </el-button
       >
       <el-button @click="cancleSave">取消</el-button>
     </div>
@@ -339,8 +341,8 @@
 </template>
 
 <script>
-import Treeselect from "@riophae/vue-treeselect";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import Treeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import {
   getBizUserByName,
   mmdneed,
@@ -351,115 +353,115 @@ import {
   getCanShowDatabaseDefineList,
   findTablesByTableName,
   findAllETables,
-  getServiceCode,
-} from "@/api/structureManagement/dataList/index";
-import { getDictByType } from "@/api/structureManagement/dataList/StructureManageTable";
-import { dataClassAll } from "@/api/structureManagement/dataList/StructureClassify";
-import { datumTypeGetTree } from "@/api/structureManagement/dataList/StructureClassify";
+  getServiceCode
+} from '@/api/structureManagement/dataList/index'
+import { getDictByType } from '@/api/structureManagement/dataList/StructureManageTable'
+import { dataClassAll } from '@/api/structureManagement/dataList/StructureClassify'
+import { datumTypeGetTree } from '@/api/structureManagement/dataList/StructureClassify'
 // 公共元数据资料树
-import StructurePublicTree from "@/views/structureManagement/dataList/StructurePublicTree";
+import StructurePublicTree from '@/views/structureManagement/dataList/StructurePublicTree'
 // 存储元数据资料树
-import StructureStorageTree from "@/views/structureManagement/dataList/StructureStorageTree";
+import StructureStorageTree from '@/views/structureManagement/dataList/StructureStorageTree'
 // 关联表信息
-import EditDataUseDialog from "@/views/structureManagement/dataList/EditDataUseDialog";
+import EditDataUseDialog from '@/views/structureManagement/dataList/EditDataUseDialog'
 
 //接口地址
 export default {
-  name: "structureMaterialSingle",
+  name: 'structureMaterialSingle',
   components: {
     Treeselect,
     EditDataUseDialog,
     StructurePublicTree,
-    StructureStorageTree,
+    StructureStorageTree
   },
   props: {
     isSourceTree: {
-      type: Boolean,
+      type: Boolean
     },
     editNodeId: {
-      type: String,
+      type: String
     },
     editMaterial: {
-      type: String,
+      type: String
     },
     DRegistrationObj: {
-      type: Object,
+      type: Object
     },
     editTableName: {
-      type: String,
+      type: String
     },
     isFooterShow: {
-      type: Boolean,
-    },
+      type: Boolean
+    }
   },
   data() {
     var nameValidate = (rule, value, callback) => {
-      let msg = "";
-      if (rule.field == "dbEleCode" || rule.field.indexOf("dbEleCode") > -1) {
-        msg = "字段编码";
+      let msg = ''
+      if (rule.field == 'dbEleCode' || rule.field.indexOf('dbEleCode') > -1) {
+        msg = '字段编码'
       } else if (
-        rule.field == "celementCode" ||
-        rule.field.indexOf("celementCode") > -1
+        rule.field == 'celementCode' ||
+        rule.field.indexOf('celementCode') > -1
       ) {
-        msg = "字段编码";
+        msg = '字段编码'
       }
-      if (value === "") {
-        callback(new Error("请输入" + msg));
+      if (value === '') {
+        callback(new Error('请输入' + msg))
       } else if (!codeVer(value)) {
         callback(
-          new Error(msg + "不允许输入小写字母和中文，且需以大写字母开头")
-        );
+          new Error(msg + '不允许输入小写字母和中文，且需以大写字母开头')
+        )
       } else {
-        callback();
+        callback()
       }
-    };
+    }
 
     const tableNumValidate = (rule, value, callback) => {
-      if (value === "" || value === null || value === undefined) {
-        callback(new Error("请输入序号"));
+      if (value === '' || value === null || value === undefined) {
+        callback(new Error('请输入序号'))
       }
-    };
+    }
 
     const accuracyValidate = (rule, value, callback) => {
-      if (value === null || value === "") {
-        callback();
+      if (value === null || value === '') {
+        callback()
       } else {
         if (value > 0) {
-          callback();
+          callback()
         } else {
-          callback(new Error("不是正整数"));
+          callback(new Error('不是正整数'))
         }
       }
-    };
+    }
     const lengthValidate = (rule, value, callback) => {
-      if (value === null || value === "") {
-        callback();
+      if (value === null || value === '') {
+        callback()
       } else {
         if (value > 0) {
-          callback();
+          callback()
         } else {
-          callback(new Error("不是正整数"));
+          callback(new Error('不是正整数'))
         }
       }
-    };
+    }
     return {
       selColumnData: [], //选中的表格值
       multipleSelectionTabs: [],
       multipleSelectionTabsArry: [],
-      activeTabsName: "", //服务编码tab
+      activeTabsName: '', //服务编码tab
       tableTem1: {}, //新增表格模板1
       tableTem3: {}, //新增表格模板3
       //关联表信息-start
       tableDataLink: [],
       multipleSelection: [],
-      linTableName: "",
+      linTableName: '',
       linkOptions: [],
       //关联表信息-end
       DatabaseDefineList: [], //数据库列表
       ddataIdFlag: false, //公共元数据信息是否必填
       dictshowflag: false,
       filterMethod(query, item) {
-        return item.label.indexOf(query) > -1;
+        return item.label.indexOf(query) > -1
       }, //用户列表查询
       userList: [], //用户列表
       dictdataTypes: [], //标签
@@ -470,96 +472,97 @@ export default {
         return {
           id: node.id,
           label: node.name,
-          children: node.children,
-        };
+          children: node.children
+        }
       },
       tableStructureManageContral: false,
-      labelWidth: "100px",
+      labelWidth: '100px',
 
       isDisabledEdit: false,
       materialData: {
-        ddataId: "",
+        // ddataId: "",
         ddataId: null,
         dataClassId: null,
         dataName: null,
         parentId: null,
-        typeText: "资料",
-        ifStopUse: true,
-        isAccess: 1,
+        typeText: '资料',
+        published: 0,
+        isArchive: 1,
         useBaseInfo: 0,
         sn: 0,
         dataLogicListTable: [], //数据用途回显的树
         labelKeyFrom: [],
         dataClassLabelList: [],
         hasPowerList: [],
+        dataDesc: null
       },
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
       rules: {
+        // ddataId: [
+        //   {
+        //     required: true,
+        //     message: "名称不能为空",
+        //     trigger: "change",
+        //   },
+        // ],
         ddataId: [
           {
             required: true,
-            message: "名称不能为空",
-            trigger: "change",
-          },
-        ],
-        ddataId: [
-          {
-            required: true,
-            message: "四级编码不能为空",
-            trigger: "change",
-          },
+            message: '四级编码不能为空',
+            trigger: 'change'
+          }
         ],
         parentId: [
           {
             required: true,
-            message: "父节点不能为空",
-            trigger: "change",
-          },
+            message: '父节点不能为空',
+            trigger: 'change'
+          }
         ],
         dataName: [
           {
             required: true,
-            message: "资料名称不能为空",
-            trigger: "change",
-          },
+            message: '资料名称不能为空',
+            trigger: 'change'
+          }
         ],
         dataClassId: [
           {
             required: true,
-            message: "存储编码不能为空",
-            trigger: "change",
-          },
+            message: '存储编码不能为空',
+            trigger: 'change'
+          }
         ],
         sn: [
           {
             required: true,
-            message: "排序不能为空",
-            trigger: "change",
-          },
-        ],
+            message: '排序不能为空',
+            trigger: 'change'
+          }
+        ]
       },
-      dataClassIdWatch: "",
-    };
+      dataClassIdWatch: ''
+    }
   },
   async created() {
     this.tableTem1 = {
       dbEleCode: {
-        label: "字段编码",
-        type: "text",
+        label: '字段编码',
+        type: 'text',
         rules: {
           required: true,
-          message: "字段编码不能为空",
-        },
+          message: '字段编码不能为空'
+        }
       },
       eleName: {
-        label: "中文简称",
-        type: "text",
+        label: '中文简称',
+        type: 'text',
         rules: {
           required: true,
-          message: "中文简称不能为空",
-        },
-      },
+          message: '中文简称不能为空'
+        }
+      }
       /*   dbEleCode: {
         label: "公共元数据字段",
         type: "input",
@@ -569,7 +572,7 @@ export default {
           message: "公共元数据字段不能为空",
         },
       }, */
-    };
+    }
 
     this.tableTem3 = {
       /*  isUpdate: {
@@ -581,13 +584,13 @@ export default {
         ],
       }, */
       isShow: {
-        label: "是否显示",
-        type: "radio",
+        label: '是否显示',
+        type: 'radio',
         options: [
-          { text: "是", value: 1 },
-          { text: "否", value: 0 },
-        ],
-      },
+          { text: '是', value: 1 },
+          { text: '否', value: 0 }
+        ]
+      }
 
       /*  isManager: {
         label: "是否管理字段",
@@ -597,44 +600,44 @@ export default {
           { text: "否", value: false },
         ],
       }, */
-    };
+    }
     await getCanShowDatabaseDefineList().then((res) => {
-      this.DatabaseDefineList = res.data;
-    });
+      this.DatabaseDefineList = res.data
+    })
     await mmdneed().then((res) => {
-      this.ddataIdFlag = res.data;
-    });
+      this.ddataIdFlag = res.data
+    })
     await enable().then((res) => {
-      if (res.data == "true") {
-        this.tableStructureManageContral = true;
+      if (res.data == 'true') {
+        this.tableStructureManageContral = true
       } else {
-        this.tableStructureManageContral = false;
+        this.tableStructureManageContral = false
       }
-    });
+    })
     // 名称树
     await datumTypeGetTree().then((response) => {
-      this.resetData(response.data);
-      this.publicTreeOptions = response.data;
-    });
+      this.resetData(response.data)
+      this.publicTreeOptions = response.data
+    })
     // 父节点树
     await dataClassAll().then((response) => {
-      const menu = { id: 0, name: "主类目", children: [] };
-      this.resetData(response.data);
-      menu.children = response.data;
-      this.storageTree.push(menu);
-    });
+      const menu = { id: 0, name: '主类目', children: [] }
+      this.resetData(response.data)
+      menu.children = response.data
+      this.storageTree.push(menu)
+    })
     // 标签
-    await getDictByType({ dictType: "zt_label" }).then((response) => {
-      this.dictdataTypes = response.data;
-    });
+    await getDictByType({ dictType: 'zt_label' }).then((response) => {
+      this.dictdataTypes = response.data
+    })
 
     //查询所有要素表
     await findAllETables().then((response) => {
-      this.linkOptions = response.data;
-    });
+      this.linkOptions = response.data
+    })
 
     if (this.editTableName) {
-      await this.getLinkTable(this.editTableName);
+      await this.getLinkTable(this.editTableName)
     }
     // 用户列表 todo
     /*   await getBizUserByName().then((response) => {
@@ -649,252 +652,254 @@ export default {
       this.userList = dataList;
     }); */
     // 初始化
-    await this.initMaterialForm();
+    await this.initMaterialForm()
   },
   watch: {
-    dataClassIdWatch: function () {
-      this.$nextTick(function () {
+    dataClassIdWatch: function() {
+      this.$nextTick(function() {
         /*现在数据已经渲染完毕*/
-        this.multipleSelectionTabsArry = [];
-        this.getServiceCodeMethods();
-      });
-    },
+        this.multipleSelectionTabsArry = []
+        this.getServiceCodeMethods()
+      })
+    }
   },
   methods: {
     // tabclick
     handleTabsClick(tab, event) {
-      console.log(tab, event);
+      console.log(tab, event)
     },
     // 选中就勾选
     handleClickTableRow(row, event, column) {
-      row.isEdit = true;
+      row.isEdit = true
     },
     getLinkTable(val) {
-      this.linTableName = val;
+      this.linTableName = val
       //关联表信息
       findTablesByTableName({ tableName: this.linTableName }).then(
         (response) => {
-          this.tableDataLink = response.data;
+          this.tableDataLink = response.data
         }
-      );
+      )
     },
     handleSelectionChange(val) {
-      console.log(val);
-      this.multipleSelection = val;
-      this.multipleSelectionTabsArry = [];
-      this.multipleSelectionTabsArry = val;
+      console.log(val)
+      this.multipleSelection = val
+      this.multipleSelectionTabsArry = []
+      this.multipleSelectionTabsArry = val
       this.multipleSelectionTabsArry.forEach((element) => {
-        element.columnData = [];
-      });
+        element.columnData = []
+      })
       if (this.multipleSelection.length > 0) {
-        this.activeTabsName = this.multipleSelection[0].DATABASE_NAME;
-        this.getServiceCodeMethods();
+        this.activeTabsName = this.multipleSelection[0].DATABASE_NAME
+        this.getServiceCodeMethods()
       }
     },
     // 获取字段
     async getServiceCodeMethods() {
       for (var i = 0; i < this.multipleSelectionTabsArry.length; i++) {
+        debugger
         await getServiceCode({
           dataclassId: this.materialData.dataClassId,
-          tableId: this.multipleSelectionTabsArry[i].ID,
+          tableId: this.multipleSelectionTabsArry[i].ID
         }).then((res) => {
           if (res.code == 200) {
-            this.multipleSelectionTabsArry[i].columnData = res.data;
+            this.multipleSelectionTabsArry[i].columnData = res.data
           }
-        });
+        })
       }
-      this.multipleSelectionTabs = this.multipleSelectionTabsArry;
-      console.log(this.multipleSelectionTabs);
+      this.multipleSelectionTabs = this.multipleSelectionTabsArry
+      console.log(this.multipleSelectionTabs)
     },
     setSelectDictdataTypes(val) {
-      this.SelectDictdataTypes = [];
+      this.SelectDictdataTypes = []
       val.forEach((element) => {
         this.dictdataTypes.forEach((item) => {
           if (element == item.dictValue) {
-            this.SelectDictdataTypes.push(item);
+            this.SelectDictdataTypes.push(item)
           }
-        });
-      });
+        })
+      })
     },
     resetData(dataArr) {
       for (var i in dataArr) {
-        dataArr[i].className = dataArr[i].name;
-        dataArr[i].name = dataArr[i].name + "(" + dataArr[i].id + ")";
-        this.resetData(dataArr[i].children);
+        dataArr[i].className = dataArr[i].name
+        dataArr[i].name = dataArr[i].name + '(' + dataArr[i].id + ')'
+        this.resetData(dataArr[i].children)
       }
     },
     //初始化表单
     initMaterialForm() {
       if (this.isSourceTree) {
-        this.materialData.typeText = "目录";
+        this.materialData.typeText = '目录'
       }
       if (!this.isSourceTree) {
-        this.materialData.typeText = "资料";
+        this.materialData.typeText = '资料'
       }
       //资料树  初始化
       if (this.isSourceTree && this.editNodeId) {
-        this.isDisabledEdit = true;
-        this.getMaterialForm(this.editNodeId);
+        this.isDisabledEdit = true
+        this.getMaterialForm(this.editNodeId)
       }
       //资料  初始化
       if (!this.isSourceTree && this.editMaterial) {
-        this.isDisabledEdit = true;
-        this.getMaterialForm(this.editMaterial);
+        this.isDisabledEdit = true
+        this.getMaterialForm(this.editMaterial)
       }
 
       // 从数据注册审核来的资料
       if (this.DRegistrationObj) {
-        this.materialData.applyId = this.DRegistrationObj.applyId;
+        this.materialData.applyId = this.DRegistrationObj.applyId
         // this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
-        this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
-        this.materialData.dataLogicListTable = this.DRegistrationObj.dataLogicList;
-        getNewDataClassId({ parentId: this.materialData.ddataId }).then(
-          (res) => {
-            if (res.code == 200) {
-              this.materialData.dataClassId = res.data;
-              if (res.data == "") {
-                let code = checkNode.id.split(".");
-                if (code.length == 4) {
-                  let fCode = code[3].substring(0, 1);
-                  code[3] = code[3].replace(fCode, "M");
-                  this.materialData.dataClassId = code.join(".");
-                } else {
-                  this.materialData.dataClassId = checkNode.id;
-                }
-              }
-              this.dataClassIdWatch = this.materialData.dataClassId;
-            }
-          }
-        );
-        console.log(this.materialData);
+        this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID
+        this.materialData.dataLogicListTable = this.DRegistrationObj.dataLogicList
+        // getNewDataClassId({ parentId: this.materialData.ddataId }).then(
+        //   (res) => {
+        //     if (res.code == 200) {
+        //       this.materialData.dataClassId = res.data;
+        //       if (res.data == "") {
+        //         let code = checkNode.id.split(".");
+        //         if (code.length == 4) {
+        //           let fCode = code[3].substring(0, 1);
+        //           code[3] = code[3].replace(fCode, "M");
+        //           this.materialData.dataClassId = code.join(".");
+        //         } else {
+        //           this.materialData.dataClassId = checkNode.id;
+        //         }
+        //       }
+        //       this.dataClassIdWatch = this.materialData.dataClassId;
+        //     }
+        //   }
+        // );
+        console.log(this.materialData)
       }
     },
     //获取资料树，资料的数据
     async getMaterialForm(id) {
-      console.log(id);
+      console.log(id)
       await getDetailById({ id: id }).then((response) => {
-        if (response.code == "200") {
+        if (response.code == '200') {
           if (!response.data.dataClassLabelList) {
-            response.data.labelKeyFrom = [];
+            response.data.labelKeyFrom = []
           } else {
-            response.data.labelKeyFrom = [];
+            response.data.labelKeyFrom = []
             response.data.dataClassLabelList.forEach((element) => {
-              response.data.labelKeyFrom.push(element.labelKey);
-            });
-            this.SelectDictdataTypes = [];
+              response.data.labelKeyFrom.push(element.labelKey)
+            })
+            this.SelectDictdataTypes = []
             this.dictdataTypes.forEach((element) => {
               response.data.dataClassLabelList.forEach((item) => {
                 if (item.labelKey == element.dictValue) {
                   let obj = {
-                    dictLabel: element.dictLabel,
-                  };
-                  this.SelectDictdataTypes.push(obj);
+                    dictLabel: element.dictLabel
+                  }
+                  this.SelectDictdataTypes.push(obj)
                 }
-              });
-            });
+              })
+            })
           }
 
           if (!response.data.dataClassUserList) {
-            response.data.dataClassUserList = [];
+            response.data.dataClassUserList = []
           } else {
-            response.data.hasPowerList = [];
+            response.data.hasPowerList = []
             response.data.dataClassUserList.forEach((element) => {
-              response.data.hasPowerList.push(element.userName);
-            });
+              response.data.hasPowerList.push(element.userName)
+            })
           }
+          this.materialData = response.data
           if (
             response.data.dataLogicList &&
             response.data.dataLogicList.length > 0
           ) {
-            let logcList = response.data.dataLogicList;
-            logcList.forEach(async (item, index) => {
+            let logcList = response.data.dataLogicList
+            logcList.forEach(async(item, index) => {
               this.tableDataLink.forEach((citem, cindex) => {
                 if (item.tableId == citem.ID) {
                   this.$refs.multipleTable.toggleRowSelection(
                     this.tableDataLink[cindex]
-                  );
+                  )
                 }
-              });
-            });
-          }
-          this.materialData = response.data;
-          if (this.materialData.type == 1) {
-            this.materialData.typeText = "目录";
-          } else {
-            this.materialData.typeText = "资料";
+              })
+            })
           }
 
-          console.log(this.materialData.dataLogicList);
+          if (this.materialData.type == 1) {
+            this.materialData.typeText = '目录'
+          } else {
+            this.materialData.typeText = '资料'
+          }
+
+          console.log(this.materialData.dataLogicList)
         } else {
-          console.log("出错了，出错信息：" + response.msg);
+          console.log('出错了，出错信息：' + response.msg)
         }
-      });
+      })
     },
     // 显示公共元数据资料树
     showPublicTree() {
-      this.publicTreeVisible = true;
+      this.publicTreeVisible = true
     },
     //从公共元数据获取数据
     getChildCheckNode(checkNode) {
-      console.log(checkNode);
+      console.log(checkNode)
       if (!this.isDisabledEdit) {
-        if (this.materialData.typeText == "目录") {
-          this.materialData.dataClassId = checkNode.id;
-        } else if (this.materialData.typeText == "资料") {
+        if (this.materialData.typeText == '目录') {
+          this.materialData.dataClassId = checkNode.id
+        } else if (this.materialData.typeText == '资料') {
           getNewDataClassId({ parentId: checkNode.id }).then((res) => {
             if (res.code == 200) {
-              this.materialData.dataClassId = res.data;
-              if (res.data == "") {
-                let code = checkNode.id.split(".");
+              this.materialData.dataClassId = res.data
+              if (res.data == '') {
+                let code = checkNode.id.split('.')
                 if (code.length == 4) {
-                  let fCode = code[3].substring(0, 1);
-                  code[3] = code[3].replace(fCode, "M");
-                  this.materialData.dataClassId = code.join(".");
+                  let fCode = code[3].substring(0, 1)
+                  code[3] = code[3].replace(fCode, 'M')
+                  this.materialData.dataClassId = code.join('.')
                 } else {
-                  this.materialData.dataClassId = checkNode.id;
+                  this.materialData.dataClassId = checkNode.id
                 }
               }
             }
-          });
+          })
         }
-        this.dataClassIdWatch = this.materialData.dataClassId;
-        this.materialData.dataName = checkNode.className;
+        this.dataClassIdWatch = this.materialData.dataClassId
+        this.materialData.dataName = checkNode.className
       }
 
-      this.materialData.ddataId = checkNode.id;
+      this.materialData.ddataId = checkNode.id
       // this.materialData.metaDataName = checkNode.name;
       // this.publicTreeVisible = false;
     },
     //关闭公共元数据弹出层
     closePublicDialog() {
-      this.publicTreeVisible = false;
+      this.publicTreeVisible = false
     },
     // 显示存储元数据资料树
     showStorageTree() {
-      this.storageTreeVisible = true;
+      this.storageTreeVisible = true
     },
     //从存储元数据获取数据
     getStorageCheckNode(checkNode) {
       if (this.isSourceTree) {
-        this.materialData.parentId = checkNode.id;
+        this.materialData.parentId = checkNode.id
       } else {
-        if (checkNode.id === 0 || checkNode.id.split(".").length == 4) {
-          this.materialData.dataName = checkNode.name;
-          this.materialData.dataClassId = checkNode.id;
+        if (checkNode.id.split('.').length == 4) {
+          this.materialData.dataName = checkNode.name
+          this.materialData.dataClassId = checkNode.id
         } else {
           this.$message({
-            type: "error",
-            message: "只能选择四级目录或者主类目",
-          });
-          this.$nextTick(function () {
-            this.materialData.dataName = null;
-          });
+            type: 'error',
+            message: '只能选择四级目录或者主类目'
+          })
+          this.$nextTick(function() {
+            this.materialData.dataName = null
+          })
         }
       }
     },
     //关闭存储元数据弹出层
     closeStorageTreeDialog() {
-      this.storageTreeVisible = false;
+      this.storageTreeVisible = false
     },
 
     // 保存数据
@@ -905,145 +910,148 @@ export default {
           message: "请选择名称",
         });
       } */
-      this.$refs["materialForm"].validate((valid) => {
+      this.$refs['materialForm'].validate((valid) => {
         if (valid) {
           // 1为目录   2为资料
-          if (this.materialData.typeText == "目录") {
-            this.materialData.type = 1;
-          } else if (this.materialData.typeText == "资料") {
-            this.materialData.type = 2;
+          if (this.materialData.typeText == '目录') {
+            this.materialData.type = 1
+          } else if (this.materialData.typeText == '资料') {
+            this.materialData.type = 2
           }
-          let handleMessage = "";
-          let refreshWhich = "";
+          let handleMessage = ''
+          let refreshWhich = ''
           //资料分类树新增或编辑
           if (this.isSourceTree) {
-            refreshWhich = "tree";
+            refreshWhich = 'tree'
             // 编辑
-            if (this.editNodeId !== "") {
-              handleMessage = "编辑资料树节点成功";
+            if (this.editNodeId !== '') {
+              handleMessage = '编辑资料树节点成功'
             }
             //新增
             else {
-              handleMessage = "新增资料树节点成功";
+              handleMessage = '新增资料树节点成功'
             }
           }
           //资料的新增或编辑
           else {
             // 编辑
-            if (this.editMaterial !== "") {
-              handleMessage = "编辑资料成功";
+            if (this.editMaterial !== '') {
+              handleMessage = '编辑资料成功'
             }
             //新增
             else {
-              handleMessage = "新增资料成功";
+              handleMessage = '新增资料成功'
             }
-            this.materialData.dataClassLabelList = [];
+            this.materialData.dataClassLabelList = []
             this.dictdataTypes.forEach((element) => {
               this.materialData.labelKeyFrom.forEach((item) => {
                 if (element.dictValue == item) {
                   let obj = {
-                    labelKey: item,
-                  };
-                  this.materialData.dataClassLabelList.push(obj);
+                    labelKey: item
+                  }
+                  this.materialData.dataClassLabelList.push(obj)
                 }
-              });
-            });
+              })
+            })
 
-            this.materialData.dataClassUserList = [];
-            this.materialData.hasPowerList.forEach((element) => {
-              let obj = {
-                userName: element,
-              };
-              this.materialData.dataClassUserList.push(obj);
-            });
-            console.log(this.materialData);
-            this.materialData.dataLogicList = [];
+            this.materialData.dataClassUserList = []
+            // this.materialData.hasPowerList.forEach((element) => {
+            //   let obj = {
+            //     userName: element,
+            //   };
+            //   this.materialData.dataClassUserList.push(obj);
+            // });
+            console.log(this.materialData)
+            this.materialData.dataLogicList = []
             this.multipleSelection.forEach((element) => {
               let obj = {
                 databaseId: element.DATABASE_ID,
                 subTableId: element.SUB_TABLE_ID,
                 tableId: element.ID,
-                dataClassId: this.materialData.dataClassId,
-              };
-              this.materialData.dataLogicList.push(obj);
-            });
+                dataClassId: this.materialData.dataClassId
+              }
+              this.materialData.dataLogicList.push(obj)
+            })
             this.multipleSelectionTabs.forEach((element) => {
-              element.dataclassId = this.materialData.dataClassId;
-            });
-            this.materialData.serviceCodeList = this.multipleSelectionTabs;
+              element.dataclassId = this.materialData.dataClassId
+            })
+            this.materialData.serviceCodeList = this.multipleSelectionTabs
           }
-          console.log(this.materialData);
+          console.log(this.materialData)
           //数据注册审核的数据用途只能选一条
           if (!resForm) {
-            let dataLogicListTable = this.materialData.dataLogicListTable;
+            let dataLogicListTable = this.materialData.dataLogicListTable
             if (dataLogicListTable.length != 1) {
               this.$message({
-                type: "error",
-                message: "只能选择一条数据用途",
-              });
+                type: 'error',
+                message: '只能选择一条数据用途'
+              })
             } else if (
               !dataLogicListTable[0].storageType ||
               dataLogicListTable[0].storageType == null ||
-              dataLogicListTable[0].storageType == ""
+              dataLogicListTable[0].storageType == ''
             ) {
               this.$message({
-                type: "error",
-                message: "请选择存储类型",
-              });
+                type: 'error',
+                message: '请选择存储类型'
+              })
             } else {
-              this.saveData(handleMessage, refreshWhich);
+              this.saveData(handleMessage, refreshWhich)
             }
           } else {
-            this.saveData(handleMessage, refreshWhich);
+            this.saveData(handleMessage, refreshWhich)
           }
         }
-      });
+      })
     },
     saveData(handleMessage, refreshWhich) {
       save(this.materialData).then((response) => {
         if (response.success === true) {
           this.$message({
-            type: "success",
-            message: handleMessage,
-          });
-          if (refreshWhich == "tree") {
+            type: 'success',
+            message: handleMessage
+          })
+          if (refreshWhich == 'tree') {
             //资料树节点 新增  编辑  isSourceTree:true   isSourceTree:false
-            this.$emit("addOrEditSuccess", "handleTree");
+            this.$emit('addOrEditSuccess', 'handleTree')
           } else {
             if (this.DRegistrationObj) {
-              this.$emit("addOrEditSuccess", response.data);
+              this.$emit('addOrEditSuccess', response.data)
             } else {
-              this.$emit("addOrEditSuccess", "handleTable");
+              this.$emit('addOrEditSuccess', 'handleTable')
             }
           }
         } else {
           this.$message({
-            type: "error",
-            message: response.msg,
-          });
+            type: 'error',
+            message: response.msg
+          })
         }
-      });
+      })
     },
 
     cancleSave() {
-      this.$emit("closeMaterialDialog");
-    },
-  },
-};
+      this.$emit('closeMaterialDialog')
+    }
+  }
+}
 </script>
 
 <style lang="scss">
 .structureMaterialSingle {
   .el-collapse {
     border: 1px solid #e6ebf5;
+
     .el-collapse-item__header {
       padding-left: 10px;
     }
+
     .el-collapse-item__content {
       border-top: 1px solid #e6ebf5;
       padding-top: 25px;
     }
   }
+
   .publicDataTitle,
   .storageDataTitle,
   .dictDataTitle {
@@ -1096,21 +1104,26 @@ export default {
     .el-select {
       width: 100%;
     }
+
     .linkInfo {
       display: flex;
       justify-content: space-between;
+
       .leftBox,
       .rightBox {
         width: 49.5%;
       }
+
       .el-table {
         margin-top: 10px;
       }
+
       .rightBox {
         border: 1px solid #c0c4cc;
         padding: 10px;
       }
     }
+
     h4 {
       font-size: 15px;
       height: 39px;
@@ -1150,20 +1163,25 @@ export default {
   .el-input-number {
     width: 100%;
   }
+
   .el-transfer-panel {
     width: 400px;
+
     .el-checkbox-group {
       text-align: left;
+
       .el-checkbox {
         display: block;
       }
     }
+
     .el-transfer-panel__header {
       .el-checkbox {
         text-align: left;
       }
     }
   }
+
   .dialog-footer {
     margin-top: 20px;
   }

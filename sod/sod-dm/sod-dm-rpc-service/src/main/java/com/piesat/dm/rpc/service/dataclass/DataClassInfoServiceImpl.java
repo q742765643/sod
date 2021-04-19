@@ -78,6 +78,8 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultT saveDto(DataClassInfoDto dataClassInfoDto) {
+        this.dataClassLabelService.deleteByDataClassId(dataClassInfoDto.getDataClassId());
+        this.serviceCodeService.deleteByClassId(dataClassInfoDto.getDataClassId());
         List<DataClassLabelDto> dataClassLabelList = dataClassInfoDto.getDataClassLabelList();
         for (DataClassLabelDto dataClassLabelDto : dataClassLabelList) {
             String labelKey = dataClassLabelDto.getLabelKey();
@@ -96,11 +98,23 @@ public class DataClassInfoServiceImpl extends BaseService<DataClassInfoEntity> i
         List<DataClassLogicDto> dataClassLogicList = dataClassInfoDto.getDataLogicList();
         this.dataLogicService.deleteByDataClassId(dataClassInfoDto.getDataClassId());
         this.dataLogicService.saveList(dataClassLogicList);
-        List<DataClassServiceCodeDto> serviceCodeList = dataClassInfoDto.getServiceCodeList();
-        this.serviceCodeService.deleteByClassId(dataClassInfoDto.getDataClassId());
-        this.serviceCodeService.saveDtoList(serviceCodeList);
+        List<DataClassServiceCodeList> serviceCodeList = dataClassInfoDto.getServiceCodeList();
+        serviceCodeList.forEach(e -> {
+                    List<DataClassServiceCodeDto> columnData = e.getColumnData();
+                    columnData.forEach(c -> c.setDataClassId(dataClassInfoDto.getDataClassId()));
+                    this.serviceCodeService.saveDtoList(columnData);
+                }
+        );
         dataClassInfoDto.setStatus(StatusEnum.审核通过.getCode());
-        this.saveNotNull(this.dataClassInfoMapper.toEntity(dataClassInfoDto));
+        DataClassInfoEntity dataClassInfoEntity = this.dataClassInfoMapper.toEntity(dataClassInfoDto);
+        if (StringUtils.isNotEmpty(dataClassInfoEntity.getId())) {
+            DataClassInfoEntity byId = this.getById(dataClassInfoEntity.getId());
+            this.getById(dataClassInfoEntity.getId());
+            if (byId == null) {
+                dataClassInfoEntity.setId(null);
+            }
+        }
+        this.saveNotNull(dataClassInfoEntity);
         return ResultT.success();
     }
 

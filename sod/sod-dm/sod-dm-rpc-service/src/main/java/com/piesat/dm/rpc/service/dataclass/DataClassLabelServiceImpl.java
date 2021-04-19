@@ -9,6 +9,7 @@ import com.piesat.dm.rpc.dto.dataclass.DataClassLabelDto;
 import com.piesat.dm.rpc.mapper.dataclass.DataClassLabelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class DataClassLabelServiceImpl extends BaseService<DataClassLabelEntity>
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DataClassLabelDto saveDto(DataClassLabelDto dataClassLabelDto) {
         DataClassLabelEntity dataClassLabelEntity = this.dataClassLabelMapper.toEntity(dataClassLabelDto);
         DataClassLabelEntity save = this.save(dataClassLabelEntity);

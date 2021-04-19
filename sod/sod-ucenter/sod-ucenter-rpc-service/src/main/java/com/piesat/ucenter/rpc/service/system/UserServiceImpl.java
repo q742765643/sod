@@ -16,10 +16,12 @@ import com.piesat.common.utils.StringUtils;
 import com.piesat.common.utils.poi.ExcelUtil;
 import com.piesat.dm.entity.dataclass.LogicDefineEntity;
 import com.piesat.dm.rpc.api.dataapply.DataAuthorityApplyService;
+import com.piesat.dm.rpc.api.database.DatabaseUserService;
 import com.piesat.dm.rpc.api.dataclass.DataClassService;
 import com.piesat.dm.rpc.api.special.DatabaseSpecialService;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityApplyDto;
 import com.piesat.dm.rpc.dto.dataapply.DataAuthorityRecordDto;
+import com.piesat.dm.rpc.dto.database.DatabaseUserDto;
 import com.piesat.dm.rpc.dto.dataclass.LogicDefineDto;
 import com.piesat.dm.rpc.dto.special.DatabaseSpecialDto;
 import com.piesat.ucenter.dao.system.UserDao;
@@ -69,6 +71,8 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     private DataAuthorityApplyService dataAuthorityApplyService;
     @GrpcHthtClient
     private DataClassService dataClassService;
+    @GrpcHthtClient
+    private DatabaseUserService databaseUserService;
 
     @Override
     public BaseDao<UserEntity> getBaseDao() {
@@ -92,7 +96,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Override
     public UserDto selectUserByUserName(String userName) {
         UserEntity userEntity = userDao.findByUserName(userName);
-        if(StringUtils.isNotNull(userEntity)) {
+        if (StringUtils.isNotNull(userEntity)) {
             List<String> roles = roleMapper.selectRoleListByUserId(userEntity.getId());
             userEntity.setRoleIds(roles.toArray(new String[roles.size()]));
         }
@@ -282,7 +286,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
 
     @Override
     public ResultT addBizUser(Map<String, String> map, String applyPaper) {
-
+        ResultT r = new ResultT();
         String appNames = map.get("appName");
         String bizUserid = map.get("bizUserid");
         String applyAuthority = map.get("applyAuthority");
@@ -308,9 +312,10 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         if (byBizUserId != null) {
             return ResultT.failed("业务用户注册id已存在！");
         }
-        String password = map.get("password");
+        String password1 = map.get("password");
+        String password = "";
         try {
-            password = AESUtil.aesEncrypt(password).trim();
+            password = AESUtil.aesEncrypt(password1).trim();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -335,7 +340,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setBizIp(bizIp);
         userEntity.setBizType(bizType);
         userEntity.setUserName(bizUserid);
-        userEntity.setChecked("0");
+        userEntity.setChecked("1");
         userEntity.setDeptName(deptName);
         userEntity.setLastEditTime(new Date());
         userEntity.setLegalUnits(legalUnits);
@@ -354,11 +359,25 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
         userEntity.setWebUserId(webUserid);
         userEntity.setWebUsername(webUsername);
         userEntity.setDbIds(dbIds);
+
+        DatabaseUserDto d = new DatabaseUserDto();
+        d.setDatabaseUpIp(bizIp);
+        d.setCreateDatabaseIds(dbIds);
+        d.setDatabaseUpId(webUserid);
+        d.setUserId(webUserid);
+        d.setExamineStatus("1");
+        d.setExaminer("PORTAL");
+        d.setDatabaseUpPassword(password1);
+        DatabaseUserDto databaseUserDto = this.databaseUserService.saveDto(d);
+        databaseUserDto.setCreateDatabaseIds(dbIds);
+        this.databaseUserService.addDbUser(databaseUserDto, r);
+
         userEntity.setSodApi(sodApi);
         userEntity.setDbCreate(dbCreate);
         userEntity.setStatus("1".equals(sodApp) ? "0" : "1");
         userEntity = this.userDao.saveNotNull(userEntity);
-        return ResultT.success(userEntity);
+        r.setData(userEntity);
+        return r;
     }
 
     @Override
@@ -511,7 +530,7 @@ public class UserServiceImpl extends BaseService<UserEntity> implements UserServ
     @Transactional
     public void delBizUser(String bizUserid) {
         UserEntity userEntity = userDao.findByUserName(bizUserid);
-        if(userEntity != null){
+        if (userEntity != null) {
             userRoleDao.deleteByUserId(userEntity.getId());
             this.delete(userEntity.getId());
 

@@ -618,11 +618,11 @@ export default {
   data() {
     var nameValidate = (rule, value, callback) => {
       let msg = "";
-      if (rule.field == "dbEleCode" || rule.field.indexOf("dbEleCode") > -1) {
+      if (rule.field == "celementCode" || rule.field.indexOf("celementCode") > -1) {
         msg = "公共元数据字段";
       } else if (
-        rule.field == "celementCode" ||
-        rule.field.indexOf("celementCode") > -1
+        rule.field == "dbEleCode" ||
+        rule.field.indexOf("dbEleCode") > -1
       ) {
         msg = "字段编码";
       }
@@ -755,7 +755,7 @@ export default {
   async created() {
     await this.getDictByTypeMethods("table_column_type");
     this.tableTem1 = {
-      celementCode: {
+      dbEleCode: {
         label: "字段编码",
         type: "input",
         rules: {
@@ -1168,6 +1168,7 @@ export default {
     },
     //批量保存
     columnSaveFun(formName) {
+      debugger
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.columnForm.columnData);
@@ -1546,19 +1547,19 @@ export default {
       dataJson.forEach((element) => {
         element.id = "";
         element.tableId = getTableId;
-        if (!element.celementCode) {
+        if (!element.dbEleCode) {
           flag = true;
           flagmsg = "字段编码不能为空";
           return;
         }
-        if (!codeVer(element.celementCode)) {
+        if (!codeVer(element.dbEleCode)) {
           flag = true;
           flagmsg = "字段编码不允许输入小写字母和中文，且需以大写字母开头";
           return;
         }
         let tableArry = JSON.parse(gettableColumn);
         tableArry.forEach((c) => {
-          if (c.celementCode == element.celementCode) {
+          if (c.dbEleCode == element.dbEleCode) {
             flag = true;
             flagmsg = "字段编码不能重复";
             return;

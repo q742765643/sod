@@ -105,4 +105,14 @@ public class DataClassDto {
 
     private String remark;
 
+    public DataClassInfoDto getInfo(){
+        DataClassInfoDto d = new DataClassInfoDto();
+        d.setDataClassId(this.dataClassId);
+        d.setDataName(this.className);
+        d.setIsArchive(this.isAccess);
+        d.setSn(this.serialNo);
+        d.setUserId(this.userId);
+        return d;
+    }
+
 }
