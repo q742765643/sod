@@ -261,11 +261,14 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
      */
     @Override
     public List<UserManageDto> getSubUsers(String id) {
+        UserManageEntity userManageEntity = this.getById(id);
         List<UserManageEntity> subUsers = new ArrayList<UserManageEntity>();
         if("P".equals(sysLevel)){
             subUsers = userManageMapper.getSubUsersP(id);
         }else{
-            subUsers = userManageMapper.getSubUsersC(id);
+            if(StringUtils.isNotEmpty(userManageEntity.getOrgCodePath())){
+                subUsers = userManageMapper.getSubUsersC(id);
+            }
         }
         return userManageMapstruct.toDto(subUsers);
     }
