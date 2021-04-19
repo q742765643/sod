@@ -58,6 +58,11 @@ public class UserManageDto extends BaseDto {
     String deptName;
 
     /**
+     * 部门编码
+     */
+    String deptCode;
+
+    /**
      * 是否审核:1:已审核,0:未审核
      */
     String ischeck;
