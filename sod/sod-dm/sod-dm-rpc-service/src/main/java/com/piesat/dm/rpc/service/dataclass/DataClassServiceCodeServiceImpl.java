@@ -85,6 +85,7 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<DataClassServiceCodeDto> saveDtoList(List<DataClassServiceCodeDto> serviceCodeList) {
         List<DataClassServiceCodeEntity> dataClassServiceCodeEntities = this.dataClassServiceCodeMapper.toEntity(serviceCodeList);
         List<DataClassServiceCodeEntity> save = this.save(dataClassServiceCodeEntities);
@@ -129,7 +130,7 @@ public class DataClassServiceCodeServiceImpl extends BaseService<DataClassServic
             d.setUpdateBy(getValue(e, "UPDATE_BY"));
             d.setUpdateTime(getDate(e, "UPDATE_TIME"));
             d.setVersion(getValue(e, "VERSION") == null ? 0 : Integer.valueOf(getValue(e, "VERSION")));
-            d.setTableColumnId(tableId);
+            d.setTableColumnId(getValue(e, "TABLE_COLUMN_ID"));
             d.setIsManager(getValue(e, "IS_MANAGER") == null ? 0 : Integer.valueOf(getValue(e, "IS_MANAGER")));
             d.setIsShow(getValue(e, "IS_SHOW") == null ? 1 : Integer.valueOf(getValue(e, "IS_SHOW")));
             d.setUnit(getValue(e, "UNIT"));

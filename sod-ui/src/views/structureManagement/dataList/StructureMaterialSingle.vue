@@ -94,10 +94,10 @@
                 <el-option :value="6" label="L6"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="访问控制" v-if="!isSourceTree">
-              <el-select v-model.trim="materialData.isAccess">
-                <el-option :value="1" label="公开"></el-option>
-                <el-option :value="2" label="限制"></el-option>
+            <el-form-item label="是否归档" v-if="!isSourceTree">
+              <el-select v-model.trim="materialData.isArchive">
+                <el-option :value="1" label="是"></el-option>
+                <el-option :value="0" label="否"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="排序" prop="sn">
@@ -111,9 +111,9 @@
               label="是否发布"
               v-if="tableStructureManageContral && !isSourceTree"
             >
-              <el-select v-model.trim="materialData.ifStopUse">
-                <el-option :value="true" label="发布"></el-option>
-                <el-option :value="false" label="不发布"></el-option>
+              <el-select v-model.trim="materialData.published">
+                <el-option :value="1" label="发布"></el-option>
+                <el-option :value="0" label="不发布"></el-option>
                 <!-- <el-option :value="true" label="全部发布"></el-option>
                 <el-option :value="false" label="不发布"></el-option>
                 <el-option :value="3" label="部分发布"></el-option>-->
@@ -129,7 +129,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="备注" v-if="!isSourceTree">
-              <el-input v-model.trim="materialData.remark"></el-input>
+              <el-input v-model.trim="materialData.dataDesc"></el-input>
             </el-form-item>
           </div>
         </div>
@@ -478,31 +478,32 @@ export default {
 
       isDisabledEdit: false,
       materialData: {
-        ddataId: "",
+        // ddataId: "",
         ddataId: null,
         dataClassId: null,
         dataName: null,
         parentId: null,
         typeText: "资料",
-        ifStopUse: true,
-        isAccess: 1,
+        published: 0,
+        isArchive: 1,
         useBaseInfo: 0,
         sn: 0,
         dataLogicListTable: [], //数据用途回显的树
         labelKeyFrom: [],
         dataClassLabelList: [],
         hasPowerList: [],
+        dataDesc: null,
       },
       publicTreeVisible: false, //公共元数据资料树弹出层
       storageTreeVisible: false, //存储元数据资料树弹出层
       rules: {
-        ddataId: [
-          {
-            required: true,
-            message: "名称不能为空",
-            trigger: "change",
-          },
-        ],
+        // ddataId: [
+        //   {
+        //     required: true,
+        //     message: "名称不能为空",
+        //     trigger: "change",
+        //   },
+        // ],
         ddataId: [
           {
             required: true,
@@ -694,6 +695,7 @@ export default {
     // 获取字段
     async getServiceCodeMethods() {
       for (var i = 0; i < this.multipleSelectionTabsArry.length; i++) {
+        debugger
         await getServiceCode({
           dataclassId: this.materialData.dataClassId,
           tableId: this.multipleSelectionTabsArry[i].ID,
@@ -748,24 +750,24 @@ export default {
         // this.materialData.metaDataName = this.DRegistrationObj.TYPE_NAME;
         this.materialData.ddataId = this.DRegistrationObj.D_DATA_ID;
         this.materialData.dataLogicListTable = this.DRegistrationObj.dataLogicList;
-        getNewDataClassId({ parentId: this.materialData.ddataId }).then(
-          (res) => {
-            if (res.code == 200) {
-              this.materialData.dataClassId = res.data;
-              if (res.data == "") {
-                let code = checkNode.id.split(".");
-                if (code.length == 4) {
-                  let fCode = code[3].substring(0, 1);
-                  code[3] = code[3].replace(fCode, "M");
-                  this.materialData.dataClassId = code.join(".");
-                } else {
-                  this.materialData.dataClassId = checkNode.id;
-                }
-              }
-              this.dataClassIdWatch = this.materialData.dataClassId;
-            }
-          }
-        );
+        // getNewDataClassId({ parentId: this.materialData.ddataId }).then(
+        //   (res) => {
+        //     if (res.code == 200) {
+        //       this.materialData.dataClassId = res.data;
+        //       if (res.data == "") {
+        //         let code = checkNode.id.split(".");
+        //         if (code.length == 4) {
+        //           let fCode = code[3].substring(0, 1);
+        //           code[3] = code[3].replace(fCode, "M");
+        //           this.materialData.dataClassId = code.join(".");
+        //         } else {
+        //           this.materialData.dataClassId = checkNode.id;
+        //         }
+        //       }
+        //       this.dataClassIdWatch = this.materialData.dataClassId;
+        //     }
+        //   }
+        // );
         console.log(this.materialData);
       }
     },
@@ -802,6 +804,7 @@ export default {
               response.data.hasPowerList.push(element.userName);
             });
           }
+          this.materialData = response.data;
           if (
             response.data.dataLogicList &&
             response.data.dataLogicList.length > 0
@@ -817,7 +820,7 @@ export default {
               });
             });
           }
-          this.materialData = response.data;
+
           if (this.materialData.type == 1) {
             this.materialData.typeText = "目录";
           } else {
@@ -950,12 +953,12 @@ export default {
             });
 
             this.materialData.dataClassUserList = [];
-            this.materialData.hasPowerList.forEach((element) => {
-              let obj = {
-                userName: element,
-              };
-              this.materialData.dataClassUserList.push(obj);
-            });
+            // this.materialData.hasPowerList.forEach((element) => {
+            //   let obj = {
+            //     userName: element,
+            //   };
+            //   this.materialData.dataClassUserList.push(obj);
+            // });
             console.log(this.materialData);
             this.materialData.dataLogicList = [];
             this.multipleSelection.forEach((element) => {

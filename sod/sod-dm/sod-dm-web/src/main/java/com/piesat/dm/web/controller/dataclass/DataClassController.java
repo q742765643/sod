@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.piesat.common.config.DatabseType;
 import com.piesat.common.utils.StringUtils;
 import com.piesat.dm.rpc.api.database.SchemaService;
-import com.piesat.dm.rpc.api.dataclass.DataClassLabelService;
-import com.piesat.dm.rpc.api.dataclass.DataClassService;
-import com.piesat.dm.rpc.api.dataclass.DataClassUserService;
-import com.piesat.dm.rpc.api.dataclass.DataLogicService;
+import com.piesat.dm.rpc.api.dataclass.*;
 import com.piesat.dm.rpc.dto.ConsistencyCheckDto;
 import com.piesat.dm.rpc.dto.dataclass.*;
 import com.piesat.dm.rpc.service.GrpcService;
@@ -38,6 +35,8 @@ import java.util.*;
 public class DataClassController {
     @Autowired
     private DataClassService dataClassService;
+    @Autowired
+    private DataClassInfoService dataClassInfoService;
     @Autowired
     private DataLogicService dataLogicService;
     @Autowired
@@ -106,14 +105,21 @@ public class DataClassController {
     @GetMapping(value = "/findByClassId")
     public ResultT findByClassId(String id) {
         try {
-            DataClassDto dataClassDto = this.dataClassService.findByDataClassId(id);
+
+            List<DataClassInfoDto> dataClassInfoDtoList= this.dataClassInfoService.getDotByClassId(id);
+            DataClassInfoDto d = null;
+            if (dataClassInfoDtoList.size()==0){
+                DataClassDto dataClassDto = this.dataClassService.findByDataClassId(id);
+                d = dataClassDto.getInfo();
+            }else {
+                d = dataClassInfoDtoList.get(0);
+            }
+
             List<DataClassLogicDto> byDataClassId = this.dataLogicService.findByDataClassId(id);
-            dataClassDto.setDataLogicList(byDataClassId);
-            List<DataClassLabelDto> dataClassLabels = this.dataClassLabelService.findByDataClassId(dataClassDto.getDataClassId());
-            dataClassDto.setDataClassLabelList(dataClassLabels);
-            List<DataClassUserDto> dataClassUsers = this.dataClassUserService.findByDataClassId(dataClassDto.getDataClassId());
-            dataClassDto.setDataClassUserList(dataClassUsers);
-            return ResultT.success(dataClassDto);
+            d.setDataLogicList(byDataClassId);
+            List<DataClassLabelDto> dataClassLabels = this.dataClassLabelService.findByDataClassId(d.getDataClassId());
+            d.setDataClassLabelList(dataClassLabels);
+            return ResultT.success(d);
         } catch (Exception e) {
             e.printStackTrace();
             return ResultT.failed(e.getMessage());

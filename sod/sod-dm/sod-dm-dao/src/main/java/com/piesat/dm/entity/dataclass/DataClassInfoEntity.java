@@ -65,6 +65,12 @@ public class DataClassInfoEntity extends BaseEntity {
     @Column(name = "published")
     private Integer published;
 
+    /**
+     * 是否使用基础信息
+     */
+    @Column(name = "useBaseInfo")
+    private Integer useBaseInfo;
+
 
     /**
      * 存储目录

@@ -1568,8 +1568,7 @@
                B.ID,
                B.CREATE_BY,
                B.CREATE_TIME,
-               B.DEL_FLAG
-                ,
+               B.DEL_FLAG,
                B.UPDATE_BY,
                B.UPDATE_TIME,
                B.VERSION,
