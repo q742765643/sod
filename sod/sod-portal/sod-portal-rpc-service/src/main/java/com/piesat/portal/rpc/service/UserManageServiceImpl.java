@@ -150,7 +150,9 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
             String result = HttpClientUtil.doPost(url,s1,headers);
             if(!"Index: 0, Size: 0".equals(result)){
                 String userInfo = SM4Utils.decrypt(result,uaPassword);
-                resultJsonObject = JSONObject.parseObject(userInfo);
+                if(StringUtils.isNotEmpty(userInfo)){
+                    resultJsonObject = JSONObject.parseObject(userInfo);
+                }
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -168,6 +170,7 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
             List<DepartManageDto> departManageDtos = departManageService.findByDeptunicode(deptunicode);
             if(departManageDtos != null && departManageDtos.size()>0){
                 String deptName = "";
+                userManageDto.setDeptCode(departManageDtos.get(0).getDeptcode());
                 deptName = getAllDeptName(deptName,departManageDtos.get(0));
                 userManageDto.setDeptName(deptName);
             }
@@ -175,6 +178,7 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         }else{
             if (StringUtils.isNotEmpty(uaUrl) && StringUtils.isNotEmpty(uaPassword)) {
                 JSONObject jsonObject = getPortalUserInfo(id);
+                userManageDto.setDeptCode(getDeptInfo(userManageEntity.getOrgCodePath()));
                 userManageDto.setPhone("");
                 if(jsonObject != null && jsonObject.size()>0){
                     userManageDto.setPhone((String) jsonObject.get("mobile"));
@@ -199,14 +203,28 @@ public class UserManageServiceImpl extends BaseService<UserManageEntity> impleme
         return userManageDto;
     }
 
+    public String getDeptInfo(String deptInfoMessage){
+        //
+        String dept = "";
+        if(StringUtils.isNotEmpty(deptInfoMessage)){
+            String[] split = deptInfoMessage.split("/");
+            if(deptInfoMessage.lastIndexOf("/") == deptInfoMessage.length()-1){
+                dept = split[split.length-2];
+            }else{
+                dept = split[split.length-1];
+            }
+        }
+        return dept;
+    }
+
     private String  getAllDeptName(String deptName,DepartManageDto dept){
         if(dept.getDeptcode().equals(dept.getParentCode())){
-            return dept.getDeptname()+"-"+deptName;
+            return dept.getDeptname()+"/"+deptName;
         }else{
             if(StringUtil.isEmpty(deptName)){
                 deptName = dept.getDeptname();
             }else{
-                deptName = dept.getDeptname() + "-"+deptName;
+                deptName = dept.getDeptname() + "/"+deptName;
             }
             List<DepartManageDto> parent = departManageService.findByDeptcode(dept.getParentCode());
             if(null != parent && parent.size()>0){
