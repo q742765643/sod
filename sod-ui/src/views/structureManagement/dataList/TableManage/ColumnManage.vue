@@ -92,14 +92,6 @@
         @click="importTelplate"
         >导入</el-button
       >
-      <el-button
-        type="primary"
-        size="small"
-        icon="el-icon-s-operation"
-        @click="syncServe"
-        v-if="tableStructureManageContral"
-        >同步服务名称</el-button
-      >
     </el-button-group>
     <!-- 字段表格 -->
     <el-form
