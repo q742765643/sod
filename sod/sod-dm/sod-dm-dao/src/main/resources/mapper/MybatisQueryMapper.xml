@@ -1579,6 +1579,7 @@
                B.IS_MANAGER,
                B.IS_SHOW,
                B.UNIT,
+               B.SN,
                CASE WHEN UNIT_CN IS NULL THEN ELE_UNIT ELSE UNIT_CN END                        UNIT_CN,
                CASE WHEN B.USER_ELE_CODE IS NULL THEN C.USER_ELE_CODE ELSE B.USER_ELE_CODE END USER_ELE_CODE
         FROM T_SOD_DATA_TABLE_COLUMNS A

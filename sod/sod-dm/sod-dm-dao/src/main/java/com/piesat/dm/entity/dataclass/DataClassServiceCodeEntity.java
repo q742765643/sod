@@ -70,5 +70,10 @@ public class DataClassServiceCodeEntity extends BaseEntity {
     @Column(name = "is_manager")
     private Integer isManager;
 
-
+    /**
+     * 排序
+     * sn
+     */
+    @Column(name = "sn")
+    private Integer sn;
 }

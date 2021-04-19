@@ -71,5 +71,10 @@ public class DataClassServiceCodeDto extends BaseDto {
      */
     private Integer isManager;
 
+    /**
+     * 排序
+     */
+    private Integer sn;
+
 
 }

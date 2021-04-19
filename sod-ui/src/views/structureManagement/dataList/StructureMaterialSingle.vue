@@ -262,6 +262,17 @@
             @row-click="handleClickTableRow"
             class="columnTable"
           >
+
+            <el-table-column label="排序" align="center" width="180">
+              <template slot-scope="scope">
+                <el-input-number
+                  v-model.trim="scope.row.sn"
+                  :min="0"
+                ></el-input-number>
+              </template>
+
+            </el-table-column>
+
             <el-table-column
               :label="column.label"
               v-for="(column, field) of tableTem1"
@@ -704,6 +715,7 @@ export default {
           tableId: this.multipleSelectionTabsArry[i].ID
         }).then((res) => {
           if (res.code == 200) {
+            debugger
             this.multipleSelectionTabsArry[i].columnData = res.data
           }
         })
